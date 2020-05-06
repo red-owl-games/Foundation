@@ -1,0 +1,15 @@
+{
+    "name": "com.redowl.core",
+    "version": "1.0.0",
+    "displayName": "RedOwl Core",
+    "description": "RedOwl Core",
+    "unity": "2019.3",
+    "dependencies": {
+      "com.unity.mathematics": "1.1.0"
+    },
+    "author": {
+      "name": "RedOwl",
+      "email": "support@redowlgames.com",
+      "url": "https://redowlgames.com"
+    }
+  }
