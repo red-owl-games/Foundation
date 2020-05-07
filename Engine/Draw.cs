@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public partial class CoreSettings
+    public partial class RedOwlSettings
     {
         [SerializeField]
         [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(120)]
@@ -25,8 +25,8 @@ namespace RedOwl.Core
         [Conditional("UNITY_EDITOR")]
         public static void Line(Vector3 start, Vector3 end, Color? color = null)
         {
-            if (!CoreSettings.ShowDebugDraw) return;
-            UnityEngine.Debug.DrawLine(start, end, color ?? CoreSettings.DebugDrawColor, 0f, true);
+            if (!RedOwlSettings.ShowDebugDraw) return;
+            UnityEngine.Debug.DrawLine(start, end, color ?? RedOwlSettings.DebugDrawColor, 0f, true);
         }
         
         [Conditional("UNITY_EDITOR")]

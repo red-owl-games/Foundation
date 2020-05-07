@@ -14,7 +14,7 @@ namespace RedOwl.Core
         Debug = 3
     }
     
-    public partial class CoreSettings
+    public partial class RedOwlSettings
     {
         [SerializeField]
         private LogLevel logLevel;
@@ -52,25 +52,25 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Debug(string message)
         {
-            if (CoreSettings.LogLevel >= LogLevel.Debug) log($"<color=grey>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Debug) log($"<color=grey>{message}</color>");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(string message)
         {
-            if (CoreSettings.LogLevel >= LogLevel.Info) log($"<color=teal>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Info) log($"<color=teal>{message}</color>");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warn(string message)
         {
-            if (CoreSettings.LogLevel >= LogLevel.Warn) logWarning($"<color=yellow>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Warn) logWarning($"<color=yellow>{message}</color>");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(string message)
         {
-            if (CoreSettings.LogLevel >= LogLevel.Error) logError($"<color=red>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Error) logError($"<color=red>{message}</color>");
         }
     }
 }
