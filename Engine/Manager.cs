@@ -22,7 +22,9 @@ namespace RedOwl.Core
             get {
                 if (_instance == null)
                 {
-                    _instance = new GameObject($"{typeof(T).Name}").AddComponent<T>();
+                    var obj = new GameObject($"{typeof(T).Name}");
+                    DontDestroyOnLoad(obj);
+                    _instance = obj.AddComponent<T>();
                     if (_instance is IManagerHideFlags flags)
                         _instance.gameObject.hideFlags = flags.HideFlags;
                 }

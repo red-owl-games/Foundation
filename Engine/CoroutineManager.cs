@@ -16,42 +16,50 @@ namespace RedOwl.Core
         public event Action OnCancelled;
         
         private readonly IEnumerator _target;
+        private Coroutine _routine;
         
         public CoroutineWrapper(IEnumerator target)
         {
             _target = target;
         }
+        
+        public CoroutineWrapper Start()
+        {
+            _routine = CoroutineManager.StartRoutine(Wrapper(_target));
+            return this;
+        }
 
-        internal IEnumerator Routine()
+        public CoroutineWrapper Stop()
+        {
+            CoroutineManager.StopRoutine(_routine);
+            return this;
+        }
+
+        private IEnumerator Wrapper(IEnumerator target)
         {
             bool didComplete = false;
             try
             {
-                while (_target.MoveNext())
+                while (target.MoveNext())
                 {
-                    if (_target.Current is Cancelled)
+                    if (target.Current is Cancelled)
                     {
                         OnCancelled?.Invoke();
                         yield break;
                     }
 
-                    yield return _target.Current;
+                    yield return target.Current;
                 }
 
                 didComplete = true;
             }
             finally
             {
-                if (didComplete) OnSuccessful?.Invoke(); 
+                if (didComplete) OnSuccessful?.Invoke();
             }
             OnDone?.Invoke();
         }
 
-        public void Stop()
-        {
-            CoroutineManager.StopRoutine(_target);
-        }
-        
         public CoroutineWrapper WhenDone(Action callback)
         {
             OnDone += callback;
@@ -75,7 +83,7 @@ namespace RedOwl.Core
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Init() => Initialize();
-
+        
         private static IEnumerator CallbackWrapper(Func<bool> callback)
         {
             while (callback() == false)
@@ -87,29 +95,18 @@ namespace RedOwl.Core
         public static CoroutineWrapper StartRoutine(Func<bool> callback)
         {
             var output = new CoroutineWrapper(CallbackWrapper(callback));
-            Instance.StartCoroutine(output.Routine());
-            return output;
-        }
-        
-        public static CoroutineWrapper StartRoutine(IEnumerator routine)
-        {
-            var output = new CoroutineWrapper(routine);
-            Instance.StartCoroutine(output.Routine());
+            output.Start();
             return output;
         }
 
-        public static void StopRoutine(CoroutineWrapper wrapper)
+        public static Coroutine StartRoutine(IEnumerator wrapper)
         {
-            wrapper?.Stop();
+            return Instance.StartCoroutine(wrapper);
         }
-        
+
         public static void StopRoutine(Coroutine routine)
         {
             if (routine != null) Instance.StopCoroutine(routine);
-        }
-        
-        public static void StopRoutine(IEnumerator routine) {
-            Instance.StopCoroutine(routine);
         }
         
         public static void StopAllRoutines()

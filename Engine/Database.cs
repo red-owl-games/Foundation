@@ -18,7 +18,6 @@ namespace RedOwl.Core
     public abstract class Database<T> : GlobalConfig<T>, IDatabase where T : Database<T>, new() { }
 
 #if UNITY_EDITOR
-
     [UnityEditor.InitializeOnLoad]
     public class DatabaseInitializer
     {
@@ -33,7 +32,5 @@ namespace RedOwl.Core
             }
         }
     }
-
 #endif
-
 }
