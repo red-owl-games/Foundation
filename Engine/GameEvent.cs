@@ -13,6 +13,7 @@ namespace RedOwl.Core
         [Button(ButtonSizes.Large)]
         public void Raise()
         {
+            Log.Always($"Raising Event: {name}");
             On?.Invoke();
         }
     }

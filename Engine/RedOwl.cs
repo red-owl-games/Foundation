@@ -15,6 +15,9 @@ namespace RedOwl.Core
     
     public static partial class RedOwl
     {
+        public static ServiceCache Services = new ServiceCache();
+        public static TypeCache Types = new TypeCache();
+        
         public static Random Random;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]

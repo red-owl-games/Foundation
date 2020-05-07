@@ -79,6 +79,18 @@ namespace RedOwl.Core
         }
     }
 
+    public class NullCoroutineWrapper : CoroutineWrapper
+    {
+        public NullCoroutineWrapper() : base(NullWrapper())
+        {
+        }
+
+        private static IEnumerator NullWrapper()
+        {
+            yield return null;
+        }
+    }
+
     public class CoroutineManager : Manager<CoroutineManager>
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
