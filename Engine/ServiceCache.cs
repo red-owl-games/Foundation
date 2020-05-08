@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RedOwl.Core
 {
@@ -7,9 +8,9 @@ namespace RedOwl.Core
     {
         private readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
 
-        public void Set<T>(object serviceInstance)
+        public void Set<T>(object instance)
         {
-            _cache[typeof(T)] = serviceInstance;
+            _cache[typeof(T)] = instance;
         }
 
         public T Get<T>()

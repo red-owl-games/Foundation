@@ -7,6 +7,7 @@ namespace RedOwl.Core
 {
     public class StateMachine : State, IDisposable
     {
+        private readonly List<State> _internalStates;
         private readonly List<StateMachine> _subMachines;
         private readonly Dictionary<GameEvent, Action> _callbacks;
         private State _current;
@@ -20,6 +21,7 @@ namespace RedOwl.Core
         {
             _config = configuration;
             int count = configuration.SubStates.Count + configuration.SubStateMachines.Count;
+            _internalStates = new List<State>(configuration.States.Count);
             _subMachines = new List<StateMachine>(count);
             _callbacks = new Dictionary<GameEvent, Action>(count);
             Initialize(owner, reenterable);
@@ -29,6 +31,12 @@ namespace RedOwl.Core
 
         private void ParseStates(GameObject owner, StateMachineConfig configuration)
         {
+            foreach (string name in configuration.States)
+            {
+                var state = StateMachineUtils.GetState(name);
+                state.Initialize(owner, false);
+                _internalStates.Add(state);
+            }
             foreach (var stateConfig in configuration.SubStates)
             {
                 stateConfig.State.Initialize(owner, stateConfig.reenterable);
@@ -50,7 +58,7 @@ namespace RedOwl.Core
 
         private void RegisterEvents()
         {
-            Debug.Log($"Registering {_callbacks.Count} Events for State: {_config.name} with Id: {Id}");
+            //Debug.Log($"Registering {_callbacks.Count} Events for State: {_config.name} with Id: {Id}");
             foreach (var kvp in _callbacks)
             {
                 kvp.Key.On += kvp.Value;
@@ -59,7 +67,7 @@ namespace RedOwl.Core
 
         private void UnregisterEvents()
         {
-            Debug.Log($"Unregistering {_callbacks.Count} Events for State: {_config.name} with Id: {Id}");
+            //Debug.Log($"Unregistering {_callbacks.Count} Events for State: {_config.name} with Id: {Id}");
             foreach (var kvp in _callbacks)
             {
                 kvp.Key.On -= kvp.Value;
@@ -90,17 +98,25 @@ namespace RedOwl.Core
 
         public override IEnumerator OnEnter()
         {
-            Debug.Log($"Entering State: {_config.name} with Id: {Id}");
+            //Debug.Log($"Entering State: {_config.name} with Id: {Id}");
+            foreach (var state in _internalStates)
+            {
+                state.Enter().Start().WhenDone(() => { state.Update().Start(); });
+            }
             EnterInitialState();
             yield return null;
         }
 
         public override IEnumerator OnExit()
         {
-            Debug.Log($"Exiting State: {_config.name} with Id: {Id}");
+            //Debug.Log($"Exiting State: {_config.name} with Id: {Id}");
             UnregisterEvents();
             _current?.Exit().Start();
             _current = null;
+            foreach (var state in _internalStates)
+            {
+                state.Exit().Start();
+            }
             yield return null;
         }
 

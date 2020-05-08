@@ -26,7 +26,7 @@ namespace RedOwl.Core
                 yield return null;
                 if (ShouldStop)
                 {
-                    Log.Always($"Trying to stop state: {GetType().Name} with id: {Id}");
+                    //Log.Always($"Trying to stop state: {GetType().Name} with id: {Id}");
                     break;
                 }
             }
@@ -51,7 +51,7 @@ namespace RedOwl.Core
 
         public virtual IEnumerator OnEnter()
         {
-            Debug.Log($"Entering State: {GetType().FullName} with Id: {Id}");
+            //Debug.Log($"Entering State: {GetType().FullName} with Id: {Id}");
             yield return null;
         }
 
@@ -62,7 +62,7 @@ namespace RedOwl.Core
 
         public virtual IEnumerator OnExit()
         {
-            Debug.Log($"Exiting State: {GetType().FullName} with Id: {Id}");
+            //Debug.Log($"Exiting State: {GetType().FullName} with Id: {Id}");
             yield return null;
         }
     }
