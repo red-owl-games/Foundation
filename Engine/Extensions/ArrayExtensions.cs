@@ -6,6 +6,26 @@ namespace RedOwl.Core
 {
     public static class ArrayExtensions
     {
+        public static T[] RemoveAt<T>(this T[] self, int index)
+        {
+            int length = self.Length;
+            var output = new T[length - 1];
+
+            int i = 0;
+            int j = 0;
+            while (i < length)
+            {
+                if (i != index)
+                {
+                    output[j] = self[i];
+                    j++;
+                }
+                i++;
+            }
+
+            return output;
+        }
+        
         /// <summary>
         /// Performs a fisher-yates shuffle on the array.
         /// </summary>
