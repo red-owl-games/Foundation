@@ -19,10 +19,16 @@ namespace RedOwl.Core
         private static void Initialize()
         {
             Log.Always("Initialize RedOwl Game");
-            var obj = new GameObject("Game");
-            Object.DontDestroyOnLoad(obj);
             
             Services = new ServiceCache();
+            
+            if (RedOwlSettings.GameStateMachine != null) InitializeStateMachine();
+        }
+
+        private static void InitializeStateMachine()
+        {
+            var obj = new GameObject("Game");
+            Object.DontDestroyOnLoad(obj);
             StateMachine = new StateMachine(obj, RedOwlSettings.GameStateMachine);
 
             StateMachine.EnterInitialState();

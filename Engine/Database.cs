@@ -23,9 +23,11 @@ namespace RedOwl.Core
     {
         static DatabaseInitializer()
         {
+            if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode) return;
             foreach (var type in AssemblyUtilities.GetTypes(AssemblyTypeFlags.All))
             {
                 if (!typeof(IDatabase).IsAssignableFrom(type) || type.IsAbstract) continue;
+                //Debug.Log($"Database Initialization of type: {type.Name}");
                 var info = typeof(GlobalConfig<>).MakeGenericType(type).GetProperty("Instance",
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                 if (info?.GetValue(null, null) == null) return;

@@ -14,7 +14,7 @@ namespace RedOwl.Core.Editor
                 for (int i = 0; i < callbacks.Length; i++)
                 {
                     callbacks[i]();
-                    EditorUtility.DisplayProgressBar(title, body, i/steps);
+                    EditorUtility.DisplayProgressBar($"{title} ({i} / {steps})", body, i/steps);
                 }
             }
             catch (Exception)
@@ -36,7 +36,7 @@ namespace RedOwl.Core.Editor
                 for (int i = 0; i < steps; i++)
                 {
                     callback(items[i]);
-                    EditorUtility.DisplayProgressBar(title, body, i/steps);
+                    EditorUtility.DisplayProgressBar($"{title} ({i} / {steps})", body, i/steps);
                 }
             }
             catch (Exception)
