@@ -1,10 +1,12 @@
+using System;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
+using UnityEngine;
 
 namespace RedOwl.Core
 {
     [HideMonoScript]
-    [GlobalConfig("Resources/RedOwl", UseAsset = true)]
+    [GlobalConfig("Assets/Resources/RedOwl/", UseAsset = true)]
     public partial class RedOwlSettings : Database<RedOwlSettings>
     {
 #if UNITY_EDITOR

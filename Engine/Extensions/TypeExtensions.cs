@@ -6,7 +6,7 @@ namespace RedOwl.Core
 {
     public static class TypeExtensions
     {
-        public static Type[] SafeGetTypes(this Assembly self)
+        public static IEnumerable<Type> SafeGetTypes(this Assembly self)
         {
             try
             {
@@ -46,9 +46,23 @@ namespace RedOwl.Core
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+                if (assembly.GlobalAssemblyCache) continue;
                 foreach (var type in assembly.SafeGetTypes())
                 {
                     if (typeof(T).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                        yield return type;
+                }
+            }
+        }
+        
+        public static IEnumerable<Type> GetAllTypesWithAttribute<T>() where T : Attribute
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GlobalAssemblyCache) continue;
+                foreach (var type in assembly.SafeGetTypes())
+                {
+                    if (!type.IsAbstract && !type.IsInterface && type.IsDefined(typeof(T), true))
                         yield return type;
                 }
             }

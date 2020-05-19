@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -19,7 +20,7 @@ namespace RedOwl.Core
         [SerializeField]
         private LogLevel logLevel;
 
-        public static LogLevel LogLevel => Instance.logLevel;
+        public static LogLevel LogLevel => I.logLevel;
     }
     
     public static class Log

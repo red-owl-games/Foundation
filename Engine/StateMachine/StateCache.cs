@@ -37,6 +37,8 @@ namespace RedOwl.Core
             }
         }
         
+        public static State Get(string name) => TryGet(name, out Type type) ? (State) Activator.CreateInstance(type) : new NullState();
+        
         internal static bool TryGet(string name, out Type output)
         {
             ShouldBuildCache();

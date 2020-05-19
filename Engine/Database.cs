@@ -6,7 +6,7 @@ namespace RedOwl.Core
 {
     /*
     [HideMonoScript]
-    [GlobalConfig("Game/Resources/MyTest", UseAsset = true)]
+    [GlobalConfig("Assets/Game/Resources/MyTest", UseAsset = true)]
     public class MyTestDatabase : Database<MyTestDatabase>
     {
         public float number;
@@ -15,7 +15,21 @@ namespace RedOwl.Core
     
     public interface IDatabase { }
 
-    public abstract class Database<T> : GlobalConfig<T>, IDatabase where T : Database<T>, new() { }
+    public abstract class Database<T> : GlobalConfig<T>, IDatabase where T : Database<T>, new()
+    {
+        //TODO: The following is a hack for a bug in GlobalConfig not loading the asset at runtime
+        public static T I { get; private set; }
+        
+        private void Awake()
+        {
+            I = (T)this;
+        }
+
+        private void OnEnable()
+        {
+            if (I == null) I = (T)this;
+        }
+    }
 
 #if UNITY_EDITOR
     [UnityEditor.InitializeOnLoad]

@@ -11,13 +11,13 @@ namespace RedOwl.Core
         [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(120)]
         private bool showDebugDraw = true;
 
-        public static bool ShowDebugDraw => Instance.showDebugDraw;
+        public static bool ShowDebugDraw => I.showDebugDraw;
 
         [SerializeField]
         [HorizontalGroup("Draw"), ShowIf("showDebugDraw"), HideLabel]
         private Color debugDrawColor = Color.magenta;
 
-        public static Color DebugDrawColor => Instance.debugDrawColor;
+        public static Color DebugDrawColor => I.debugDrawColor;
     }
     
     public static class Draw

@@ -55,22 +55,22 @@ namespace RedOwl.Core
         
         public int2 GetRandomCell() =>
             new int2(
-                RedOwl.Random.NextInt(Width),
-                RedOwl.Random.NextInt(Height));
+                Game.Random.NextInt(Width),
+                Game.Random.NextInt(Height));
 
         public int2 GetRandomCellEdge()
         {
-            int side = RedOwl.Random.NextInt(4);
+            int side = Game.Random.NextInt(4);
             switch (side)
             {
                 case 0: // Bottom
-                    return new int2(RedOwl.Random.NextInt(Width),-1);
+                    return new int2(Game.Random.NextInt(Width),-1);
                 case 1: // Left
-                    return new int2(-1, RedOwl.Random.NextInt(Height));
+                    return new int2(-1, Game.Random.NextInt(Height));
                 case 2: // Right
-                    return new int2(Width, RedOwl.Random.NextInt(Height));
+                    return new int2(Width, Game.Random.NextInt(Height));
                 case 3: // Top
-                    return new int2(RedOwl.Random.NextInt(Width),Height);
+                    return new int2(Game.Random.NextInt(Width),Height);
             }
             return new int2(0, 0);
         }

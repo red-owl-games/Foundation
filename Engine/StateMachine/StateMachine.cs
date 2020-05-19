@@ -12,7 +12,7 @@ namespace RedOwl.Core
         private readonly Dictionary<GameEvent, Action> _callbacks;
         private State _current;
 
-        public State InitialState { get; private set; }
+        private State InitialState { get; set; }
         
         // Debug
         private StateMachineConfig _config;
@@ -33,7 +33,7 @@ namespace RedOwl.Core
         {
             foreach (string name in configuration.States)
             {
-                var state = StateMachineUtils.GetState(name);
+                var state = StateCache.Get(name);
                 state.Initialize(owner, false);
                 _internalStates.Add(state);
             }

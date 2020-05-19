@@ -7,7 +7,7 @@ namespace RedOwl.Core
     /*
     [HideMonoScript]
     [ShowOdinSerializedPropertiesInInspector]
-    [GlobalConfig("Game/Resources/MyTest", UseAsset = true)]
+    [GlobalConfig("Assets/Game/Resources/MyTest", UseAsset = true)]
     public class MyTestDatabase : OdinDatabase<MyTestDatabase>
     {
         public HashSet<string> strings;
@@ -19,6 +19,18 @@ namespace RedOwl.Core
     
     public abstract class OdinDatabase<T> : GlobalConfig<T>, IOdinDatabase, ISerializationCallbackReceiver where T : OdinDatabase<T>, new()
     {
+        public static T I { get; private set; }
+        
+        private void Awake()
+        {
+            I = (T)this;
+        }
+
+        private void OnEnable()
+        {
+            if (I == null) I = (T)this;
+        }
+        
         [SerializeField, HideInInspector] 
         private SerializationData serializationData;
         

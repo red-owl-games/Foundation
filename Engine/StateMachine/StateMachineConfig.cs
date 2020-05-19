@@ -20,8 +20,7 @@ namespace RedOwl.Core
         public string StateSelector;
 
         private State _state;
-        internal State State =>
-            _state ?? (_state = StateMachineUtils.GetState(StateSelector));
+        internal State State => _state ?? (_state = StateCache.Get(StateSelector));
 
         private IList<ValueDropdownItem<string>> PossibleStates
         {
