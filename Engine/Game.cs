@@ -16,11 +16,6 @@ namespace RedOwl.Core
     
     public partial class RedOwlSettings
     {
-        [SerializeField]
-        private StateMachineConfig gameStateMachine;
-
-        public static StateMachineConfig GameStateMachine => I.gameStateMachine;
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void InitializeGame() => Game.Initialize();
     }
@@ -33,7 +28,6 @@ namespace RedOwl.Core
             
             InitializeRandom();
             InitializeServices();
-            InitializeStateMachine();
         }
 
         #region Random
@@ -58,25 +52,6 @@ namespace RedOwl.Core
         
         public static void Bind<T>(T instance) => Services.Bind(instance);
         public static void Inject(object obj) => Services.Inject(obj);
-        
-        #endregion
-        
-        #region StateMachine
-        
-        public static StateMachine StateMachine { get; private set; }
-        
-        private static void InitializeStateMachine()
-        {
-            if (RedOwlSettings.GameStateMachine == null) return;
-            Log.Always("Initialize RedOwl Game State Machine");
-            
-            var obj = new GameObject("Game");
-            Object.DontDestroyOnLoad(obj);
-            StateMachine = new StateMachine(obj, RedOwlSettings.GameStateMachine);
-
-            StateMachine.EnterInitialState();
-        }
-        public static CoroutineWrapper SetState(State nextState) => StateMachine.SetState(nextState);
         
         #endregion
     }
