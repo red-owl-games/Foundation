@@ -12,7 +12,7 @@ namespace RedOwl.Core.Editor
 
         private int _currentTarget;
         
-        [MenuItem("Red Owl/Game Manager")]
+        [MenuItem("Tools/Red Owl/Game Manager")]
         private static void OpenWindow()
         {
             _targets = FindGameManagers();
