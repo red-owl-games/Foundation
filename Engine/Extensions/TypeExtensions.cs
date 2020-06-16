@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 using System.Reflection;
 
 namespace RedOwl.Core
@@ -42,14 +43,33 @@ namespace RedOwl.Core
             }
         }
 
+        public static TAttr SafeGetAttribute<TAttr>(this Type self, bool inherit = false) where TAttr : Attribute, new()
+        {
+            var attrType = typeof(TAttr);
+            return self.IsDefined(attrType, inherit) ? (TAttr)self.GetCustomAttributes(attrType, inherit)[0] : new TAttr();
+        }
+
+        public static bool TryGetAttribute<TAttr>(this FieldInfo self, out TAttr attr, bool inherit = false) where TAttr : Attribute
+        {
+            var attrType = typeof(TAttr);
+            attr = null;
+            bool found = self.IsDefined(attrType, inherit);
+            if (found)
+            {
+                attr = (TAttr) self.GetCustomAttributes(attrType, inherit)[0];
+            }
+            return found;
+        }
+
         public static IEnumerable<Type> GetAllTypes<T>()
         {
+            var attrType = typeof(T);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (assembly.GlobalAssemblyCache) continue;
                 foreach (var type in assembly.SafeGetTypes())
                 {
-                    if (typeof(T).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                    if (attrType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
                         yield return type;
                 }
             }
@@ -57,14 +77,45 @@ namespace RedOwl.Core
         
         public static IEnumerable<Type> GetAllTypesWithAttribute<T>() where T : Attribute
         {
+            var attrType = typeof(T);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (assembly.GlobalAssemblyCache) continue;
                 foreach (var type in assembly.SafeGetTypes())
                 {
-                    if (!type.IsAbstract && !type.IsInterface && type.IsDefined(typeof(T), true))
+                    if (!type.IsAbstract && !type.IsInterface && type.IsDefined(attrType, true))
                         yield return type;
                 }
+            }
+        }
+        
+        public static IEnumerable<FieldInfo> GetFieldsWithAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+        {
+            var attrType = typeof(T);
+            foreach (var info in type.GetFields())
+            {
+                if (info.IsDefined(attrType, inherit))
+                    yield return info;
+            }
+        }
+        
+        public static IEnumerable<PropertyInfo> GetPropertiesWithAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+        {
+            var attrType = typeof(T);
+            foreach (var info in type.GetProperties())
+            {
+                if (info.IsDefined(attrType, inherit))
+                    yield return info;
+            }
+        }
+        
+        public static IEnumerable<MethodInfo> GetMethodsWithAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+        {
+            var attrType = typeof(T);
+            foreach (var info in type.GetMethods())
+            {
+                if (info.IsDefined(attrType, inherit))
+                    yield return info;
             }
         }
     }
