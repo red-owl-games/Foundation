@@ -1,0 +1,6 @@
+remote_theme: pmarsceill/just-the-docs
+search_enabled: true
+color_scheme: "dark"
+aux_links:
+    "Project on GitHub":
+      - "//github.com/red-owl-games/Foundation"
