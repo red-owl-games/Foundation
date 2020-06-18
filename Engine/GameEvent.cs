@@ -4,6 +4,28 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
+    public class WaitForNextEvent : CustomYieldInstruction
+    {
+        private bool _keepWaiting;
+        public override bool keepWaiting => _keepWaiting;
+
+        private readonly GameEvent _evt;
+
+        public WaitForNextEvent(GameEvent evt)
+        {
+            _evt = evt;
+            _evt.On += HandleEvent;
+            _keepWaiting = true;
+        }
+
+        private void HandleEvent()
+        {
+            _evt.On -= HandleEvent;
+            _keepWaiting = false;
+            
+        }
+    }
+    
     [HideMonoScript]
     [CreateAssetMenu(menuName = "Red Owl/Game Event")]
     public class GameEvent : ScriptableObject
@@ -15,6 +37,11 @@ namespace RedOwl.Core
         {
             Log.Always($"Raising Event: {name}");
             On?.Invoke();
+        }
+
+        public WaitForNextEvent OnNext()
+        {
+            return new WaitForNextEvent(this);
         }
     }
 

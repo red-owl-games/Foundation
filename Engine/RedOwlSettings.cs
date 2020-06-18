@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
@@ -16,5 +17,16 @@ namespace RedOwl.Core
             public static UnityEditor.SettingsProvider Create() { return CreateCustomSettingsProvider("Core"); }
         }
 #endif
+
+        public List<GameObject> singletons;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Initialize()
+        {
+            foreach (var singleton in I.singletons)
+            {
+                DontDestroyOnLoad(Instantiate(singleton));
+            }
+        }
     }
 }
