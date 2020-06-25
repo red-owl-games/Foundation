@@ -16,7 +16,7 @@ namespace RedOwl.Core
     
     public partial class RedOwlSettings
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void InitializeGame() => Game.Initialize();
     }
     

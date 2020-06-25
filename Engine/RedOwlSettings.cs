@@ -18,9 +18,10 @@ namespace RedOwl.Core
         }
 #endif
 
+        [AssetsOnly]
         public List<GameObject> singletons;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
             foreach (var singleton in I.singletons)

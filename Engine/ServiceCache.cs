@@ -16,7 +16,14 @@ namespace RedOwl.Core
 
         public void Bind<T>(T instance) => _cache[typeof(T)] = instance;
 
-        private object Find(Type type) => _cache[type];
+        private object Find(Type type)
+        {
+            if (!_cache.TryGetValue(type, out object value))
+            {
+                Log.Warn($"Unable to find service for: '{type.FullName}'");
+            }
+            return value;
+        }
 
         public T Find<T>() => (T)_cache[typeof(T)];
 

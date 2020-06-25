@@ -4,7 +4,7 @@ namespace RedOwl.Core
 {
     public static class RedOwlTools
     {
-        public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : MonoBehaviour
+        public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {
             var type = typeof(T);
             string label = string.IsNullOrEmpty(name) ? type.Name : name;
