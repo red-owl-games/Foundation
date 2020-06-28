@@ -26,19 +26,13 @@ namespace RedOwl.Core
         {
             Log.Always("Initialize RedOwl Game!");
             
-            InitializeRandom();
             InitializeServices();
         }
 
         #region Random
-        
-        public static Random Random { get; private set; }
 
-        private static void InitializeRandom()
-        {
-            Random = new Random((uint)Environment.TickCount);
-        }
-        
+        public static Random Random => new Random((uint)Environment.TickCount);
+
         #endregion
         
         #region Services

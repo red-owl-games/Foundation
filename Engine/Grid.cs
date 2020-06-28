@@ -1,6 +1,7 @@
 using System;
 using Unity.Mathematics;
 using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace RedOwl.Core
 {
@@ -16,6 +17,8 @@ namespace RedOwl.Core
         private int2 _min;
         private int2 _max;
         private readonly T[,] _array;
+
+        private Random rng;
         
         public Grid(int width, int height, float3 origin, int size = 1, Func<int, int, T> cellConstructor = null)
         {
@@ -26,6 +29,7 @@ namespace RedOwl.Core
             _min = new int2(0, 0);
             _max = new int2(width - 1, height - 1);
             _array = new T[width, height];
+            rng = Game.Random;
 
             if (cellConstructor != null) ForEach(cellConstructor);
         }
@@ -55,22 +59,22 @@ namespace RedOwl.Core
         
         public int2 GetRandomCell() =>
             new int2(
-                Game.Random.NextInt(Width),
-                Game.Random.NextInt(Height));
+                rng.NextInt(Width),
+                rng.NextInt(Height));
 
         public int2 GetRandomCellEdge()
         {
-            int side = Game.Random.NextInt(4);
+            int side = rng.NextInt(4);
             switch (side)
             {
                 case 0: // Bottom
-                    return new int2(Game.Random.NextInt(Width),-1);
+                    return new int2(rng.NextInt(Width),-1);
                 case 1: // Left
-                    return new int2(-1, Game.Random.NextInt(Height));
+                    return new int2(-1, rng.NextInt(Height));
                 case 2: // Right
-                    return new int2(Width, Game.Random.NextInt(Height));
+                    return new int2(Width, rng.NextInt(Height));
                 case 3: // Top
-                    return new int2(Game.Random.NextInt(Width),Height);
+                    return new int2(rng.NextInt(Width),Height);
             }
             return new int2(0, 0);
         }
