@@ -118,5 +118,24 @@ namespace RedOwl.Core
                     yield return info;
             }
         }
+        
+        public static IEnumerable<Type> GetInheritanceHierarchy(this Type type, bool includeInterfaces = false)
+        {
+            for (var current = type; current != null; current = current.BaseType)
+            {
+                if (includeInterfaces)
+                {
+                    foreach (var @interface in current.GetInterfaces())
+                    {
+                        yield return @interface;
+                        //foreach (var interfaceBase in @interface.GetInheritanceHierarchy(true))
+                        //{
+                        //    yield return interfaceBase;
+                        //}
+                    }
+                }
+                yield return current;
+            }
+        }
     }
 }

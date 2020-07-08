@@ -91,10 +91,23 @@ namespace RedOwl.Core
         }
     }
 
-    public class CoroutineManager : Manager<CoroutineManager>
+    public class CoroutineManager : MonoBehaviour
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Init() => Initialize();
+        private static bool _initialized;
+        private static CoroutineManager _instance;
+
+        public static CoroutineManager Instance {
+            get {
+                if (!_initialized)
+                {
+                    var obj = new GameObject($"{nameof(CoroutineManager)}");
+                    DontDestroyOnLoad(obj);
+                    _instance = obj.AddComponent<CoroutineManager>();
+                    _initialized = true;
+                }
+                return _instance;
+            }
+        }
         
         private static IEnumerator CallbackWrapper(Func<bool> callback)
         {

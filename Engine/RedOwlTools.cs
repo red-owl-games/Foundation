@@ -4,6 +4,7 @@ namespace RedOwl.Core
 {
     public static class RedOwlTools
     {
+        public static bool IsRunning => Application.isPlaying;
         public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {
             var type = typeof(T);

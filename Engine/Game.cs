@@ -25,8 +25,6 @@ namespace RedOwl.Core
         internal static void Initialize()
         {
             Log.Always("Initialize RedOwl Game!");
-            
-            InitializeServices();
         }
 
         #region Random
@@ -36,17 +34,16 @@ namespace RedOwl.Core
         #endregion
         
         #region Services
-        
-        public static ServiceCache Services { get; private set; }
 
-        private static void InitializeServices()
-        {
-            Services = new ServiceCache();
-        }
-        
+        private static ServiceCache _services;
+        public static ServiceCache Services => _services ?? (_services = new ServiceCache());
+
         public static void Bind<T>(T instance) => Services.Bind(instance);
+        public static T Find<T>() => Services.Find<T>();
         public static void Inject(object obj) => Services.Inject(obj);
         
         #endregion
+
+        
     }
 }

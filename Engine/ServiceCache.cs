@@ -14,7 +14,21 @@ namespace RedOwl.Core
     {
         private readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
 
-        public void Bind<T>(T instance) => _cache[typeof(T)] = instance;
+        public void Bind<T>(T instance)
+        {
+            Log.Info($"Binding: {typeof(T).FullName}");
+            _cache[typeof(T)] = instance;
+        }
+        
+        public void BindAll<T>(T instance)
+        {
+            foreach (var type in instance.GetType().GetInheritanceHierarchy(true))
+            {
+                if (type.Namespace != null && (type.Namespace.Contains("Unity") || type.Namespace.Contains("System"))) continue;
+                Log.Info($"Binding: {type.FullName}");
+                _cache[type] = instance;
+            }
+        }
 
         private object Find(Type type)
         {
@@ -25,7 +39,7 @@ namespace RedOwl.Core
             return value;
         }
 
-        public T Find<T>() => (T)_cache[typeof(T)];
+        public T Find<T>() => _cache.TryGetValue(typeof(T), out object output) ? (T)output : default;
 
         public void Reset() => _cache.Clear();
 

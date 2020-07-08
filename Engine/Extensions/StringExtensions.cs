@@ -11,6 +11,18 @@ namespace RedOwl.Core
 {
 	public static class StringUtility
 	{
+		public static string GetResourcesPath(string originalPath)
+		{
+			bool found = false;
+			string output = "";
+			foreach (string part in originalPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))
+			{
+				if (found) output = $"{output}/{part}";
+				if (part.ToLower() == "resources") found = true;
+			}
+			return output.Substring(1, output.Length - 1);
+		}
+		
 		public static bool IsNullOrWhiteSpace(string s)
 		{
 			return s == null || s.Trim() == string.Empty;
