@@ -8,17 +8,17 @@ using Print = UnityEngine.Debug;
 
 namespace RedOwl.Core
 {
-    public enum LogLevel : int {
-        Error = 0,
-        Warn = 1,
-        Info = 2,
-        Debug = 3
+    public enum LogLevel {
+        Error,
+        Warn,
+        Info,
+        Debug
     }
     
     public partial class RedOwlSettings
     {
         [SerializeField]
-        private LogLevel logLevel;
+        private LogLevel logLevel = LogLevel.Warn;
 
         public static LogLevel LogLevel => I.logLevel;
     }

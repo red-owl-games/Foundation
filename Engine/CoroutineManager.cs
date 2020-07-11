@@ -98,7 +98,7 @@ namespace RedOwl.Core
 
         public static CoroutineManager Instance {
             get {
-                if (!_initialized)
+                if (!_initialized && !RedOwlTools.IsShuttingDown)
                 {
                     var obj = new GameObject($"{nameof(CoroutineManager)}");
                     DontDestroyOnLoad(obj);

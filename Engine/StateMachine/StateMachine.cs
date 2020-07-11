@@ -52,19 +52,15 @@ namespace RedOwl.Core
     {
         private Guid _initial;
         private List<StateBuilder> _builders = new List<StateBuilder>();
-        protected StateBuilder Create(IState state)
+        public StateBuilder Create(IState state, bool initial = false)
         {
-            var output = new StateBuilder();
-            output.WithState(state);
-            _builders.Add(output);
-            return output;
+            var builder = new StateBuilder();
+            builder.WithState(state);
+            _builders.Add(builder);
+            if (initial) _initial = builder.Id;
+            return builder;
         }
-        
-        protected void Initial(StateBuilder builder)
-        {
-            _initial = builder.Id;
-        }
-        
+
         public StateMachine Build()
         {
             var machine = new StateMachine();

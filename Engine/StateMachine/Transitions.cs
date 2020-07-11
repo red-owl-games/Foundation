@@ -18,10 +18,10 @@ namespace RedOwl.Core
     public class Transition : ITransition
     {
         private readonly StateMachine _machine;
-        private readonly Message _message;
+        private readonly IMessage _message;
         private readonly Guid _state;
 
-        public Transition(StateMachine machine, Message message, Guid state)
+        public Transition(StateMachine machine, IMessage message, Guid state)
         {
             _machine = machine;
             _message = message;
@@ -47,11 +47,11 @@ namespace RedOwl.Core
     public class GuardedTransition : ITransition
     {
         private readonly StateMachine _machine;
-        private readonly Message _message;
+        private readonly IMessage _message;
         private readonly Guid _state;
         private readonly Func<bool> _isAllowed;
 
-        public GuardedTransition(StateMachine machine, Message message, Guid state, Func<bool> guard)
+        public GuardedTransition(StateMachine machine, IMessage message, Guid state, Func<bool> guard)
         {
             _machine = machine;
             _message = message;
@@ -85,18 +85,18 @@ namespace RedOwl.Core
     public class TransitionBuilder
     {
         private readonly TransitionTypes _type;
-        private readonly Message _message;
+        private readonly IMessage _message;
         private readonly Guid _state;
         private readonly Func<bool> _guard;
         
-        public TransitionBuilder(Message message, Guid state)
+        public TransitionBuilder(IMessage message, Guid state)
         {
             _type = TransitionTypes.Normal;
             _message = message;
             _state = state;
         }
 
-        public TransitionBuilder(Message message, Guid state, Func<bool> guard)
+        public TransitionBuilder(IMessage message, Guid state, Func<bool> guard)
         {
             _type = TransitionTypes.Guarded;
             _message = message;

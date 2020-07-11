@@ -85,16 +85,13 @@ namespace RedOwl.Core
             _state = state;
         }
         
-        public void Permit(Message message, StateBuilder state)
+        public void Permit(IMessage message, StateBuilder state, Func<bool> guard = null)
         {
-            _transitions.Add(new TransitionBuilder(message, state.Id));
+            _transitions.Add(guard == null
+                ? new TransitionBuilder(message, state.Id)
+                : new TransitionBuilder(message, state.Id, guard));
         }
 
-        public void PermitIf(Message message, StateBuilder state, Func<bool> guard)
-        {
-            _transitions.Add(new TransitionBuilder(message, state.Id, guard));
-        }
-        
         public State Build(StateMachine machine)
         {
             var transitions = new List<ITransition>();

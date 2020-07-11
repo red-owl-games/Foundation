@@ -5,6 +5,10 @@ namespace RedOwl.Core
     public static class RedOwlTools
     {
         public static bool IsRunning => Application.isPlaying;
+        
+        // TODO: Detect ShuttingDown from Application.quitting too
+        public static bool IsShuttingDown { get; private set; }
+
         public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {
             var type = typeof(T);
@@ -25,8 +29,9 @@ namespace RedOwl.Core
 
         public static void Quit()
         {
+            IsShuttingDown = true;
 #if (UNITY_EDITOR)
-            UnityEditor.EditorApplication.isPlaying = false;
+            UnityEditor.EditorApplication.ExitPlaymode();
 #elif (UNITY_STANDALONE) 
             Application.Quit();
 #elif (UNITY_WEBGL)

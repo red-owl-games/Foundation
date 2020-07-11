@@ -3,8 +3,13 @@ using Sirenix.OdinInspector;
 
 namespace RedOwl.Core
 {
+    public interface IMessage
+    {
+        event Action On;
+    }
+    
     [HideReferenceObjectPicker, InlineProperty, HideLabel]
-    public class Message
+    public class Message : IMessage
     {
         private string _name;
         
@@ -16,11 +21,15 @@ namespace RedOwl.Core
         public event Action On;
         
         [Button("@_name", ButtonSizes.Medium)]
-        public void Raise() => On?.Invoke();
+        public void Raise()
+        {
+            Log.Always($"Raising '{_name}'");
+            On?.Invoke();
+        }
     }
     
     [HideReferenceObjectPicker, InlineProperty, HideLabel]
-    public class Message<T1>
+    public class Message<T1> : IMessage
     {
         private string _name;
         public Message(string name)
@@ -28,14 +37,19 @@ namespace RedOwl.Core
             _name = name.Prettify();
         }
 
-        public event Action<T1> On;
+        public event Action On;
+        public event Action<T1> OnParams;
         
         [Button("@_name", ButtonSizes.Medium, ButtonStyle.FoldoutButton)]
-        public void Raise([HideLabel] T1 p1) => On?.Invoke(p1);
+        public void Raise([HideLabel] T1 p1)
+        {
+            On?.Invoke();
+            OnParams?.Invoke(p1);
+        }
     }
     
     [HideReferenceObjectPicker, InlineProperty, HideLabel]
-    public class Message<T1, T2>
+    public class Message<T1, T2> : IMessage
     {
         private string _name;
         
@@ -43,10 +57,15 @@ namespace RedOwl.Core
         {
             _name = name.Prettify();
         }
-        
-        public event Action<T1, T2> On;
+
+        public event Action On;
+        public event Action<T1, T2> OnParams;
         
         [Button("@_name", ButtonSizes.Medium, ButtonStyle.FoldoutButton)]
-        public void Raise([HideLabel] T1 p1, [HideLabel] T2 p2) => On?.Invoke(p1, p2);
+        public void Raise([HideLabel] T1 p1, [HideLabel] T2 p2)
+        {
+            On?.Invoke();
+            OnParams?.Invoke(p1, p2);
+        }
     }
 }

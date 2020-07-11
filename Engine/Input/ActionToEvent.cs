@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace RedOwl.Core.Input
@@ -23,7 +24,7 @@ namespace RedOwl.Core.Input
             }
         }
         
-        public GameEvent @event;
+        public UnityEvent @event = new UnityEvent();
 
         private void OnEnable()
         {
@@ -40,7 +41,7 @@ namespace RedOwl.Core.Input
         private void OnInput(InputAction.CallbackContext ctx)
         {
             if (ctx.ReadValueAsButton())
-                @event.Raise();
+                @event.Invoke();
         }
     }
 }

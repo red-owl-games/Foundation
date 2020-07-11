@@ -16,7 +16,7 @@ namespace RedOwl.Core
 
         public void Bind<T>(T instance)
         {
-            Log.Info($"Binding: {typeof(T).FullName}");
+            //Log.Info($"Binding: {typeof(T).FullName}");
             _cache[typeof(T)] = instance;
         }
         
@@ -25,7 +25,7 @@ namespace RedOwl.Core
             foreach (var type in instance.GetType().GetInheritanceHierarchy(true))
             {
                 if (type.Namespace != null && (type.Namespace.Contains("Unity") || type.Namespace.Contains("System"))) continue;
-                Log.Info($"Binding: {type.FullName}");
+                //Log.Info($"Binding: {type.FullName}");
                 _cache[type] = instance;
             }
         }
