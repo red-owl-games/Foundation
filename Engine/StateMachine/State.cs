@@ -6,19 +6,24 @@ namespace RedOwl.Core
 {
     public interface IState
     {
-        IEnumerator OnExecute();
+        
     }
 
     public interface IStateEnterable
     {
         void OnEnter();
     }
+
+    public interface IStateExecute
+    {
+        IEnumerator OnExecute();
+    }
     
     public interface IStateExitable
     {
         void OnExit();
     }
-
+    
     public class State
     {
         private IState _state;
@@ -47,7 +52,7 @@ namespace RedOwl.Core
 
         internal IEnumerator Execute()
         {
-            yield return _state.OnExecute();
+            if (_state is IStateExecute e) yield return e.OnExecute();
         }
 
         internal void Exit()
