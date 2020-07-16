@@ -131,7 +131,7 @@ namespace RedOwl.Core
 
         public static void StopRoutine(Coroutine routine)
         {
-            if (routine != null) Instance.StopCoroutine(routine);
+            if (routine != null && Instance != null) Instance.StopCoroutine(routine);
         }
         
         public static void StopAllRoutines()

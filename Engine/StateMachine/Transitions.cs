@@ -4,61 +4,68 @@ namespace RedOwl.Core
 {
     public interface ITransition
     {
+        IState To { get;}
+        int Priority { get;  }
+        bool IsReady { get; }
+        void Reset();
         void Enable();
         void Disable();
     }
 
-    public class NullTransition : ITransition
+    public class CallbackTransition : ITransition
     {
-        public void Enable() { }
+        public IState To { get; }
+        public int Priority { get; }
+        private readonly Func<bool> _isAllowed;
+        public bool IsReady => _isAllowed();
+        
+        public CallbackTransition(IState to, int priority, Func<bool> callback)
+        {
+            To = to;
+            Priority = priority;
+            _isAllowed = callback;
+        }
 
+        public void Reset() { }
+        public void Enable() { }
         public void Disable() { }
     }
     
-    public class Transition : ITransition
+    public class EventTransition : ITransition
     {
-        private readonly StateMachine _machine;
+        public IState To { get; }
+        public int Priority { get; }
         private readonly IMessage _message;
-        private readonly Guid _state;
-
-        public Transition(StateMachine machine, IMessage message, Guid state)
-        {
-            _machine = machine;
-            _message = message;
-            _state = state;
-        }
-        
-        public void Enable()
-        {
-            _message.On += HandleEvent;
-        }
-
-        public void Disable()
-        {
-            _message.On -= HandleEvent;
-        }
-
-        private void HandleEvent()
-        {
-            _machine.SetState(_state);
-        }
-    }
-
-    public class GuardedTransition : ITransition
-    {
-        private readonly StateMachine _machine;
-        private readonly IMessage _message;
-        private readonly Guid _state;
         private readonly Func<bool> _isAllowed;
+        private readonly bool _hasGuard;
+        private readonly bool _autoReset;
 
-        public GuardedTransition(StateMachine machine, IMessage message, Guid state, Func<bool> guard)
+        public EventTransition(IState to, int priority, IMessage message, bool autoReset)
         {
-            _machine = machine;
+            To = to;
+            Priority = priority;
             _message = message;
-            _state = state;
-            _isAllowed = guard;
+            _hasGuard = false;
+            _autoReset = autoReset;
         }
-        
+
+        public EventTransition(IState to, int priority, IMessage message, Func<bool> guard, bool autoReset)
+        {
+            To = to;
+            Priority = priority;
+            _message = message;
+            _isAllowed = guard;
+            _hasGuard = false;
+            _autoReset = autoReset;
+        }
+
+        public bool IsReady { get; private set; }
+
+        public void Reset()
+        {
+            if (_autoReset) IsReady = false;
+        }
+
         public void Enable()
         {
             _message.On += HandleEvent;
@@ -71,49 +78,13 @@ namespace RedOwl.Core
 
         private void HandleEvent()
         {
-            if (!_isAllowed()) return;
-            _machine.SetState(_state);
-        }
-    }
-
-    public enum TransitionTypes
-    {
-        Normal,
-        Guarded
-    }
-
-    public class TransitionBuilder
-    {
-        private readonly TransitionTypes _type;
-        private readonly IMessage _message;
-        private readonly Guid _state;
-        private readonly Func<bool> _guard;
-        
-        public TransitionBuilder(IMessage message, Guid state)
-        {
-            _type = TransitionTypes.Normal;
-            _message = message;
-            _state = state;
-        }
-
-        public TransitionBuilder(IMessage message, Guid state, Func<bool> guard)
-        {
-            _type = TransitionTypes.Guarded;
-            _message = message;
-            _state = state;
-            _guard = guard;
-        }
-
-        public ITransition Build(StateMachine machine)
-        {
-            switch (_type)
+            if (_hasGuard)
             {
-                case TransitionTypes.Normal:
-                    return new Transition(machine, _message, _state);
-                case TransitionTypes.Guarded:
-                    return new GuardedTransition(machine, _message, _state, _guard);
-                default:
-                    return new NullTransition();
+                if (_isAllowed()) IsReady = true;
+            }
+            else
+            {
+                IsReady = true;
             }
         }
     }

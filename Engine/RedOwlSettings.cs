@@ -12,10 +12,17 @@ namespace RedOwl.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
+            Application.quitting += HandleQuit;
             foreach (var singleton in RedOwlSettings.I.singletons)
             {
                 Object.DontDestroyOnLoad(Object.Instantiate(singleton));
             }
+        }
+
+        private static void HandleQuit()
+        {
+            CoroutineManager.StopAllRoutines();
+            RedOwlTools.IsShuttingDown = true;
         }
     }
     

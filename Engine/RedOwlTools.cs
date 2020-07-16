@@ -6,8 +6,7 @@ namespace RedOwl.Core
     {
         public static bool IsRunning => Application.isPlaying;
         
-        // TODO: Detect ShuttingDown from Application.quitting too
-        public static bool IsShuttingDown { get; private set; }
+        public static bool IsShuttingDown { get; internal set; }
 
         public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {

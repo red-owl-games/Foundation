@@ -1,6 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -40,14 +41,12 @@ namespace RedOwl.Core
 #endif
             }
         }
-        
-        public static implicit operator string(SceneReference sceneReference)
+
+        public static implicit operator int(SceneReference sceneReference)
         {
-            return sceneReference.ScenePath;
+            return SceneUtility.GetBuildIndexByScenePath(sceneReference.ScenePath);
         }
-        
-        // TODO: implict operator for int to use the BuildIndex
-        
+
 #if UNITY_EDITOR
         private SceneAsset GetSceneAssetFromPath() => 
             string.IsNullOrEmpty(path) ? null : AssetDatabase.LoadAssetAtPath<SceneAsset>(path);

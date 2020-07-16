@@ -36,6 +36,7 @@ namespace RedOwl.Core
             {
                 Log.Warn($"Unable to find service for: '{type.FullName}'");
             }
+            //Log.Info($"Finding: {value?.GetType()}");
             return value;
         }
 
@@ -45,6 +46,7 @@ namespace RedOwl.Core
 
         public void Inject( object obj )
         {
+            if (RedOwlTools.IsShuttingDown) return;
             foreach (var field in Reflector.Reflect(obj.GetType()))
             {
                 field.SetValue(obj, Find(field.FieldType));
