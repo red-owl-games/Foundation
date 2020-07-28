@@ -224,6 +224,7 @@ namespace RedOwl.Core
             ExitInternalStates();
             DisableAnyTransitions();
             ExitState(_current);
+            _current = _initial;
         }
 
         #endregion
