@@ -1,5 +1,7 @@
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RedOwl.Core
 {
@@ -16,6 +18,16 @@ namespace RedOwl.Core
             T comp = self.GetComponent(typeof(T)) as T;
             if (!comp) comp = self.AddComponent(typeof(T)) as T;
             return comp;
+        }
+        
+        public static void Children(this GameObject self, Action<GameObject> predicate)
+        {
+            self.transform.Children(t => predicate(t.gameObject));
+        }
+        
+        public static void Clear(this GameObject self)
+        {
+            self.transform.Clear();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

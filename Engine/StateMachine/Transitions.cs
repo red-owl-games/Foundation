@@ -55,7 +55,7 @@ namespace RedOwl.Core
             Priority = priority;
             _message = message;
             _isAllowed = guard;
-            _hasGuard = false;
+            _hasGuard = true;
             _autoReset = autoReset;
         }
 
@@ -80,7 +80,7 @@ namespace RedOwl.Core
         {
             if (_hasGuard)
             {
-                if (_isAllowed()) IsReady = true;
+                IsReady = _isAllowed();
             }
             else
             {

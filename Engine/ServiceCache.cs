@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine.Assertions;
@@ -12,14 +13,20 @@ namespace RedOwl.Core
     
     public class ServiceCache
     {
-        private readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
+        protected readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
 
         public void Bind<T>(T instance)
+        {
+            //Log.Info($"Binding: {instance.GetType().FullName}");
+            _cache[instance.GetType()] = instance;
+        }
+        
+        public void BindAs<T>(T instance)
         {
             //Log.Info($"Binding: {typeof(T).FullName}");
             _cache[typeof(T)] = instance;
         }
-        
+
         public void BindAll<T>(T instance)
         {
             foreach (var type in instance.GetType().GetInheritanceHierarchy(true))

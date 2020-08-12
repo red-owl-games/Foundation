@@ -9,6 +9,9 @@ namespace RedOwl.Core
     public class StateMachine : IStateEnter, IStateAsyncExecute, IStateExit, IStateIdentifiable
     {
         private static readonly List<ITransition> Empty = new List<ITransition>(0);
+
+        public Action<IState> OnEnterState;
+        public Action<IState> OnExitState;
         
         private readonly Dictionary<string, IState> _states;
         private readonly Dictionary<string, List<ITransition>> _transitions;
@@ -41,13 +44,15 @@ namespace RedOwl.Core
         
         #region Helpers
 
+        private string GetId<T>() => typeof(T).FullName;
+
         private string GetId(IState state)
         {
             if (state is IStateIdentifiable s) return s.Id;
             return state.GetType().FullName;
         }
         
-        private void Ensure(IState state)
+        public void Ensure(IState state)
         {
             if (_isStarted)
             {
@@ -136,6 +141,7 @@ namespace RedOwl.Core
             {
                 transition.Enable();
             }
+            OnEnterState?.Invoke(state);
             if (state is IStateEnter s) s.OnEnter();
             if (state is IStateAsyncEnter a) CoroutineManager.StartRoutine(a.OnEnter());
         }
@@ -143,6 +149,7 @@ namespace RedOwl.Core
         private void ExitState(IState state)
         {
             //Log.Always($"Exiting State {GetId(state)}");
+            OnExitState?.Invoke(state);
             if (state is IStateExit s) s.OnExit();
             if (state is IStateAsyncExit a) CoroutineManager.StartRoutine(a.OnExit());
             foreach (var transition in _currentTransitions)
@@ -245,12 +252,14 @@ namespace RedOwl.Core
             _isStarted = false;
         }
 
+        public void Initial<TState>() => Initial(_states[GetId<TState>()]);
         public void Initial(IState initial)
         {
             Ensure(initial);
             _initial = initial;
         }
-        
+
+        public void Permit<TFrom, TTo>(int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], priority);
         public void Permit(IState from, IState to, int priority = 0)
         {
             Ensure(from);
@@ -258,12 +267,14 @@ namespace RedOwl.Core
             Add(from, new CallbackTransition(to, priority, () => true));
         }
         
+        public void Permit<TTo>(Func<bool> guard, int priority = 0) => Permit(_states[GetId<TTo>()], guard, priority);
         public void Permit(IState to, Func<bool> guard, int priority = 0)
         {
             Ensure(to);
             AddAny(new CallbackTransition(to, priority, guard));
         }
 
+        public void Permit<TFrom, TTo>(Func<bool> guard, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], guard, priority);
         public void Permit(IState from, IState to, Func<bool> guard, int priority = 0)
         {
             Ensure(from);
@@ -271,12 +282,14 @@ namespace RedOwl.Core
             Add(from, new CallbackTransition(to, priority, guard));
         }
         
+        public void Permit<TTo>(IMessage message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, autoReset, priority);
         public void Permit(IState to, IMessage message, bool autoReset = true, int priority = 0)
         {
             Ensure(to);
             AddAny(new EventTransition(to, priority, message, autoReset));
         }
 
+        public void Permit<TFrom, TTo>(IMessage message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, autoReset, priority);
         public void Permit(IState from, IState to, IMessage message, bool autoReset = true, int priority = 0)
         {
             Ensure(from);
@@ -284,12 +297,14 @@ namespace RedOwl.Core
             Add(from, new EventTransition(to, priority, message, autoReset));
         }
         
+        public void Permit<TTo>(IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, guard, autoReset, priority);
         public void Permit(IState to, IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0)
         {
             Ensure(to);
             AddAny(new EventTransition(to, priority, message, guard, autoReset));
         }
 
+        public void Permit<TFrom, TTo>(IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, guard, autoReset, priority);
         public void Permit(IState from, IState to, IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0)
         {
             Ensure(from);

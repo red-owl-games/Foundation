@@ -39,6 +39,7 @@ namespace RedOwl.Core
         public static ServiceCache Services => _services ?? (_services = new ServiceCache());
 
         public static void Bind<T>(T instance) => Services.Bind(instance);
+        public static void BindAs<T>(T instance) => Services.BindAs(instance);
         public static T Find<T>() => Services.Find<T>();
         public static void Inject(object obj) => Services.Inject(obj);
         
