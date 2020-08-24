@@ -24,10 +24,11 @@ namespace RedOwl.Core
         public SequenceTypes type;
 
         [SerializeReference]
-        public TweenData[] tweens;
+        public TweenData[] tweens = new TweenData[0];
 
         private Sequence _sequence;
         private bool _started;
+        private bool _toggleState;
 
         private void Awake()
         {
@@ -51,15 +52,34 @@ namespace RedOwl.Core
                 case SequenceTypes.PingPong:
                     _sequence.SetLoops(-1, LoopType.Yoyo);
                     break;
-                case SequenceTypes.Toggle:
-                    _sequence.SetLoops(-1, LoopType.Yoyo);
-                    _sequence.OnStepComplete(() => _sequence.Pause());
-                    break;
             }
         }
 
         [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
-        public void Play() => _sequence.Play();
+        public void Play()
+        {
+            if (type == SequenceTypes.Toggle)
+            {
+                Toggle(!_toggleState);
+            }
+            else
+            {
+                _sequence.Play();
+            }
+        }
+
+        public void Toggle(bool state)
+        {
+            _toggleState = state;
+            if (_toggleState)
+            {
+                _sequence.PlayForward();
+            }
+            else
+            {
+                _sequence.PlayBackwards();
+            }
+        }
 
 #if UNITY_EDITOR
 

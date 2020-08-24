@@ -2,7 +2,8 @@
     "name": "RedOwl.Core",
     "references": [
         "Unity.Mathematics",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

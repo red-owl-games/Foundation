@@ -113,4 +113,50 @@ namespace RedOwl.Core
             return null;
         }
     }
+    
+    public class SpriteTween : TweenData<SpriteRenderer>
+    {
+        public enum Types
+        {
+            Color,
+        }
+        
+        public Types type;
+        
+        [ShowIf("type", Types.Color)] public Color color;
+        
+        protected override Tween GetTween()
+        {
+            switch (type)
+            {
+                case Types.Color:
+                    return target.DOColor(color, duration);
+            }
+
+            return null;
+        }
+    }
+
+    public class MaterialTween : TweenData<Material>
+    {
+        public enum Types
+        {
+            Color,
+        }
+        
+        public Types type;
+        
+        [ShowIf("type", Types.Color)] public Color color;
+        
+        protected override Tween GetTween()
+        {
+            switch (type)
+            {
+                case Types.Color:
+                    return target.DOColor(color, duration);
+            }
+
+            return null;
+        }
+    }
 }
