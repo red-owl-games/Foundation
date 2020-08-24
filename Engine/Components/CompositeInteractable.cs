@@ -6,6 +6,8 @@ namespace RedOwl.Core
 {
     public interface IInteractable
     {
+        void Select();
+        void Deselect();
         void Interact();
     }
     
@@ -25,6 +27,22 @@ namespace RedOwl.Core
                 var component = interactable.GetComponent<IInteractable>();
                 if (component == null) continue;
                 _cache.Add(component);
+            }
+        }
+
+        public void Select()
+        {
+            foreach (var interactable in _cache)
+            {
+                interactable.Select();
+            }
+        }
+        
+        public void Deselect()
+        {
+            foreach (var interactable in _cache)
+            {
+                interactable.Deselect();
             }
         }
 
