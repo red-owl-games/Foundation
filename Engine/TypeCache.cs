@@ -25,6 +25,12 @@ namespace RedOwl.Core
                     yield return type;
             }
         }
+
+        public bool Get(string key, out Type type)
+        {
+            ShouldBuildCache();
+            return _cache.TryGetValue(key, out type);
+        }
         
         public void ShouldBuildCache()
         {
@@ -36,7 +42,7 @@ namespace RedOwl.Core
             _cache = new Dictionary<string, Type>();
             foreach (var type in TypeExtensions.GetAllTypes<T>())
             {
-                if (ShouldCache(type)) _cache.Add(type.Name, type);
+                if (ShouldCache(type)) _cache.Add(type.SafeGetName(), type);
             }
         }
 

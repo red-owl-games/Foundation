@@ -37,6 +37,16 @@ namespace RedOwl.Core
             }
         }
 
+        public void Unbind<T>(T instance)
+        {
+            _cache.Remove(instance.GetType());
+        }
+
+        public void UnbindAs<T>(T instance)
+        {
+            _cache.Remove(typeof(T));
+        }
+
         private object Find(Type type)
         {
             if (!_cache.TryGetValue(type, out object value))
@@ -49,7 +59,7 @@ namespace RedOwl.Core
 
         public T Find<T>() => _cache.TryGetValue(typeof(T), out object output) ? (T)output : default;
 
-        public void Reset() => _cache.Clear();
+        public void Clear() => _cache.Clear();
 
         public void Inject( object obj )
         {
