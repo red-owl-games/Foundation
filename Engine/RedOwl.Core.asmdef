@@ -3,7 +3,8 @@
     "references": [
         "Unity.Mathematics",
         "Unity.InputSystem",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "KinematicCharacterController"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

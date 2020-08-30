@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
+    // TODO: Should Probably somehow merge this and SaveGame system to provide a data type that will "store" itself in the save game file OR to player prefs
     public class PrefsValue<T>
     {
         private readonly string _key;
