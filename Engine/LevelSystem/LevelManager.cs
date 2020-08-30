@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -56,7 +55,6 @@ namespace RedOwl.Core
             CoroutineManager.StartRoutine(LoadLevelAsync(level));
         }
 
-        [MenuItem("Game/Load Next Level")]
         public static void LoadNextLevel()
         {
             CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel)));

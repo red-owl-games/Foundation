@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using DG.DOTweenEditor;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -92,7 +89,7 @@ namespace RedOwl.Core
             int loops = 0;
             BuildSequence();
             if (type == SequenceTypes.Toggle) _sequence.AppendInterval(0.5f);
-            DOTweenEditorPreview.PrepareTweenForPreview(_sequence);
+            DG.DOTweenEditor.DOTweenEditorPreview.PrepareTweenForPreview(_sequence);
             _sequence.OnStepComplete(() =>
             {
                 switch (type)
@@ -109,10 +106,10 @@ namespace RedOwl.Core
                 if (loops > 1)
                 {
                     _isPreviewing = false;
-                    DOTweenEditorPreview.Stop(true);
+                    DG.DOTweenEditor.DOTweenEditorPreview.Stop(true);
                 }
             });
-            DOTweenEditorPreview.Start();
+            DG.DOTweenEditor.DOTweenEditorPreview.Start();
         }
         #endif
     }

@@ -175,7 +175,9 @@ namespace RedOwl.Core
         public static void Label(Vector3 point, string text, Color? color = null)
         {
             var style = new GUIStyle {normal = {textColor = color ?? RedOwlSettings.DebugDrawColor}};
+            #if UNITY_EDITOR
             UnityEditor.Handles.Label(point, text, style);
+            #endif
         }
 
         [Conditional("UNITY_EDITOR")]
