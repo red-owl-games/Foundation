@@ -14,27 +14,27 @@ namespace RedOwl.Core
     public class TelegramReceiver : MonoBehaviour
     {
         public TelegramStyles style;
-        public ITelegram telegram;
+        public TelegramReference telegramReference;
         public UnityEvent response;
         
         private void Awake()
         {
-            if (style == TelegramStyles.AwakeDestroy) telegram.On += OnEvent;
+            if (style == TelegramStyles.AwakeDestroy) telegramReference.Subscribe(OnEvent);
         }
 
         private void OnEnable()
         {
-            if (style == TelegramStyles.EnableDisable) telegram.On += OnEvent;
+            if (style == TelegramStyles.EnableDisable) telegramReference.Subscribe(OnEvent);
         }
 
         private void OnDisable()
         {
-            if (style == TelegramStyles.EnableDisable) telegram.On -= OnEvent;
+            if (style == TelegramStyles.EnableDisable) telegramReference.Unsubscribe(OnEvent);
         }
 
         private void OnDestroy()
         {
-            if (style == TelegramStyles.AwakeDestroy) telegram.On -= OnEvent;
+            if (style == TelegramStyles.AwakeDestroy) telegramReference.Unsubscribe(OnEvent);
         }
         
         private void OnEvent()

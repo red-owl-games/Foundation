@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 
 namespace RedOwl.Core
@@ -11,44 +10,28 @@ namespace RedOwl.Core
         Once,
         Permanent
     }
-    
-    public interface IReceiver { };
-    
-    public interface IReceiver<in T> : IReceiver
-    {
-        void OnEvent( T evt );
-    }
-    
+
     public interface ISignal {}
     
-    [Serializable]
-    public struct Signal : ISignal
-    {
-        public readonly string Name;
-        
-        public Signal(string name)
-        {
-            Name = name;
-        }
-    }
-    
-    public class SignalCache : TypeCache<ISignal>
-    {
-        protected override bool ShouldCache(Type type)
-        {
-            return typeof(ISignal).IsAssignableFrom(type);
-        }
-    }
-    
-    public class Cable : Dictionary<Type, List<IReceiver>> {}
-
     public static class Telegraph
     {
-        public static readonly SignalCache Signals = new SignalCache();
+        public class Cable : Dictionary<string, List<Delegate>> {}
         
+        public class SignalCache : TypeCache<ISignal>
+        {
+            protected override bool ShouldCache(Type type)
+            {
+                return typeof(ISignal).IsAssignableFrom(type);
+            }
+        }
+
+        public static readonly SignalCache Signals = new SignalCache();
+
         private static readonly Cable Cables = new Cable();
         private static readonly Cable CablesOnce = new Cable();
         private static readonly Cable CablesPermanent = new Cable();
+        
+        
         
         [PublicAPI]
         public static void Clear()
@@ -57,76 +40,124 @@ namespace RedOwl.Core
             CablesOnce.Clear();
         }
         
-        private static bool SubscriptionExists(Type type, IReceiver receiver, Cable cables)
+        private static void Subscribe(string key, Delegate listener, Cable cables)
         {
-            return cables.TryGetValue(type, out var receivers) && receivers.Any(t => t == receiver);
+            if (!cables.TryGetValue(key, out var listeners))
+            {
+                listeners = new List<Delegate>();
+                cables.Add(key, listeners);
+            }
+            listeners.Add(listener);
+            Log.Always($"Subscribed Event Listener for {key}");
         }
-
-        private static void Subscribe<T>(IReceiver<T> listener, Cable cables)
-        {
-            Type eventType = typeof(T);
-
-            if( !cables.ContainsKey(eventType))
-                cables[eventType] = new List<IReceiver>();
-
-            if( !SubscriptionExists(eventType, listener, cables))
-                cables[eventType].Add(listener);
-        }
-
+        
         [PublicAPI]
-        public static void Subscribe<T>(IReceiver<T> listener, TelegraphStyles style = TelegraphStyles.Normal) where T : struct
+        public static void Subscribe(string key, Delegate listener, TelegraphStyles style = TelegraphStyles.Normal)
         {
             switch (style)
             {
                 case TelegraphStyles.Normal:
-                    Subscribe(listener, Cables);
+                    Subscribe(key, listener, Cables);
                     break;
                 case TelegraphStyles.Once:
-                    Subscribe(listener, CablesOnce);
+                    Subscribe(key, listener, CablesOnce);
                     break;
                 case TelegraphStyles.Permanent:
-                    Subscribe(listener, CablesPermanent);
+                    Subscribe(key, listener, CablesPermanent);
                     break;
             }
         }
+        
+        [PublicAPI]
+        public static void Subscribe<T>(Action<T> listener, TelegraphStyles style = TelegraphStyles.Normal) where T : ISignal =>
+            Subscribe(typeof(T).SafeGetName(), listener);
 
-        private static void Send<T>(T evt, Cable cables, bool clear = false) where T : struct
+
+        private static void Unsubscribe(string key, Delegate listener, Cable cables)
         {
-            Type eventType = typeof(T);
-
-            if (!cables.TryGetValue(eventType, out var receivers)) return;
-            foreach (var receiver in receivers)
+            if (!cables.TryGetValue(key, out List<Delegate> listeners)) return;
+            for (int i = listeners.Count - 1; i >= 0; i--)
             {
-                ((IReceiver<T>) receiver)?.OnEvent(evt);
+                if (listeners[i] == listener)
+                {
+                    listeners.RemoveAt(i);
+                    Log.Always($"Unsubscribed Event Listener for {key}");
+                }
             }
-            if (clear) receivers.Clear();
         }
 
         [PublicAPI]
-        public static void Send<T>(T evt) where T : struct
+        public static void Unsubscribe(string key, Delegate listener)
         {
-            Send(evt, CablesPermanent);
-            Send(evt, Cables);
-            Send(evt, CablesOnce, true);
+            Unsubscribe(key, listener, Cables);
+            Unsubscribe(key, listener, CablesOnce);
+            Unsubscribe(key, listener, CablesPermanent);
         }
-        
-        private static void Unsubscribe<T>(IReceiver<T> listener, Cable cables)
-        {
-            Type eventType = typeof(T);
+        [PublicAPI]
+        public static void Unsubscribe<T>(Action<T> listener) where T : ISignal =>
+            Unsubscribe(typeof(T).SafeGetName(), listener);
 
-            if (!Cables.TryGetValue(eventType, out var receivers)) return;
-            for (int i = receivers.Count - 1; i >= 0; i--)
+        private static void Send<T>(string key, T payload, Cable cables, bool clear = false)
+        {
+            if (!cables.TryGetValue(key, out var listeners)) return;
+            Log.Always($"Found Event Listeners For {key}");
+            foreach (var listener in listeners)
             {
-                if (receivers[i] == listener) receivers.RemoveAt(i);
+                if (listener is Delegate d)
+                {
+                    Log.Always($"Firing Delegate {key}");
+                    d.DynamicInvoke(payload);
+                }
+                
+                if (listener is Action a)
+                {
+                    Log.Always($"Firing Action {key}");
+                    a.Invoke();
+                }
+
+                if (listener is Action<T> a1)
+                {
+                    Log.Always($"Firing Action<T> {key}");
+                    a1.Invoke(payload);
+                }
             }
+            if (clear) listeners.Clear();
         }
+
+        [PublicAPI]
+        public static void Send(string key)
+        {
+            var payload = GetDefault(key);
+            if (payload == null) return;
+            Send(key, payload, CablesPermanent);
+            Send(key, payload, Cables);
+            Send(key, payload, CablesOnce, true);
+        }
+
+        public static ISignal GetDefault(string key)
+        {
+            if (!Signals.Get(key, out Type type)) return null;
+            return (ISignal) Activator.CreateInstance(type);
+        }
+
+        [PublicAPI]
+        public static void Send<T>() where T : ISignal, new() => Send(new T());
+        [PublicAPI]
+        public static void Send<T>(string key, T payload) where T : ISignal
+        {
+            Send(key, payload, CablesPermanent);
+            Send(key, payload, Cables);
+            Send(key, payload, CablesOnce, true);
+        } 
         
         [PublicAPI]
-        public static void Unsubscribe<T>(IReceiver<T> listener) where T : struct
+        public static void Send<T>(T payload) where T : ISignal
         {
-            Unsubscribe(listener, Cables);
-            Unsubscribe(listener, CablesOnce);
-            Unsubscribe(listener, CablesPermanent);
+            string key = typeof(T).SafeGetName();
+
+            Send(key, payload, CablesPermanent);
+            Send(key, payload, Cables);
+            Send(key, payload, CablesOnce, true);
         }
     }
 }

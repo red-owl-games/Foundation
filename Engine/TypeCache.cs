@@ -7,6 +7,15 @@ namespace RedOwl.Core
     {
         private Dictionary<string, Type> _cache;
         
+        public IEnumerable<string> Names
+        {
+            get
+            {
+                ShouldBuildCache();
+                return _cache.Keys;
+            }
+        }
+        
         public IEnumerable<Type> All
         {
             get

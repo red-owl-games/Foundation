@@ -11,15 +11,15 @@ namespace RedOwl.Core
         [SerializeField]
         [FoldoutGroup("Telegram", false)]
         [LabelText("On Select"), DisableInPlayMode]
-        private ITelegram onSelectTelegram;
+        private TelegramReference onSelectTelegram;
         [SerializeField]
         [FoldoutGroup("Telegram", false)]
         [LabelText("On Deselect"), DisableInPlayMode]
-        private ITelegram onDeselectTelegram;
+        private TelegramReference onDeselectTelegram;
         [SerializeField]
         [FoldoutGroup("Telegram", false)]
         [LabelText("On Interact"), DisableInPlayMode]
-        private ITelegram onInteractTelegram;
+        private TelegramReference onInteractTelegram;
         
         [FoldoutGroup("Unity", false)]
         [LabelText("On Select")]
