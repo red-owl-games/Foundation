@@ -20,7 +20,7 @@ namespace RedOwl.Core
         [SerializeField]
         private LogLevel logLevel = LogLevel.Warn;
 
-        public static LogLevel LogLevel => I.logLevel;
+        public static LogLevel LogLevel => I != null ? I.logLevel : LogLevel.Warn;
     }
     
     public static class Log

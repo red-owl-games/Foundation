@@ -29,11 +29,11 @@ namespace RedOwl.Core
         public static void Quit()
         {
             IsShuttingDown = true;
-#if (UNITY_EDITOR)
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.ExitPlaymode();
-#elif (UNITY_STANDALONE) 
+#elif UNITY_STANDALONE 
             Application.Quit();
-#elif (UNITY_WEBGL)
+#elif UNITY_WEBGL
             Application.OpenURL("about:blank");
 #endif
         }

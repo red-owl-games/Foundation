@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,20 +48,20 @@ namespace RedOwl.Core
     [HideMonoScript]
     public class LevelState : MonoBehaviour
     {
-        private static readonly List<LevelState> Instances = new List<LevelState>(5);
+        private static readonly List<LevelState> All = new List<LevelState>(5);
         
         [NonSerialized, ShowInInspector, DisableInPlayMode]
         [OnValueChanged("TestState"), EnumToggleButtons, HideLabel]
-        private LevelStates State;
+        private LevelStates state;
 
         private void Awake()
         {
-            Instances.Add(this);
+            All.Add(this);
         }
 
         private void OnDestroy()
         {
-            Instances.Remove(this);
+            All.Remove(this);
         }
 
 #if UNITY_EDITOR
@@ -72,25 +73,27 @@ namespace RedOwl.Core
 
         private void EnsureDisabled(Scene scene, string path)
         {
+            if (this == null) return;
             ApplyState(LevelStates.None);
         }
 #endif
 
+        [UsedImplicitly]
         private void TestState()
         {
-            ApplyState(State);
+            ApplyState(state);
         }
 
-        public void ApplyState(LevelStates state)
+        public void ApplyState(LevelStates value)
         {
-            State = state;
-            gameObject.Children(c => c.SetActive(state.HasFlag((LevelStates) Enum.Parse(typeof(LevelStates), c.name))));
+            state = value;
+            gameObject.Children(c => c.SetActive(value.HasFlag((LevelStates) Enum.Parse(typeof(LevelStates), c.name))));
         }
 
 
         public static void SetState(LevelStates state)
         {
-            foreach (var component in Instances)
+            foreach (var component in All)
             {
                 component.ApplyState(state);
             }

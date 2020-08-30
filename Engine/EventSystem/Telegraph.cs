@@ -48,7 +48,6 @@ namespace RedOwl.Core
                 cables.Add(key, listeners);
             }
             listeners.Add(listener);
-            Log.Always($"Subscribed Event Listener for {key}");
         }
         
         [PublicAPI]
@@ -81,7 +80,6 @@ namespace RedOwl.Core
                 if (listeners[i] == listener)
                 {
                     listeners.RemoveAt(i);
-                    Log.Always($"Unsubscribed Event Listener for {key}");
                 }
             }
         }
@@ -100,24 +98,20 @@ namespace RedOwl.Core
         private static void Send<T>(string key, T payload, Cable cables, bool clear = false)
         {
             if (!cables.TryGetValue(key, out var listeners)) return;
-            Log.Always($"Found Event Listeners For {key}");
             foreach (var listener in listeners)
             {
                 if (listener is Delegate d)
                 {
-                    Log.Always($"Firing Delegate {key}");
                     d.DynamicInvoke(payload);
                 }
                 
                 if (listener is Action a)
                 {
-                    Log.Always($"Firing Action {key}");
                     a.Invoke();
                 }
 
                 if (listener is Action<T> a1)
                 {
-                    Log.Always($"Firing Action<T> {key}");
                     a1.Invoke(payload);
                 }
             }
