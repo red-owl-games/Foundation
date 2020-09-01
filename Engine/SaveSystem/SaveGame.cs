@@ -70,6 +70,7 @@ namespace RedOwl.Core
         
         public static void Register(ISaveData saveData, bool load = true)
         {
+            //Log.Always($"Registering {saveData.SaveDataId}");
             Registry.Add(saveData.SaveDataId, saveData);
             if (load) Pull(saveData);
         }

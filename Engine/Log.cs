@@ -25,53 +25,67 @@ namespace RedOwl.Core
     
     public static class Log
     {
-        // These fix a problem with 'dynamic' objects being passed to the API methods
-        [Conditional("UNITY_EDITOR")]
-        private static void log(string message)
-        {
-            Print.Log($"[RedOwl] {message}");
-        }
-        
-        [Conditional("UNITY_EDITOR")]
-        private static void logWarning(string message)
-        {
-            Print.LogWarning($"[RedOwl] {message}");
-        }
-        
-        [Conditional("UNITY_EDITOR")]
-        private static void logError(string message)
-        {
-            Print.LogError($"[RedOwl] {message}");
-        }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Always(string message)
         {
-            log($"<color=maroon>{message}</color>");
+#if DEBUG
+            Print.Log($"[RedOwl] <color=maroon>{message}</color>");
+#else 
+            Console.Write($"[RedOwl] <color=maroon>{message}</color>");
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Debug(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Debug) log($"<color=grey>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Debug)
+            {
+#if DEBUG
+                Print.Log($"[RedOwl] <color=grey>{message}</color>");
+#else 
+                Console.Write($"[RedOwl] <color=grey>{message}</color>");
+#endif
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Info) log($"<color=teal>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Info)
+            {
+#if DEBUG
+                Print.Log($"[RedOwl] <color=teal>{message}</color>");
+#else 
+                Console.Write($"[RedOwl] <color=teal>{message}</color>");
+#endif
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warn(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Warn) logWarning($"<color=yellow>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Warn)
+            {
+#if DEBUG
+                Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
+#else 
+                Console.Write($"[RedOwl] <color=yellow>{message}</color>");
+#endif
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Error) logError($"<color=red>{message}</color>");
+            if (RedOwlSettings.LogLevel >= LogLevel.Error)
+            {
+#if DEBUG
+                Print.LogError($"[RedOwl] <color=red>{message}</color>");
+#else 
+                Console.Write($"[RedOwl] <color=red>{message}</color>");
+#endif
+            }
         }
     }
 }

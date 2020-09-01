@@ -26,31 +26,23 @@ namespace RedOwl.Core
         public string Name => GetType().Name;
         
         protected Avatar Avatar;
-        protected KinematicCharacterMotor Motor;
-        protected Animator Animator;
+        protected KinematicCharacterMotor Motor => Avatar.Motor;
+        protected Animator Animator => Avatar.animator;
 
         public bool Enabled => enabled;
 
         // Higher Numbers Happen Last in Loops
         public abstract int Priority { get; }
-
+        
         private void Awake()
         {
             Avatar = GetComponent<Avatar>();
-            Avatar.Abilities.Add(this);
-        }
-
-        private void Start()
-        {
-            Motor = Avatar.Motor;
-            Animator = Avatar.animator;
-            if (Avatar.IsInitialized) OnStart();
+            Avatar.Add(this);
         }
 
         private void OnDestroy()
         {
-            Avatar.Abilities.Remove(this);
-            OnCleanup();
+            Avatar.Remove(this);
         }
 
         public virtual void OnStart() {}

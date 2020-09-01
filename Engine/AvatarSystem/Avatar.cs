@@ -47,11 +47,11 @@ namespace RedOwl.Core
         public AnimTriggerProperty LandedAnimParam = "Landed";
         public AnimBoolProperty GroundedAnimParam = "Grounded";
 
-        public bool IsInitialized { get; private set; }
         public AbilityCache Abilities { get; } = new AbilityCache();
         public AnimatorManager AnimManager { get; private set; }
         public KinematicCharacterMotor Motor { get; private set; }
 
+        private bool _isInitialized;
         private bool _wasGroundedLastFrame;
 
         private void Awake()
@@ -73,7 +73,7 @@ namespace RedOwl.Core
                 ability.OnStart();
             }
 
-            IsInitialized = true;
+            _isInitialized = true;
         }
 
         private void OnDestroy()
@@ -82,6 +82,18 @@ namespace RedOwl.Core
             {
                 ability.OnCleanup();
             }
+        }
+
+        internal void Add(AvatarAbility ability)
+        {
+            Abilities.Add(ability);
+            if (_isInitialized) ability.OnStart();
+        }
+
+        internal void Remove(AvatarAbility ability)
+        {
+            Abilities.Remove(ability);
+            ability.OnCleanup();
         }
 
         public void HandleInput(ref AvatarInput input)
