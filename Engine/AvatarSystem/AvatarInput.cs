@@ -1,6 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 namespace RedOwl.Core
 {
@@ -147,12 +148,14 @@ namespace RedOwl.Core
     public class AvatarInputManager : AvatarControls.IAvatarActions
     {
         private Avatar _avatar;
+        private InputUser _user;
         private AvatarControls _controls;
         private AvatarInput _input;
 
         public AvatarInputManager(Avatar avatar)
         {
             _avatar = avatar;
+            _user = InputUser.CreateUserWithoutPairedDevices();
             _controls = new AvatarControls();
             _controls.Avatar.SetCallbacks(this);
             _input = new AvatarInput();
@@ -160,6 +163,9 @@ namespace RedOwl.Core
 
         public void Enable()
         {
+            _user = InputUser.PerformPairingWithDevice(Keyboard.current, _user, InputUserPairingOptions.ForceNoPlatformUserAccountSelection);
+            _user.AssociateActionsWithUser(_controls);
+            _user.ActivateControlScheme($"Player{_user.index + 1}");
             _controls.Enable();
         }
 

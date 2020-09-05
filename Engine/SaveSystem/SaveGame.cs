@@ -70,6 +70,7 @@ namespace RedOwl.Core
         
         public static void Register(ISaveData saveData, bool load = true)
         {
+            if (!RedOwlSettings.SaveGameEnabled) return;
             //Log.Always($"Registering {saveData.SaveDataId}");
             Registry.Add(saveData.SaveDataId, saveData);
             if (load) Pull(saveData);
@@ -77,6 +78,7 @@ namespace RedOwl.Core
 
         public static void Unregister(ISaveData saveData, bool save = false)
         {
+            if (!RedOwlSettings.SaveGameEnabled) return;
             Registry.Remove(saveData.SaveDataId);
             if (save) Push(saveData);
         }
@@ -88,6 +90,7 @@ namespace RedOwl.Core
         private static void OnSave(SaveSignal signal) => Save(signal.Force);
         public static void Save(bool forceUpdate = false)
         {
+            if (!RedOwlSettings.SaveGameEnabled) return;
             Telegraph.Send<BeforeSave>();
             if (forceUpdate) PullAll();
             FileController.Write("saves/save.meta", _metafile);
@@ -98,6 +101,7 @@ namespace RedOwl.Core
         private static void OnLoad(LoadSignal signal) => Load(signal.Force);
         public static void Load(bool forceUpdate = false)
         {
+            if (!RedOwlSettings.SaveGameEnabled) return;
             Telegraph.Send<BeforeLoad>();
             if (forceUpdate)
             {

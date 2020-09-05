@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using KinematicCharacterController;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.InputSystem.Users;
 
 namespace RedOwl.Core
 {
@@ -53,27 +55,39 @@ namespace RedOwl.Core
 
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
+        private AvatarInputManager _input;
 
         private void Awake()
         {
             Motor = GetComponent<KinematicCharacterMotor>();
             if (animator == null) animator = this.EnsureComponent<Animator>();
             AnimManager = new AnimatorManager(animator);
+            _input = new AvatarInputManager(this);
             VelocityXAnimParam.Register(AnimManager);
             VelocityYAnimParam.Register(AnimManager);
             LandedAnimParam.Register(AnimManager);
             GroundedAnimParam.Register(AnimManager);
+            Motor.CharacterController = this;
+        }
+
+        private void OnEnable()
+        {
+            _input?.Enable();
         }
 
         private void Start()
         {
-            Motor.CharacterController = this;
             foreach (var ability in Abilities.All.ToArray().Reverse())
             {
                 ability.OnStart();
             }
 
             _isInitialized = true;
+        }
+
+        private void OnDisable()
+        {
+            _input?.Disable();
         }
 
         private void OnDestroy()

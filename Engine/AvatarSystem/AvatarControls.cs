@@ -156,7 +156,7 @@ namespace RedOwl.Core
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": ""Player1;Player2"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -178,7 +178,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": "";Player1"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -189,7 +189,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": ""Player2"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -200,7 +200,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": "";Player1"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -211,7 +211,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": ""Player2"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -222,7 +222,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": "";Player1"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -233,7 +233,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": ""Player2"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -244,7 +244,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": "";Player1"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -255,7 +255,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": ""Player2"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -266,7 +266,7 @@ namespace RedOwl.Core
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": ""Player1;Player2"",
                     ""action"": ""ButtonSouth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -277,7 +277,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ButtonSouth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -288,19 +288,19 @@ namespace RedOwl.Core
                     ""path"": ""<Touchscreen>/primaryTouch/tap"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Touch"",
+                    ""groups"": ""Player1;Player2"",
                     ""action"": ""ButtonSouth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""90deca70-cc3a-4113-afa7-cfd2f821a8fc"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""id"": ""7a9c5b1a-e38b-4078-a78e-2dbe7403cd74"",
+                    ""path"": ""<Keyboard>/numpad0"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""ButtonEast"",
+                    ""groups"": ""Player2"",
+                    ""action"": ""ButtonSouth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -310,19 +310,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ButtonEast"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b9fb4cd3-d55a-4e9e-8b69-d4ff3be98904"",
-                    ""path"": ""<Gamepad>/rightStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -332,19 +321,8 @@ namespace RedOwl.Core
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": ""NormalizeVector2"",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a03bbaa1-499a-45be-8606-9c886cc67793"",
-                    ""path"": ""<Gamepad>/buttonWest"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""ButtonWest"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -354,19 +332,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ButtonWest"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""774f46f2-b9e5-449e-a592-58be11d0ebde"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""ButtonNorth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -376,19 +343,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ButtonNorth"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b7d55099-6c96-479c-ade6-7f940d3214b3"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""TriggerRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -398,19 +354,8 @@ namespace RedOwl.Core
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""TriggerRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""a65c5d72-5149-4313-aea4-1bce7b19edc9"",
-                    ""path"": ""<Gamepad>/leftTrigger"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""TriggerLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -420,19 +365,8 @@ namespace RedOwl.Core
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""TriggerLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""fcc44f62-50e1-4480-9da2-2d9f3601e5a7"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""ShoulderRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -442,19 +376,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ShoulderRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""773ebcb9-2baf-4760-bee8-c80f4c562703"",
-                    ""path"": ""<Gamepad>/leftShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""ShoulderLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -464,19 +387,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""ShoulderLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6af8756a-96c6-4df5-b03c-4c37362edcf9"",
-                    ""path"": ""<Gamepad>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""SpecialRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -486,19 +398,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""SpecialRight"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""10ddff50-417b-4614-9c4c-c1063163a177"",
-                    ""path"": ""<Gamepad>/select"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""SpecialLeft"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -508,19 +409,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""SpecialLeft"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""598c92da-cb6f-4f5a-8d8e-396e16f992ab"",
-                    ""path"": ""<Gamepad>/dpad/up"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""North"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -530,19 +420,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""North"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c5c7081f-7206-4fc8-8b7e-c91e7dfb887d"",
-                    ""path"": ""<Gamepad>/dpad/down"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""South"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -552,19 +431,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/2"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Player1"",
                     ""action"": ""South"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""37884f2e-f7f5-477f-bdd6-ec7359b886bb"",
-                    ""path"": ""<Gamepad>/dpad/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""East"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -574,19 +442,8 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/3"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""East"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""22bf7bd0-80bd-45f0-8caa-d83fd380e442"",
-                    ""path"": ""<Gamepad>/dpad/left"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""West"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -596,7 +453,7 @@ namespace RedOwl.Core
                     ""path"": ""<Keyboard>/4"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
+                    ""groups"": ""Player1"",
                     ""action"": ""West"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -606,8 +463,8 @@ namespace RedOwl.Core
     ],
     ""controlSchemes"": [
         {
-            ""name"": ""Keyboard&Mouse"",
-            ""bindingGroup"": ""Keyboard&Mouse"",
+            ""name"": ""Player1"",
+            ""bindingGroup"": ""Player1"",
             ""devices"": [
                 {
                     ""devicePath"": ""<Keyboard>"",
@@ -618,27 +475,31 @@ namespace RedOwl.Core
                     ""devicePath"": ""<Mouse>"",
                     ""isOptional"": false,
                     ""isOR"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""Gamepad"",
-            ""bindingGroup"": ""Gamepad"",
-            ""devices"": [
+                },
                 {
                     ""devicePath"": ""<Gamepad>"",
-                    ""isOptional"": false,
+                    ""isOptional"": true,
                     ""isOR"": false
                 }
             ]
         },
         {
-            ""name"": ""Touch"",
-            ""bindingGroup"": ""Touch"",
+            ""name"": ""Player2"",
+            ""bindingGroup"": ""Player2"",
             ""devices"": [
                 {
-                    ""devicePath"": ""<Touchscreen>"",
+                    ""devicePath"": ""<Keyboard>"",
                     ""isOptional"": false,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Mouse>"",
+                    ""isOptional"": false,
+                    ""isOR"": false
+                },
+                {
+                    ""devicePath"": ""<Gamepad>"",
+                    ""isOptional"": true,
                     ""isOR"": false
                 }
             ]
@@ -861,31 +722,22 @@ namespace RedOwl.Core
             }
         }
         public AvatarActions @Avatar => new AvatarActions(this);
-        private int m_KeyboardMouseSchemeIndex = -1;
-        public InputControlScheme KeyboardMouseScheme
+        private int m_Player1SchemeIndex = -1;
+        public InputControlScheme Player1Scheme
         {
             get
             {
-                if (m_KeyboardMouseSchemeIndex == -1) m_KeyboardMouseSchemeIndex = asset.FindControlSchemeIndex("Keyboard&Mouse");
-                return asset.controlSchemes[m_KeyboardMouseSchemeIndex];
+                if (m_Player1SchemeIndex == -1) m_Player1SchemeIndex = asset.FindControlSchemeIndex("Player1");
+                return asset.controlSchemes[m_Player1SchemeIndex];
             }
         }
-        private int m_GamepadSchemeIndex = -1;
-        public InputControlScheme GamepadScheme
+        private int m_Player2SchemeIndex = -1;
+        public InputControlScheme Player2Scheme
         {
             get
             {
-                if (m_GamepadSchemeIndex == -1) m_GamepadSchemeIndex = asset.FindControlSchemeIndex("Gamepad");
-                return asset.controlSchemes[m_GamepadSchemeIndex];
-            }
-        }
-        private int m_TouchSchemeIndex = -1;
-        public InputControlScheme TouchScheme
-        {
-            get
-            {
-                if (m_TouchSchemeIndex == -1) m_TouchSchemeIndex = asset.FindControlSchemeIndex("Touch");
-                return asset.controlSchemes[m_TouchSchemeIndex];
+                if (m_Player2SchemeIndex == -1) m_Player2SchemeIndex = asset.FindControlSchemeIndex("Player2");
+                return asset.controlSchemes[m_Player2SchemeIndex];
             }
         }
         public interface IAvatarActions
