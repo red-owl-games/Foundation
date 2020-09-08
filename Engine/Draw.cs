@@ -1,22 +1,22 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public partial class RedOwlSettings
+    [Serializable]
+    public class DrawSettings : Settings<DrawSettings>
     {
         [SerializeField]
         [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(120)]
         private bool showDebugDraw = true;
-
-        public static bool ShowDebugDraw => I.showDebugDraw;
-
+        public static bool ShowDebugDraw => Instance.showDebugDraw;
+        
         [SerializeField]
         [HorizontalGroup("Draw"), ShowIf("showDebugDraw"), HideLabel]
-        private Color debugDrawColor = Color.magenta;
-
-        public static Color DebugDrawColor => I.debugDrawColor;
+        private Color drawColor = Color.magenta;
+        public static Color DrawColor => Instance.drawColor;
     }
     
     public static class Draw
@@ -174,7 +174,8 @@ namespace RedOwl.Core
         [Conditional("UNITY_EDITOR")]
         public static void Label(Vector3 point, string text, Color? color = null)
         {
-            var style = new GUIStyle {normal = {textColor = color ?? RedOwlSettings.DebugDrawColor}};
+            if (!DrawSettings.ShowDebugDraw) return;
+            var style = new GUIStyle {normal = {textColor = color ?? DrawSettings.DrawColor}};
             #if UNITY_EDITOR
             UnityEditor.Handles.Label(point, text, style);
             #endif
@@ -183,8 +184,8 @@ namespace RedOwl.Core
         [Conditional("UNITY_EDITOR")]
         public static void Line(Vector3 start, Vector3 end, Color? color = null)
         {
-            if (!RedOwlSettings.ShowDebugDraw) return;
-            UnityEngine.Debug.DrawLine(start, end, color ?? RedOwlSettings.DebugDrawColor, 0f, true);
+            if (!DrawSettings.ShowDebugDraw) return;
+            UnityEngine.Debug.DrawLine(start, end, color ?? DrawSettings.DrawColor, 0f, true);
         }
         
         [Conditional("UNITY_EDITOR")]

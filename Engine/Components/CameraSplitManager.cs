@@ -13,19 +13,18 @@ namespace RedOwl.Core
         Special
     }
     
-    public partial class RedOwlSettings
+    [Serializable]
+    public class CameraSettings : Settings<CameraSettings>
     {
-        [BoxGroup("Player Camera")]
-        [SerializeField, LabelText("Split Options"), Tooltip("How to split the camera screen space for 2 or 3 local players")]
-        private CameraSplitOptions playerCameraSplitOption;
-
-        public static CameraSplitOptions PlayerCameraSplitOption => I.playerCameraSplitOption;
+        [SerializeField]
+        [LabelText("Split Options"), Tooltip("How to split the camera screen space for 2 or 3 local players")]
+        private CameraSplitOptions splitOption = CameraSplitOptions.Special;
+        public static CameraSplitOptions SplitOption => Instance.splitOption;
         
-        [BoxGroup("Player Camera")]
-        [SerializeField, LabelText("Lerp Duration"), Tooltip("The amount of time for the cameras to lerp into position")]
-        private float playerCameraLerpDuration;
-
-        public static float PlayerCameraLerpDuration => I.playerCameraLerpDuration;
+        [SerializeField]
+        [LabelText("Lerp Duration"), Tooltip("The amount of time for the cameras to lerp into position")]
+        private float lerpDuration = 0.3f;
+        public static float LerpDuration => Instance.lerpDuration;
     }
     
     [RequireComponent(typeof(Camera))]
@@ -55,14 +54,14 @@ namespace RedOwl.Core
 
         private static void UpdateCameraRects()
         {
-            var duration = RedOwlSettings.PlayerCameraLerpDuration;
+            var duration = CameraSettings.LerpDuration;
             switch (All.Count)
             {
                 case 1:
                     All[0].cam.DORect(new Rect(0, 0, 1f, 1f), duration);
                     break;
                 case 2:
-                    switch (RedOwlSettings.PlayerCameraSplitOption)
+                    switch (CameraSettings.SplitOption)
                     {
                         case CameraSplitOptions.Rows:
                             All[0].cam.DORect(new Rect(0, 0.501f, 1, 0.499f), duration);
@@ -80,7 +79,7 @@ namespace RedOwl.Core
 
                     break;
                 case 3:
-                    switch (RedOwlSettings.PlayerCameraSplitOption)
+                    switch (CameraSettings.SplitOption)
                     {
                         case CameraSplitOptions.Rows:
                             All[0].cam.DORect(new Rect(0, 0.668f, 1, 0.331f), duration);

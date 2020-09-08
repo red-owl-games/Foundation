@@ -7,6 +7,12 @@ namespace RedOwl.Core
         public static bool IsRunning => Application.isPlaying;
         
         public static bool IsShuttingDown { get; internal set; }
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+        private static void BeforeSplashScreen()
+        {
+            Application.quitting += HandleQuit;
+        }
 
         public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {
@@ -24,6 +30,12 @@ namespace RedOwl.Core
             if (selectGameObjectAfterCreation) UnityEditor.Selection.activeObject = go;
 #endif
             return go.GetComponent<T>();
+        }
+
+        private static void HandleQuit()
+        {
+            CoroutineManager.StopAllRoutines();
+            IsShuttingDown = true;
         }
 
         public static void Quit()

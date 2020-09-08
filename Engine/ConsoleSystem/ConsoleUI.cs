@@ -18,12 +18,12 @@ namespace RedOwl.Core
 
         private void OnEnable()
         {
-            RedOwlSettings.ShowConsoleKey.Enable();
+            ConsoleSettings.ShowConsoleKey.Enable();
         }
 
         private void Start()
         {
-            history = new RingBuffer<string>(RedOwlSettings.ConsoleHistoryBufferLength);
+            history = new RingBuffer<string>(ConsoleSettings.HistoryBufferLength);
             history.PushFront("help");
             history.PushFront("clear");
             
@@ -31,12 +31,12 @@ namespace RedOwl.Core
             _texture.SetPixel(0, 0, new Color(0, 0, 0, .9f));
             _texture.Apply();
 
-            RedOwlSettings.ShowConsoleKey.performed += ctx => ToggleShow();
+            ConsoleSettings.ShowConsoleKey.performed += ctx => ToggleShow();
         }
 
         private void OnDisable()
         {
-            RedOwlSettings.ShowConsoleKey.Disable();
+            ConsoleSettings.ShowConsoleKey.Disable();
         }
         
         private void OnApplicationQuit()
@@ -118,12 +118,12 @@ namespace RedOwl.Core
             
             // Draw Log Lines
             _scrollPosition = GUI.BeginScrollView(logs, _scrollPosition, scroll);
-            GUI.TextArea(scroll, logLines, new GUIStyle(GUI.skin.textArea) { richText = true, fontSize = RedOwlSettings.ConsoleFontSize});
+            GUI.TextArea(scroll, logLines, new GUIStyle(GUI.skin.textArea) { richText = true, fontSize = ConsoleSettings.FontSize});
             GUI.EndScrollView();
 
             GUI.SetNextControlName(FocusControlName);
             // Draw Commandline
-            _command = GUI.TextField(commandline, _command, new GUIStyle(GUI.skin.textField) { fontSize = RedOwlSettings.ConsoleFontSize});
+            _command = GUI.TextField(commandline, _command, new GUIStyle(GUI.skin.textField) { fontSize = ConsoleSettings.FontSize});
 
             if (_show)
             {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using UnityEngine;
 using Print = UnityEngine.Debug;
 
@@ -15,12 +12,12 @@ namespace RedOwl.Core
         Debug
     }
     
-    public partial class RedOwlSettings
+    [Serializable]
+    public class LogConfig : Settings<LogConfig>
     {
         [SerializeField]
         private LogLevel logLevel = LogLevel.Warn;
-
-        public static LogLevel LogLevel => I != null ? I.logLevel : LogLevel.Warn;
+        public static LogLevel LogLevel => Instance?.logLevel ?? LogLevel.Debug;
     }
     
     public static class Log
@@ -39,7 +36,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Debug(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Debug)
+            if (LogConfig.LogLevel >= LogLevel.Debug)
             {
 #if DEBUG
                 Print.Log($"[RedOwl] <color=grey>{message}</color>");
@@ -52,7 +49,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Info)
+            if (LogConfig.LogLevel >= LogLevel.Info)
             {
 #if DEBUG
                 Print.Log($"[RedOwl] <color=teal>{message}</color>");
@@ -65,7 +62,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warn(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Warn)
+            if (LogConfig.LogLevel >= LogLevel.Warn)
             {
 #if DEBUG
                 Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
@@ -78,7 +75,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(string message)
         {
-            if (RedOwlSettings.LogLevel >= LogLevel.Error)
+            if (LogConfig.LogLevel >= LogLevel.Error)
             {
 #if DEBUG
                 Print.LogError($"[RedOwl] <color=red>{message}</color>");

@@ -1,8 +1,8 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RedOwl.Core
@@ -11,27 +11,24 @@ namespace RedOwl.Core
     
     #region Settings
     
-    public partial class RedOwlSettings
+    [Serializable]
+    public class FileControllerSettings : Settings<FileControllerSettings>
     {
-        [BoxGroup("File Controller")]
         [SerializeField]
         private bool useEncryption;
-        public static bool UseEncryption => I.useEncryption;
+        public static bool UseEncryption => Instance.useEncryption;
         
-        [BoxGroup("File Controller")]
         [SerializeField]
         private bool useCompression;
-        public static bool UseCompression => I.useCompression;
+        public static bool UseCompression => Instance.useCompression;
         
-        [BoxGroup("File Controller")]
         [SerializeField]
         private string encryptionKey;
-        public static string EncryptionKey => I.encryptionKey;
+        public static string EncryptionKey => Instance.encryptionKey;
         
-        [BoxGroup("File Controller")]
         [SerializeField]
         private string encryptionIV;
-        public static string EncryptionIV => I.encryptionIV;
+        public static string EncryptionIV => Instance.encryptionIV;
     }
     
     #endregion
@@ -39,14 +36,14 @@ namespace RedOwl.Core
     public static class FileController
     {
         private static string Filepath(string filename) => $"{Application.persistentDataPath}/{filename}";
-
+        
         private static AesCryptoServiceProvider _provider;
 
         private static AesCryptoServiceProvider Provider =>
             _provider ?? (_provider = new AesCryptoServiceProvider
             {
-                Key = Encoding.ASCII.GetBytes(RedOwlSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
-                IV = Encoding.ASCII.GetBytes(RedOwlSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
+                Key = Encoding.ASCII.GetBytes(FileControllerSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
+                IV = Encoding.ASCII.GetBytes(FileControllerSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
             });
         
         #region Read
@@ -67,8 +64,8 @@ namespace RedOwl.Core
         {
             //Log.Always($"Reading File - {filepath}");
             Stream stream = new FileStream(filepath, FileMode.Open);
-            if (RedOwlSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
-            if (RedOwlSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
+            if (FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
+            if (FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
             using (var reader = new MemoryStream())
             {
                 stream.CopyTo(reader);
@@ -98,8 +95,8 @@ namespace RedOwl.Core
             //Log.Always($"Writing File - {filepath}");
             Directory.CreateDirectory(Path.GetDirectoryName(filepath) ?? string.Empty);
             Stream stream = new FileStream(filepath, FileMode.Create);
-            if (RedOwlSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
-            if (RedOwlSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
+            if (FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
+            if (FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
             stream.Write(data, 0, data.Length);
             stream.Dispose();
         }

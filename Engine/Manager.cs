@@ -1,9 +1,33 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RedOwl.Core
 {
+    [Serializable]
+    public class ManagerSettings : Settings<ManagerSettings>
+    {
+        [AssetsOnly]
+        [SerializeField]
+        private List<GameObject> managers;
+
+        public static List<GameObject> Managers => Instance.managers;
+    }
+    
+    public static class ManagerInitialization
+    {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void BeforeSceneLoad()
+        {
+            foreach (var manager in ManagerSettings.Managers)
+            {
+                Object.DontDestroyOnLoad(Object.Instantiate(manager));
+            }
+        }
+    }
+    
     [HideMonoScript]
     public class Manager : MonoBehaviour
     {
