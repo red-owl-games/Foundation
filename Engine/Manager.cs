@@ -9,6 +9,11 @@ namespace RedOwl.Core
     [Serializable]
     public class ManagerSettings : Settings<ManagerSettings>
     {
+        [SerializeField]
+        private bool enabled = true;
+
+        public static bool Enabled => Instance.enabled;
+        
         [AssetsOnly]
         [SerializeField]
         private List<GameObject> managers;
@@ -21,6 +26,7 @@ namespace RedOwl.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BeforeSceneLoad()
         {
+            if (!ManagerSettings.Enabled) return;
             foreach (var manager in ManagerSettings.Managers)
             {
                 Object.DontDestroyOnLoad(Object.Instantiate(manager));

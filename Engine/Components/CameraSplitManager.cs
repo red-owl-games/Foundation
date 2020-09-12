@@ -27,6 +27,7 @@ namespace RedOwl.Core
         public static float LerpDuration => Instance.lerpDuration;
     }
     
+    [HideMonoScript]
     [RequireComponent(typeof(Camera))]
     public class CameraSplitManager : MonoBehaviour
     {
