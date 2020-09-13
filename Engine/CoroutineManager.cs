@@ -119,6 +119,7 @@ namespace RedOwl.Core
 
         public static CoroutineWrapper StartRoutine(Func<bool> callback)
         {
+            if (RedOwlTools.IsShuttingDown) return null;
             var output = new CoroutineWrapper(CallbackWrapper(callback));
             output.Start();
             return output;
@@ -126,6 +127,7 @@ namespace RedOwl.Core
 
         public static Coroutine StartRoutine(IEnumerator wrapper)
         {
+            if (RedOwlTools.IsShuttingDown) return null;
             return Instance.StartCoroutine(wrapper);
         }
 

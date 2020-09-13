@@ -100,19 +100,17 @@ namespace RedOwl.Core
             if (!cables.TryGetValue(key, out var listeners)) return;
             foreach (var listener in listeners)
             {
-                if (listener is Delegate d)
+                switch (listener)
                 {
-                    d.DynamicInvoke(payload);
-                }
-                
-                if (listener is Action a)
-                {
-                    a.Invoke();
-                }
-
-                if (listener is Action<T> a1)
-                {
-                    a1.Invoke(payload);
+                    case Action a:
+                        a.Invoke();
+                        break;
+                    case Action<T> a1:
+                        a1.Invoke(payload);
+                        break;
+                    case Delegate d:
+                        d.DynamicInvoke(payload);
+                        break;
                 }
             }
             if (clear) listeners.Clear();
@@ -122,7 +120,6 @@ namespace RedOwl.Core
         public static void Send(string key)
         {
             var payload = GetDefault(key);
-            if (payload == null) return;
             Send(key, payload, CablesPermanent);
             Send(key, payload, Cables);
             Send(key, payload, CablesOnce, true);

@@ -133,7 +133,7 @@ namespace RedOwl.Core
 
         private void EnterState(IState state)
         {
-            //Log.Always($"Entering State {GetId(state)}");
+            Log.Debug($"Entering State {GetId(state)}");
             _transitions.TryGetValue(GetId(state), out _currentTransitions);
             if (_currentTransitions == null)
                 _currentTransitions = Empty;
@@ -148,7 +148,7 @@ namespace RedOwl.Core
 
         private void ExitState(IState state)
         {
-            //Log.Always($"Exiting State {GetId(state)}");
+            Log.Debug($"Exiting State {GetId(state)}");
             OnExitState?.Invoke(state);
             if (state is IStateExit s) s.OnExit();
             if (state is IStateAsyncExit a) CoroutineManager.StartRoutine(a.OnExit());

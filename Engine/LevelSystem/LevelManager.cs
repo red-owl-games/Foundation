@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,11 +9,12 @@ namespace RedOwl.Core
     {
         private static GameLevel _lastLevel;
         
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
         {
-            if (SceneManager.GetActiveScene().name == "Bootstrap")
+            _lastLevel = GameLevel.Find(SceneManager.GetActiveScene().name);
+            if (_lastLevel.id == GameLevel.Levels[0].id)
             {
-                _lastLevel = GameLevel.Levels[0];
                 LoadNextLevel();
             }
             else
@@ -27,7 +29,7 @@ namespace RedOwl.Core
             yield return LoadingScreen.Hide();
         }
 
-        private static IEnumerator LoadLevelAsync(GameLevel level)
+        private static IEnumerator LoadLevelAsync(GameLevel level, Action callback = null, Func<IEnumerator> asyncCallback = null)
         {
             yield return LoadingScreen.Show();
             
@@ -40,24 +42,46 @@ namespace RedOwl.Core
             if (level.sceneName == "Bootstrap")
             {
                 yield return new WaitForSeconds(0.5f);
-                yield return LoadLevelAsync(GameLevel.Next(level));
+                yield return LoadLevelAsync(GameLevel.Next(level), callback, asyncCallback);
                 yield break;
             }
             Log.Always($"Finished Loading Level {level.sceneName}");
             _lastLevel = level;
             LevelState.SetState(level.state);
             yield return new WaitForSeconds(0.5f);
+            callback?.Invoke();
+            if (asyncCallback != null) yield return asyncCallback();
             yield return LoadingScreen.Hide();
         }
-
+        
         public static void LoadLevel(GameLevel level)
         {
             CoroutineManager.StartRoutine(LoadLevelAsync(level));
         }
+        
+        public static void LoadLevel(GameLevel level, Action callback)
+        {
+            CoroutineManager.StartRoutine(LoadLevelAsync(level, callback));
+        }
 
+        public static void LoadLevel(GameLevel level, Func<IEnumerator> callback)
+        {
+            CoroutineManager.StartRoutine(LoadLevelAsync(level, null, callback));
+        }
+        
         public static void LoadNextLevel()
         {
             CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel)));
+        }
+
+        public static void LoadNextLevel(Action callback)
+        {
+            CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel), callback));
+        }
+
+        public static void LoadNextLevel(Func<IEnumerator> callback)
+        {
+            CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel), null, callback));
         }
 
 

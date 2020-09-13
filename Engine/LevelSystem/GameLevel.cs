@@ -121,6 +121,16 @@ namespace RedOwl.Core
         }
 #endif
         #endregion
+
+        public static GameLevel Find(string name)
+        {
+            foreach (var level in Levels)
+            {
+                if (level.sceneName == name) return level;
+            }
+
+            return Levels[0];
+        }
     }
 
     public static class GameLevelExtensions
