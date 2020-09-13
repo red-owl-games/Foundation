@@ -5,37 +5,21 @@ using UnityEngine.InputSystem;
 
 namespace RedOwl.Core.Input
 {
+    [HideMonoScript]
     public class ActionToEvent : MonoBehaviour
     {
-        [SerializeField, PropertyOrder(-1), ShowIf("@controls != null")]
-        private InputActionReference action;
-
-        [SerializeField, HideInInspector]
-        private InputActionAsset controls;
-        [ShowInInspector, PropertyOrder(-2)]
-        public InputActionAsset Controls
-        {
-            get => controls;
-            set
-            {
-                if (value == controls) return;
-                controls = value;
-                action = InputUtils.UpdateReference(controls, action);
-            }
-        }
+        public ActionReference input = new ActionReference();
         
         public UnityEvent @event = new UnityEvent();
 
         private void OnEnable()
         {
-            action?.action?.Enable();
-            InputUtils.SetActionCallback(action, OnInput, true);
+            input.Bind(OnInput);
         }
 
         private void OnDisable()
         {
-            InputUtils.SetActionCallback(action, OnInput, false);
-            action?.action?.Disable();
+            input.Unbind(OnInput);
         }
 
         private void OnInput(InputAction.CallbackContext ctx)
