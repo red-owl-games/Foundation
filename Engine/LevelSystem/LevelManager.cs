@@ -84,6 +84,14 @@ namespace RedOwl.Core
             CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel), null, callback));
         }
 
-
+        public static void LoadMainMenu()
+        {
+            foreach (var level in GameLevel.Levels)
+            {
+                if (!level.isMainMenu) continue;
+                LoadLevel(level);
+                return;
+            }
+        }
     }
 }

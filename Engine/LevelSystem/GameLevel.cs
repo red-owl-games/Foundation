@@ -36,6 +36,8 @@ namespace RedOwl.Core
         public LevelStates state;
 
         public string sceneName;
+
+        public bool isMainMenu;
         
         //TODO: Localization Key
         public string title;
@@ -48,6 +50,7 @@ namespace RedOwl.Core
             id = Guid.NewGuid();
             
             sceneName = name;
+            isMainMenu = false;
             title = "";
             subTitle = "";
 
@@ -66,6 +69,12 @@ namespace RedOwl.Core
         public GameLevel Skippable()
         {
             IsSkippable = true;
+            return this;
+        }
+
+        public GameLevel MainMenu()
+        {
+            isMainMenu = true;
             return this;
         }
 
