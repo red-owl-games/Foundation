@@ -10,24 +10,23 @@ namespace RedOwl.Core
     public class ConsoleSettings : Settings<ConsoleSettings>
     {
         [SerializeField]
-        [LabelWidth(85), LabelText("Font Size")]
+        [LabelText("Font Size")]
         private int fontSize = 16;
         public static int FontSize => Instance.fontSize;
         
         [SerializeField]
-        [LabelWidth(85), LabelText("Buffer Size")]
+        [LabelText("Buffer Size")]
         private int bufferLength = 5000;
         public static int BufferLength => Instance.bufferLength;
         
         [SerializeField]
-        [LabelWidth(120), LabelText("History Buffer Size")]
+        [LabelText("History Buffer Size")]
         private int historyBufferLength = 100;
         public static int HistoryBufferLength => Instance.historyBufferLength;
         
         [SerializeField]
-        [LabelWidth(80), LabelText("Key To Show")]
-        private InputAction showConsoleKey = new InputAction();
-        public static InputAction ShowConsoleKey => Instance.showConsoleKey;
+        private InputAction showConsoleAction = new InputAction();
+        public static InputAction ShowConsoleAction => Instance.showConsoleAction;
     }
     
     public static class Console

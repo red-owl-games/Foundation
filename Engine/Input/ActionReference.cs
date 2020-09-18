@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace RedOwl.Core.Input
+namespace RedOwl.Core
 {
     [Serializable, InlineProperty]
     public class ActionReference

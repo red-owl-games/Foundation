@@ -42,7 +42,7 @@ namespace RedOwl.Core
         public struct BeforeLoad : ISignal { }
         public struct AfterLoad : ISignal { }
         
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
             Application.quitting += () =>

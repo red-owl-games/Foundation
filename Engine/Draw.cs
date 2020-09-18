@@ -9,7 +9,7 @@ namespace RedOwl.Core
     public class DrawSettings : Settings<DrawSettings>
     {
         [SerializeField]
-        [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(120)]
+        [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(200)]
         private bool showDebugDraw = true;
         public static bool ShowDebugDraw => Instance.showDebugDraw;
         

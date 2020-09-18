@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-namespace RedOwl.Core.Input
+namespace RedOwl.Core
 {
     [HideMonoScript]
     public class ActionToEvent : MonoBehaviour

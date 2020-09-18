@@ -18,7 +18,7 @@ namespace RedOwl.Core
 
         private void OnEnable()
         {
-            ConsoleSettings.ShowConsoleKey.Enable();
+            ConsoleSettings.ShowConsoleAction.Enable();
         }
 
         private void Start()
@@ -31,12 +31,12 @@ namespace RedOwl.Core
             _texture.SetPixel(0, 0, new Color(0, 0, 0, .9f));
             _texture.Apply();
 
-            ConsoleSettings.ShowConsoleKey.performed += ctx => ToggleShow();
+            ConsoleSettings.ShowConsoleAction.performed += ctx => ToggleShow();
         }
 
         private void OnDisable()
         {
-            ConsoleSettings.ShowConsoleKey.Disable();
+            ConsoleSettings.ShowConsoleAction.Disable();
         }
         
         private void OnApplicationQuit()
