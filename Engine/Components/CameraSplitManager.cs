@@ -49,6 +49,7 @@ namespace RedOwl.Core
 
         private void OnDisable()
         {
+            if (RedOwlTools.IsShuttingDown) return;
             All.Remove(this);
             UpdateCameraRects();
         }
