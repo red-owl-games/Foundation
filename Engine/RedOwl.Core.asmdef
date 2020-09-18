@@ -2,6 +2,7 @@
     "name": "RedOwl.Core",
     "references": [
         "Unity.Mathematics",
+        "Unity.TextMeshPro",
         "Unity.InputSystem",
         "DOTween.Modules",
         "KinematicCharacterController"
