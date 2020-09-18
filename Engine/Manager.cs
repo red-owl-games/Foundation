@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -77,9 +78,10 @@ namespace RedOwl.Core
             if (reference is IManagerOnEnable casted) casted.WhenEnable();
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
             if (reference is IManagerOnStart casted) casted.WhenStart();
+            if (reference is IManagerOnStartAsync castedAsync) yield return castedAsync.WhenStart();
         }
 
         private void Update()

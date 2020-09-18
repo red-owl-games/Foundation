@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace RedOwl.Core
@@ -11,6 +12,7 @@ namespace RedOwl.Core
     }
     
     public interface IManagerOnStart { void WhenStart(); }
+    public interface IManagerOnStartAsync { IEnumerator WhenStart(); }
 
     public interface IManagerOnEnable
     {
