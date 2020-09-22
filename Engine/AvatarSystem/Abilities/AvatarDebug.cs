@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public class AvatarDebug : AvatarAbility, ISaveData
+    public class AvatarDebug : AvatarAbility, IPersistData
     {
         public override int Priority { get; } = 0;
 
@@ -11,33 +11,33 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            SaveGame.Register(this);
+            Game.Register(this);
         }
 
         public override void OnCleanup()
         {
-            SaveGame.Unregister(this);
+            Game.Unregister(this);
         }
 
         public override void HandleInput(ref AvatarInput input)
         {
             // TODO: For Debug Only
-            if (input.Get(AvatarInputButtons.ShoulderLeft) == ButtonStates.Pressed) SaveGame.Save(true);
-            if (input.Get(AvatarInputButtons.ShoulderRight) == ButtonStates.Pressed) SaveGame.Load(true);
-            if (input.Get(AvatarInputButtons.South) == ButtonStates.Pressed) SaveGame.Load();
+            if (input.Get(AvatarInputButtons.ShoulderLeft) == ButtonStates.Pressed) Game.Save(true);
+            if (input.Get(AvatarInputButtons.ShoulderRight) == ButtonStates.Pressed) Game.Load(true);
+            if (input.Get(AvatarInputButtons.South) == ButtonStates.Pressed) Game.Load();
         }
 
+        public PersistenceTypes SaveDataPersistenceType => PersistenceTypes.SaveFile;
         public string SaveDataId => $"{name}.{GetType()}";
-
         public int SaveDataLength => 16;
 
-        public void SaveData(SaveWriter writer)
+        public void SaveData(PersistenceWriter writer)
         {
             writer.Write(Value1);
             writer.Write(Value2);
         }
 
-        public void LoadData(SaveReader reader)
+        public void LoadData(PersistenceReader reader)
         {
             Value1 = reader.ReadInt32();
             Value2 = reader.ReadVector3();

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RedOwl.Core
 {
     [Serializable]
-    public class SaveGameMetafile : IRedOwlFile
+    public class GameMetafile : IRedOwlFile
     {
         #region TimePlayedTracking
         

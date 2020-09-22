@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public class SaveWriter : BinaryWriter
+    public class PersistenceWriter : BinaryWriter
     {
-        public SaveWriter(Stream stream) : base(stream) {}
+        public PersistenceWriter(Stream stream) : base(stream) {}
 
         /// <summary>
         /// 8 Bytes

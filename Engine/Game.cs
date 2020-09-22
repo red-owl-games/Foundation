@@ -13,15 +13,10 @@ namespace RedOwl.Core
 
         public RedOwlException(string message, Exception inner) : base(message, inner) {}
     }
-    
-    public partial class RedOwlSettings
+
+    public static partial class Game
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void InitializeGame() => Game.Initialize();
-    }
-    
-    public static class Game
-    {
         internal static void Initialize()
         {
             Log.Always("Initialize RedOwl Game!");

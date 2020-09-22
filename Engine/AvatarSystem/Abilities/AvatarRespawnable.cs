@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public class AvatarRespawnable : AvatarAbility, ISaveData
+    public class AvatarRespawnable : AvatarAbility, IPersistData
     {
         public override int Priority { get; } = 10000;
         
@@ -20,7 +20,7 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            SaveGame.Register(this);
+            Game.Register(this);
             foreach (var checkpoint in FindObjectsOfType<Checkpoint>())
             {
                 if (checkpoint.isLevelStart) LastCheckpointPosition = checkpoint.transform.position;
@@ -30,13 +30,13 @@ namespace RedOwl.Core
 
         public override void OnCleanup()
         {
-            SaveGame.Unregister(this);
+            Game.Unregister(this);
         }
         
         private void SetCheckpointPosition(Transform target)
         {
             LastCheckpointPosition = target.position;
-            SaveGame.Push(this);
+            Game.Push(this);
         }
 
         [Button]
@@ -53,16 +53,16 @@ namespace RedOwl.Core
             gameObject.SetActive(false);
         }
         
+        public PersistenceTypes SaveDataPersistenceType => PersistenceTypes.SaveFile;
         public string SaveDataId => $"{name}.{GetType()}";
-
         public int SaveDataLength => 16;
 
-        public void SaveData(SaveWriter writer)
+        public void SaveData(PersistenceWriter writer)
         {
             writer.Write((float3)LastCheckpointPosition);
         }
 
-        public void LoadData(SaveReader reader)
+        public void LoadData(PersistenceReader reader)
         {
             LastCheckpointPosition = reader.ReadVector3();
             Respawn();
