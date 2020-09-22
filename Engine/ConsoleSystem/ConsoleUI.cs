@@ -13,8 +13,10 @@ namespace RedOwl.Core
         private Vector2 _scrollPosition;
         private string _command;
         private Texture2D _texture;
-        private int historyIndex = -1;
-        private RingBuffer<string> history;
+        private int _historyIndex = -1;
+        private RingBuffer<string> _history;
+        
+        // TODO: Replace IMGUI with UIElements or dynamically generated UI objects
 
         private void OnEnable()
         {
@@ -23,9 +25,9 @@ namespace RedOwl.Core
 
         private void Start()
         {
-            history = new RingBuffer<string>(ConsoleSettings.HistoryBufferLength);
-            history.PushFront("help");
-            history.PushFront("clear");
+            _history = new RingBuffer<string>(ConsoleSettings.HistoryBufferLength);
+            _history.PushFront("help");
+            _history.PushFront("clear");
             
             _texture = new Texture2D(1,1);
             _texture.SetPixel(0, 0, new Color(0, 0, 0, .9f));
@@ -77,13 +79,14 @@ namespace RedOwl.Core
             {
                 case EventType.KeyDown when e.keyCode == KeyCode.Return:
                 {
-                    if (string.IsNullOrEmpty(_command) || _command.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries).Length < 1) break;
+                    var parsed = _command.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+                    if (string.IsNullOrEmpty(_command) || parsed.Length < 1) break;
                     try
                     {
-                        historyIndex = -1;
-                        if (history.Front() != _command)
-                            history.PushFront(_command);
-                        Console.Run(_command);
+                        _historyIndex = -1;
+                        if (_history.Front() != _command)
+                            _history.PushFront(_command);
+                        Console.Run(parsed);
                     }
                     catch (Exception exception)
                     {
@@ -92,25 +95,25 @@ namespace RedOwl.Core
                     _command = "";
                     break;
                 }
-                // case EventType.KeyUp when e.keyCode == KeyCode.UpArrow:
-                // {
-                //     historyIndex = math.min(historyIndex + 1, history.Size - 1);
-                //     if (historyIndex > -1)
-                //     {
-                //         _command = history[historyIndex];
-                //     }
-                //     return;
-                // }
-                // case EventType.KeyUp when e.keyCode == KeyCode.DownArrow:
-                // {
-                //     historyIndex = math.max(historyIndex - 1, -1);
-                //     if (historyIndex > -1)
-                //     {
-                //         _command = history[historyIndex];
-                //     }
-                //     if (historyIndex == -1) _command = "";
-                //     return;
-                // }
+                case EventType.KeyUp when e.keyCode == KeyCode.UpArrow:
+                {
+                    _historyIndex = math.min(_historyIndex + 1, _history.Size - 1);
+                    if (_historyIndex > -1)
+                    {
+                        _command = _history[_historyIndex];
+                    }
+                    return;
+                }
+                case EventType.KeyUp when e.keyCode == KeyCode.DownArrow:
+                {
+                    _historyIndex = math.max(_historyIndex - 1, -1);
+                    if (_historyIndex > -1)
+                    {
+                        _command = _history[_historyIndex];
+                    }
+                    if (_historyIndex == -1) _command = "";
+                    return;
+                }
             }
 
             // Draw Transparent Rect

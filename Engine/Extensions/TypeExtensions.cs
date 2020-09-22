@@ -61,17 +61,25 @@ namespace RedOwl.Core
             return found;
         }
 
-        public static IEnumerable<Type> GetAllTypes<T>()
+        public static IEnumerable<Type> GetAllTypes()
         {
-            var attrType = typeof(T);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (assembly.GlobalAssemblyCache) continue;
                 foreach (var type in assembly.SafeGetTypes())
                 {
-                    if (attrType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
-                        yield return type;
+                    yield return type;
                 }
+            }
+        }
+
+        public static IEnumerable<Type> GetAllTypes<T>()
+        {
+            var attrType = typeof(T);
+            foreach (var type in GetAllTypes())
+            {
+                if (attrType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                    yield return type;
             }
         }
         
@@ -112,7 +120,7 @@ namespace RedOwl.Core
         public static IEnumerable<MethodInfo> GetMethodsWithAttribute<T>(this Type type, bool inherit = false) where T : Attribute
         {
             var attrType = typeof(T);
-            foreach (var info in type.GetMethods())
+            foreach (var info in type.GetRuntimeMethods())
             {
                 if (info.IsDefined(attrType, inherit))
                     yield return info;

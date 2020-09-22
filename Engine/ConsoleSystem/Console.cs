@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,8 +36,18 @@ namespace RedOwl.Core
     {
         public static RingBuffer<string> Logs;
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static Dictionary<string, ICommandRegistration> _commands;
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void InitializeBeforeSplashScreen()
+        {
+            _commands = new Dictionary<string, ICommandRegistration>();
+            FindCommandMethods();
+            FindCommandClasses();
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void InitializeBeforeSceneLoad()
         {
             Logs = new RingBuffer<string>(ConsoleSettings.BufferLength);
             Application.logMessageReceived += OnUnityLog;
@@ -47,7 +60,31 @@ namespace RedOwl.Core
             Log.Always("Console Initialization!");
         }
         
-        internal static void OnUnityLog(string message, string stack, LogType logtype)
+        private static void FindCommandClasses()
+        {
+            foreach (var type in TypeExtensions.GetAllTypesWithAttribute<Command>())
+            {
+                var attribute = type.GetCustomAttribute<Command>();
+                var command = new ConsoleCommandClass(attribute.Name, attribute.Description, (ICommand)Activator.CreateInstance(type));
+                _commands.Add(attribute.Name, command);
+            }
+        }
+
+        private static void FindCommandMethods()
+        {
+            foreach (var type in TypeExtensions.GetAllTypes())
+            {
+                foreach (var methodInfo in type.GetMethodsWithAttribute<Command>())
+                {
+                    if (methodInfo.IsStatic == false) continue;
+                    var attribute = methodInfo.GetCustomAttribute<Command>();
+                    var command = new ConsoleCommand(attribute.Name, attribute.Description, (Action)methodInfo.CreateDelegate(typeof(Action)));
+                    _commands.Add(command.Name, command);
+                }
+            }
+        }
+        
+        private static void OnUnityLog(string message, string stack, LogType logtype)
         {
             switch (logtype)
             {
@@ -68,19 +105,42 @@ namespace RedOwl.Core
                     throw new ArgumentOutOfRangeException(nameof(logtype), logtype, null);
             }
         }
+
+        [Command("clear", "Clears the console GUI's Log Text")]
+        public static void Clear()
+        {
+            Logs.Clear();
+        }
+        
+        [Command("help", "Prints all Commands and their Descriptions")]
+        private static void HelpCommand()
+        {
+            var commands = new List<ICommandRegistration>(_commands.Values);
+            commands.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
+            Log.Always("----------HELP----------");
+            foreach (var command in commands)
+            {
+                Log.Always($"{command.Name} - {command.Description}");
+            }
+            Log.Always("----------HELP----------");
+        }
         
         public static void Write(string message)
         {
             Logs.PushFront($"<color=grey>[{DateTime.Now:HH:mm:ss}] {message}</color>");
         }
 
-        public static void Run(string command) { Run(command.Split(new []{' '}, StringSplitOptions.RemoveEmptyEntries));}
-        public static void Run(string[] command)
+        public static void Run(string[] parsed)
         {
-            // if (CommandCache.Get(command[0], out CommandRegistration cmd))
-            //     cmd.Invoke(command);
-            // else
-            //     Log.Warn($"Unable to find command: '{command[0]}'");
+            string name = parsed[0].ToLower();
+            if (_commands.TryGetValue(name, out ICommandRegistration command))
+            {
+                command.Invoke(parsed.Skip(1).ToArray());
+            }
+            else
+            {
+                Log.Warn($"Unable to find command: '{name}'");
+            }
         }
     }
 }
