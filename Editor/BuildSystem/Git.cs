@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using RedOwl.Core;
 
-namespace RedOwl.Editor
+namespace RedOwl.Core.Editor
 {
     public static class Git
     {

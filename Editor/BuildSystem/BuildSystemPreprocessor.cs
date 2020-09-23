@@ -1,9 +1,8 @@
-using RedOwl.Core;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 
-namespace RedOwl.Editor
+namespace RedOwl.Core.Editor
 {
     public class BuildSystemPreprocessor : IPreprocessBuildWithReport
     {
