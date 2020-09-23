@@ -68,6 +68,7 @@ namespace RedOwl.Core
 
         public void Invoke(string[] args)
         {
+            // TODO: should be Game.Inject here?
             _delegate.Invoke(args);
         }
     }

@@ -9,6 +9,18 @@ namespace RedOwl.Core
     // TODO: Events
     // TODO: More Types in Reader/Writer
     // TODO: System Endian-ness https://www.codeproject.com/Articles/1130187/A-More-Powerful-BinaryReader-Writer
+
+    [Command("Game.Save", "Triggers a Save of the Game - [True]")]
+    public class SaveCommand : ICommand
+    {
+        public void Invoke(string[] args) => Game.Save(args.Length <= 0 || bool.Parse(args[0]));
+    }
+    
+    [Command("Game.Load", "Triggers a Load of the Game - [True]")]
+    public class LoadCommand : ICommand
+    {
+        public void Invoke(string[] args) => Game.Load(args.Length <= 0 || bool.Parse(args[0]));
+    }
     
     public enum PersistenceTypes
     {
@@ -128,8 +140,7 @@ namespace RedOwl.Core
                     break;
             }
         }
-
-        [Command("Game.Save", "Triggers a Save of the Game")]
+        
         public static void Save(bool forceUpdate = false)
         {
             if (!SaveGameSettings.Enabled) return;
@@ -144,8 +155,7 @@ namespace RedOwl.Core
             FileController.Write("saves/save.data", _datafile);
             Telegraph.Send<AfterSave>();
         }
-        
-        [Command("Game.Load", "Triggers a Load of the Game")]
+
         public static void Load(bool forceUpdate = false)
         {
             if (!SaveGameSettings.Enabled) return;

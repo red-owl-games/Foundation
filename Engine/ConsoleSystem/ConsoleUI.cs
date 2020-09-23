@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
+    // TODO: Convert to a UI and prefab linked in the ConsoleSettings
     public class ConsoleUI : MonoBehaviour
     {
         private const string FocusControlName = "CommandLine";

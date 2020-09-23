@@ -32,6 +32,18 @@ namespace RedOwl.Core
         public static InputAction ShowConsoleAction => Instance.showConsoleAction;
     }
     
+    [Command("clear", "Clears the console GUI's Log Text")]
+    public class ClearCommand : ICommand
+    {
+        public void Invoke(string[] args) => Console.Clear();
+    }
+    
+    [Command("help", "Prints all Commands and their Descriptions")]
+    public class HelpCommand : ICommand
+    {
+        public void Invoke(string[] args) => Console.Help();
+    }
+    
     public static class Console
     {
         public static RingBuffer<string> Logs;
@@ -42,6 +54,7 @@ namespace RedOwl.Core
         private static void InitializeBeforeSplashScreen()
         {
             _commands = new Dictionary<string, ICommandRegistration>();
+            // TODO: Could Probably just support Classes
             FindCommandMethods();
             FindCommandClasses();
         }
@@ -78,6 +91,7 @@ namespace RedOwl.Core
                 {
                     if (methodInfo.IsStatic == false) continue;
                     var attribute = methodInfo.GetCustomAttribute<Command>();
+                    Log.Always($"Building Command for: '{attribute.Name}' | '{attribute.Description}'");
                     var command = new ConsoleCommand(attribute.Name, attribute.Description, (Action)methodInfo.CreateDelegate(typeof(Action)));
                     _commands.Add(command.Name, command);
                 }
@@ -106,14 +120,13 @@ namespace RedOwl.Core
             }
         }
 
-        [Command("clear", "Clears the console GUI's Log Text")]
+        
         public static void Clear()
         {
             Logs.Clear();
         }
         
-        [Command("help", "Prints all Commands and their Descriptions")]
-        private static void HelpCommand()
+        public static void Help()
         {
             var commands = new List<ICommandRegistration>(_commands.Values);
             commands.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.Ordinal));
