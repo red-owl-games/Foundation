@@ -14,7 +14,7 @@ namespace RedOwl.Core
     public interface IAssetPerRow
     {
         uint GetId();
-        void Parse(SheetRowData row);
+        void Parse(IList<string> row);
     }
 
     public interface IAssetPerSheet

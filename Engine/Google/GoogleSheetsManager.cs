@@ -6,140 +6,108 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Sirenix.OdinInspector;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public struct SheetRowItemData
+    [Serializable]
+    public class SheetRowItem
     {
-        public string Key;
-        public object Value;
+        [SerializeField, HideInInspector]
+        private int x;
+        [SerializeField, HideInInspector]
+        private int y;
+        [SerializeField, HideInInspector]
+        private string value;
 
-        public static implicit operator string(SheetRowItemData self)
+        public int X => x;
+        public int Y => y;
+        [ShowInInspector]
+        public string Value => value;
+        
+        public SheetRowItem(int x, int y, string value)
         {
-            return (string) self.Value;
+            this.x = x;
+            this.y = y;
+            this.value = value;
         }
 
         public override string ToString()
         {
-            return (string) Value;
+            return $"[{x},{y}|{value}]";
         }
     }
-
-    public struct SheetRowData : IEnumerable<SheetRowItemData>
+    
+    [Serializable]
+    public class SheetRow : List<SheetRowItem>
     {
-        private readonly SheetRowItemData[] _array;
-        private readonly Dictionary<string, int> _dict;
-
-        public SheetRowItemData this[int index] => _array[index];
-        public SheetRowItemData this[string key]
-        {
-            get
-            {
-                key = key.ToLower();
-                return _dict.TryGetValue(key, out int index)
-                    ? _array[index]
-                    : new SheetRowItemData {Key = key, Value = null};
-            }
-        }
-
-        public SheetRowData(string[] keys, IList<object> row)
-        {
-            int count = keys.Length;
-            _array = new SheetRowItemData[count];
-            _dict = new Dictionary<string, int>(count);
-            for (int i = 0; i < count; i++)
-            {
-                string key = keys[i].ToLower();
-                _array[i] = new SheetRowItemData {Key = keys[i], Value = row[i]};
-                _dict[keys[i].ToLower()] = i;
-            }
-        }
-
-        public int Count => _array.Length;
-
-        public IEnumerator<SheetRowItemData> GetEnumerator()
-        {
-            foreach (var item in _array)
-            {
-                yield return item;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
+        public SheetRow(int width) : base(width) {}
+        
+        
         public override string ToString()
         {
             var builder = new StringBuilder();
-            builder.Append("[ ");
             foreach (var item in this)
             {
-                builder.Append($"{item.Key}:{item.Value} ");
+                builder.Append($"{item}, ");
             }
-
-            builder.Append("]");
             return builder.ToString();
         }
     }
-
-    public struct SheetData : IEnumerable<SheetRowData>
+    
+    public class SheetData : IEnumerable<SheetRow>
     {
-        public readonly string Title;
+        public string Title { get; }
         
-        private readonly SheetRowData[] _array;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
         
-        public SheetRowData this[int index] => _array[index];
+        private List<SheetRow> Data { get; }
         
-        public SheetData(string title, IList<IList<object>> data = default)
+        public SheetRow this[int index] => Data[index];
+
+        public SheetData(string title, int width, int height, IList<IList<object>> data)
         {
-            Title = title.ToLower();
-            int rowCount = data.Count;
-            _array = new SheetRowData[rowCount - 1];
-            if (rowCount <= 0) return;
-            var headerRow = data[0];
-            int headersCount = headerRow.Count;
-            var keys = new string[headersCount];
-            for (int i = 0; i < headersCount; i++)
+            Title = title;
+            Width = width;
+            Height = height;
+            Data = new List<SheetRow>(height);
+
+            for (int y = 0; y < height; y++)
             {
-                keys[i] = ((string)headerRow[i]).ToLower();
-            }
-            if (rowCount == 1)
-            {
-                for (int i = 1; i < rowCount; i++)
+                var row = new SheetRow(width);
+                for (int x = 0; x < width; x++)
                 {
-                    _array[i-1] = new SheetRowData(keys, new object[headersCount]);
+                    row.Add(new SheetRowItem(x, y, (string)data[y].TryGet(x, "")));
                 }
-            }
-            else
-            {
-                for (int i = 1; i < rowCount; i++)
-                {
-                    _array[i-1] = new SheetRowData(keys, data[i]);
-                }
+                Data.Add(row);
             }
         }
 
-        public int Count => _array.Length;
-
-        public IEnumerator<SheetRowData> GetEnumerator()
+        public IEnumerator<SheetRow> GetEnumerator()
         {
-            foreach (var item in _array)
+            for (int i = 0; i < Height; i++)
             {
-                yield return item;
+                yield return Data[i];
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         public override string ToString()
         {
-            var builder = new StringBuilder();
-            builder.Append($"{Title}(\n");
-            foreach (var item in this)
+            var builder = new StringBuilder($"{Title}[\n");
+            foreach (var row in Data)
             {
-                builder.Append($"\t{item} \n");
+                builder.Append($"\t{row}\n");
             }
-            builder.Append(")");
+
+            builder.Append("]");
             return builder.ToString();
         }
     }
@@ -150,7 +118,7 @@ namespace RedOwl.Core
 
         public string Title => _spreadsheet != null ? _spreadsheet.Properties.Title : "";
         public SheetData this[int index] => _array[index];
-        public SheetData this[string key] => _dict.TryGetValue(key.ToLower(), out int index) ? _array[index] : new SheetData(key);
+        public SheetData this[string key] => _dict.TryGetValue(key.ToLower(), out int index) ? _array[index] : null;
 
         private readonly List<SheetData> _array;
         private readonly Dictionary<string, int> _dict;
@@ -194,14 +162,25 @@ namespace RedOwl.Core
 
         public void Refresh()
         {
-            int count = _spreadsheet.Sheets.Count;
             _array.Clear();
             _dict.Clear();
-            for (int i = 0; i < count; i++)
+            int i = 0;
+            var lookup = new Dictionary<int, string>(_spreadsheet.Sheets.Count);
+            foreach (var sheet in _spreadsheet.Sheets)
             {
-                string title = _spreadsheet.Sheets[i].Properties.Title;
-                _array.Add(new SheetData(title, GetSheetData(_service, _spreadsheet, i)));
-                _dict.Add(title, i);
+                lookup.Add((int)sheet.Properties.SheetId, sheet.Properties.Title);
+            }
+            foreach (var range in _spreadsheet.NamedRanges)
+            {
+                int sheetId = range.Range.SheetId ?? 0;
+                int width =  (range.Range.EndColumnIndex ?? 1) - (range.Range.StartColumnIndex ?? 0);
+                int height = (range.Range.EndRowIndex ?? 1) - (range.Range.StartRowIndex ?? 0);
+                Log.Always($"{range.Name} | {width} | {height}");
+                var values = _service.Spreadsheets.Values.Get(_spreadsheet.SpreadsheetId, GetSheetRange(lookup[sheetId], range.Range)).Execute().Values;
+                var data = new SheetData(range.Name, width, height, values);
+                _array.Add(data);
+                _dict.Add(range.Name, i);
+                i++;
             }
         }
 
@@ -213,18 +192,18 @@ namespace RedOwl.Core
         /// </summary>
         /// <param name="column"></param>
         /// <returns></returns>
-        private static string ColumnFromIndex(int column)
+        private static string ColumnToLetter(int column)
         {
-            string columnString = "";
+            decimal temp;
+            string letter = "";
             decimal columnNumber = column;
             while (columnNumber > 0)
             {
-                decimal currentLetterNumber = (columnNumber - 1) % 26;
-                char currentLetter = (char)(currentLetterNumber + 65);
-                columnString = currentLetter + columnString;
-                columnNumber = (columnNumber - (currentLetterNumber + 1)) / 26;
+                temp = (columnNumber - 1) % 26;
+                letter = ((char)(temp + 65)) + letter;
+                columnNumber = (columnNumber - temp - 1) / 26;
             }
-            return columnString;
+            return letter;
         }
 
         /// <summary>
@@ -235,36 +214,26 @@ namespace RedOwl.Core
         /// </summary>
         /// <param name="column"></param>
         /// <returns></returns>
-        private static int IndexFromColumn(string column)
+        private static int LetterToColumn(string letter)
         {
-            int retVal = 0;
-            string col = column.ToUpper();
-            for (int iChar = col.Length - 1; iChar >= 0; iChar--)
+            int column = 0;
+            string letters = letter.ToUpper();
+            var length = letter.Length;
+            for (var i = 0; i < length; i++)
             {
-                char colPiece = col[iChar];
-                int colNum = colPiece - 64;
-                retVal = retVal + colNum * (int)math.pow(26, col.Length - (iChar + 1));
+                var index = ((char)letters[i]) - 64;
+                column += index * (int)math.pow(26, length - i - 1);
             }
-            return retVal;
+            return column;
         }
         
-        private static string GetSheetRange(Sheet sheet)
+        private static string GetSheetRange(string spreadsheet, GridRange range)
         {
-            int columnCount = sheet.Properties.GridProperties.ColumnCount ?? 1;
-            int rowCount = sheet.Properties.GridProperties.RowCount ?? 1;
-            return $"{sheet.Properties.Title}!A1:{ColumnFromIndex(columnCount)}{rowCount}";
-        }
-
-        private static IList<IList<object>> GetSheetData(SheetsService service, Spreadsheet spreadsheet, int index)
-        {
-            try
-            {
-                return service.Spreadsheets.Values.Get(spreadsheet.SpreadsheetId, GetSheetRange(spreadsheet.Sheets[index])).Execute().Values;
-            }
-            catch (Exception)
-            {
-                return default;
-            }
+            int startColumn = range.StartColumnIndex + 1 ?? 1;
+            int startRow = range.StartRowIndex + 1 ?? 1;
+            int endColumn = range.EndColumnIndex ?? 1;
+            int endRow = range.EndRowIndex ?? 1;
+            return $"{spreadsheet}!{ColumnToLetter(startColumn)}{startRow}:{ColumnToLetter(endColumn)}{endRow}";
         }
     }
 }

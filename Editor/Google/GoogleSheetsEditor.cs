@@ -22,9 +22,9 @@ namespace RedOwl.Core.Editor
             value.Poll();
             switch (value.SheetType)
             {
-                case SheetTypes.AssetPerRow:
-                BuildPerRow(value);
-                break;
+                //case SheetTypes.AssetPerRow:
+                //BuildPerRow(value);
+                //break;
                 case SheetTypes.AssetPerSheet:
                 BuildPerSheet(value);
                 break;
@@ -49,6 +49,7 @@ namespace RedOwl.Core.Editor
             return database;
         }
 
+        /*
         private static void BuildPerRow(GoogleSheetsRegistration value)
         {
             Log.Info($"Building Asset Data for '{value.Manager.Title} - {value.Manager[value.Sheet].Title}' using data class '{value.DataClass}' per row");
@@ -95,6 +96,7 @@ namespace RedOwl.Core.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+        */
 
         private static void BuildPerSheet(GoogleSheetsRegistration value)
         {

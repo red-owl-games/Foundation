@@ -11,7 +11,7 @@ namespace RedOwl.Core
         [OnValueChanged("Poll")]
         [LabelWidth(45)]
         public string Id;
-
+        
         [HorizontalGroup("More")]
         [OnValueChanged("SheetTypeChanged")]
         [ShowIf("HasId"), LabelText("Type"), LabelWidth(45)]
@@ -80,7 +80,7 @@ namespace RedOwl.Core
                     var row = Manager[Sheet][0];
                     for (int i = 0; i < row.Count; i++)
                     {
-                        output.Add(row[i].Key, i);
+                        output.Add(row[i].Value, i);
                     }
                 }
                 return output;

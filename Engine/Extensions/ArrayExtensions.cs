@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Mathematics;
 
 namespace RedOwl.Core
@@ -49,6 +48,7 @@ namespace RedOwl.Core
             return self;
         }
         
+        /*
         /// <summary>
         /// Splits an array into several smaller arrays.
         /// </summary>
@@ -62,6 +62,12 @@ namespace RedOwl.Core
             {
                 yield return self.Skip(i * size).Take(size);
             }
+        }
+        */
+        
+        public static T TryGet<T>(this IList<T> self, int index, T defaultValue)
+        {
+            return index < self.Count ? self[index] : defaultValue;
         }
     }
 }
