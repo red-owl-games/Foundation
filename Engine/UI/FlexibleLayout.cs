@@ -25,6 +25,8 @@ namespace RedOwl.Core
         [DisableIf("isAutoLayout"), LabelWidth(30)]
         public bool fitY;
         
+        public bool contentSizeFit;
+        
         [HorizontalGroup("Grid", 0.7f)]
         [DisableIf("isAutoLayout"), DisableIf("isFixedColumns"), LabelText("Rows & Columns")]
         public int rows;
@@ -86,6 +88,13 @@ namespace RedOwl.Core
                 SetChildAlongAxis(item, 0, xPos, cellSize.x);
                 SetChildAlongAxis(item, 1, yPos, cellSize.y);
                 j += 1;
+            }
+
+            if (contentSizeFit)
+            {
+                rowCount += 1;
+                rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                    cellSize.y * rowCount + pad.top + spacing.y * rowCount);
             }
         }
 
