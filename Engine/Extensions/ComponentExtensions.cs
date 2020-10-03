@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -16,6 +17,11 @@ namespace RedOwl.Core
             T comp = self.GetComponent(typeof(T)) as T;
             if (!comp) comp = self.gameObject.AddComponent(typeof(T)) as T;
             return comp;
+        }
+
+        public static void WithComponent<T>(this Component self, Action<T> callback) where T : Component
+        {
+            if (self.TryGetComponent<T>(out T comp)) callback(comp);
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

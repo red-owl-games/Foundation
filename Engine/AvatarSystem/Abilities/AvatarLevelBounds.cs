@@ -47,16 +47,10 @@ namespace RedOwl.Core
                 case BoundsBehavior.Constrain:
                     return constrain;
                 case BoundsBehavior.Kill:
-                    if (constrain) KillPlayer();
+                    if (constrain) Avatar.Abilities.Find<AvatarRespawnable>()?.Kill();
                     break;
             }
             return false;
-        }
-
-        private void KillPlayer()
-        {
-            // TODO: Kill Player
-            //Log.Always($"Kill Player Due To Level Bounds");
         }
     }
 }

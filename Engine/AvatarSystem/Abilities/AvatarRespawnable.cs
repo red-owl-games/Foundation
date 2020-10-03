@@ -7,6 +7,8 @@ namespace RedOwl.Core
     public class AvatarRespawnable : AvatarAbility, IPersistData
     {
         public override int Priority { get; } = 10000;
+
+        public bool killAllPlayers;
         
         public Vector3 LastCheckpointPosition { get; private set; } = Vector3.zero;
         
@@ -42,14 +44,46 @@ namespace RedOwl.Core
         [Button]
         public void Respawn()
         {
-            Motor.SetPosition(LastCheckpointPosition);
+            if (killAllPlayers)
+            {
+                foreach (var player in Avatar.Players)
+                {
+                    player.Abilities.Find<AvatarRespawnable>()?.InternalRespawn();
+                }
+            }
+            else
+            {
+                InternalRespawn();
+            }
+        }
+
+        private void InternalRespawn()
+        {
+            Motor.SetPosition(LastCheckpointPosition); 
             gameObject.SetActive(true);
         }
         
         [Button]
         public void Kill()
         {
-            Motor.BaseVelocity = Vector3.zero;
+            if (killAllPlayers)
+            {
+                foreach (var player in Avatar.Players)
+                {
+                    player.Abilities.Find<AvatarRespawnable>()?.InternalKill();
+                }
+
+                Delayed.Run(Respawn, 2f);
+            }
+            else
+            {
+                InternalKill();
+            }
+        }
+
+        private void InternalKill()
+        {
+            Motor.BaseVelocity = Vector3.zero; 
             gameObject.SetActive(false);
         }
         

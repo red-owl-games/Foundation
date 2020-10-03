@@ -41,8 +41,12 @@ namespace RedOwl.Core
     [HideMonoScript]
     public class Avatar : MonoBehaviour, ICharacterController
     {
+        public static List<Avatar> Players { get; } = new List<Avatar>(4);
+
         [SerializeField]
         internal Animator animator;
+
+        public bool isPlayer;
 
         public AnimFloatProperty VelocityXAnimParam = "VelocityX";
         public AnimFloatProperty VelocityYAnimParam = "VelocityY";
@@ -68,6 +72,7 @@ namespace RedOwl.Core
             LandedAnimParam.Register(AnimManager);
             GroundedAnimParam.Register(AnimManager);
             Motor.CharacterController = this;
+            if (isPlayer) Players.Add(this);
         }
 
         private void OnEnable()
