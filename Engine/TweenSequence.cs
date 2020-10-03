@@ -65,6 +65,15 @@ namespace RedOwl.Core
             }
         }
 
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
+        public void Stop()
+        {
+            if (type != SequenceTypes.Toggle)
+            {
+                _sequence.Pause();
+            }
+        }
+
         public void Toggle(bool state)
         {
             _toggleState = state;

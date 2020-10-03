@@ -22,6 +22,16 @@ namespace RedOwl.Core
             sequence.AppendCallback(Callback.Invoke);
         }
     }
+    
+    public class WaitTween : TweenData
+    {
+        public float duration;
+        
+        public override void ApplyTween(Sequence sequence)
+        {
+            sequence.AppendInterval(duration);
+        }
+    }
 
     public abstract class TweenData<T> : TweenData
     {
