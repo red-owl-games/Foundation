@@ -296,7 +296,7 @@ namespace RedOwl.Core
                 {
                     ""name"": """",
                     ""id"": ""7a9c5b1a-e38b-4078-a78e-2dbe7403cd74"",
-                    ""path"": ""<Keyboard>/numpad0"",
+                    ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Player2"",
