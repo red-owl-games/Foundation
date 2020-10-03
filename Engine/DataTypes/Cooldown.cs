@@ -24,6 +24,7 @@ namespace RedOwl.Core
         }
 
         public bool IsReady => _cooldown < 0.000000001f;
+        public bool IsActive => _cooldown > 0.000000001f;
 
         public void Tick(float deltaTime = 1f)
         {
@@ -44,5 +45,11 @@ namespace RedOwl.Core
             _cooldown = 0;
             OnChanged?.Invoke(_cooldown);
         }
+
+        public static implicit operator Cooldown(float threshold) => new Cooldown(threshold);
+
+        public static implicit operator Cooldown(int threshold) => new Cooldown(threshold);
+
+        public static implicit operator float(Cooldown self) => self.threshold;
     }
 }

@@ -24,6 +24,12 @@ namespace RedOwl.Core
         {
             self.transform.Children(t => predicate(t.gameObject));
         }
+
+        public static void SetLayer(this GameObject self, int layer)
+        {
+            self.layer = layer;
+            self.Children(o => o.SetLayer(layer));
+        }
         
         public static void Clear(this GameObject self)
         {

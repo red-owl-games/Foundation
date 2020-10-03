@@ -64,7 +64,9 @@ namespace RedOwl.Core
         }
 
         public void On() => Set(true);
+        public bool IsOn() => Get() == true;
         public void Off() => Set(false);
+        public bool IsOff() => Get() == false;
         
         public static implicit operator AnimBoolProperty(string name) => new AnimBoolProperty {Name = name};
     }
