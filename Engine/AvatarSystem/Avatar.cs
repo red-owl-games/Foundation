@@ -55,14 +55,14 @@ namespace RedOwl.Core
 
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
-        private AvatarInputManager _input;
+        //private AvatarInputManager _input;
 
         private void Awake()
         {
             Motor = GetComponent<KinematicCharacterMotor>();
             if (animator == null) animator = this.EnsureComponent<Animator>();
             AnimManager = new AnimatorManager(animator);
-            _input = new AvatarInputManager(this);
+            //_input = new AvatarInputManager(this);
             VelocityXAnimParam.Register(AnimManager);
             VelocityYAnimParam.Register(AnimManager);
             LandedAnimParam.Register(AnimManager);
@@ -72,7 +72,7 @@ namespace RedOwl.Core
 
         private void OnEnable()
         {
-            _input?.Enable();
+            //_input?.Enable();
         }
 
         private void Start()
@@ -87,7 +87,7 @@ namespace RedOwl.Core
 
         private void OnDisable()
         {
-            _input?.Disable();
+            //_input?.Disable();
         }
 
         private void OnDestroy()
