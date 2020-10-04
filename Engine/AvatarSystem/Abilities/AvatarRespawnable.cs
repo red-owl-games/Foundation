@@ -14,7 +14,15 @@ namespace RedOwl.Core
         
         private void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<Checkpoint>() != null)
+            if (other.GetComponent<Checkpoint>() == null) return;
+            if (killAllPlayers)
+            {
+                foreach (var player in Avatar.Players)
+                {
+                    player.Abilities.Find<AvatarRespawnable>()?.SetCheckpointPosition(other.transform);
+                }
+            }
+            else
             {
                 SetCheckpointPosition(other.transform);
             }
@@ -27,7 +35,12 @@ namespace RedOwl.Core
             {
                 if (checkpoint.isLevelStart) LastCheckpointPosition = checkpoint.transform.position;
             }
-            Respawn();
+        }
+
+        public override void OnReset()
+        {
+            Motor.SetPosition(LastCheckpointPosition);
+            gameObject.SetActive(true);
         }
 
         public override void OnCleanup()
@@ -48,21 +61,15 @@ namespace RedOwl.Core
             {
                 foreach (var player in Avatar.Players)
                 {
-                    player.Abilities.Find<AvatarRespawnable>()?.InternalRespawn();
+                    player.Respawn();
                 }
             }
             else
             {
-                InternalRespawn();
+                Avatar.Respawn();
             }
         }
 
-        private void InternalRespawn()
-        {
-            Motor.SetPosition(LastCheckpointPosition); 
-            gameObject.SetActive(true);
-        }
-        
         [Button]
         public void Kill()
         {

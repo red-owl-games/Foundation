@@ -8,12 +8,14 @@ namespace RedOwl.Core
     {
         public override int Priority { get; } = -200;
         
-        // TODO: Should we have a ButtonProperty similar to the AnimatorProperty?
-        public AvatarInputButtons button = AvatarInputButtons.ButtonSouth;
+        public AvatarInputButtons selectButton = AvatarInputButtons.TriggerRight;
+        public AvatarInputButtons interactButton = AvatarInputButtons.ButtonSouth;
+        
 
         public BetterStackTypes stackType = BetterStackTypes.Fifo;
         
-        private ButtonStates _button;
+        private ButtonStates _select;
+        private ButtonStates _interact;
 
         private BetterStack<IInteractable> _stack;
 
@@ -25,7 +27,7 @@ namespace RedOwl.Core
             if (interactable != null)
             {
                 _stack.Push(interactable);
-                _stack.Peek()?.Select();
+                //_stack.Peek()?.Select();
             }
         }
 
@@ -35,23 +37,35 @@ namespace RedOwl.Core
             if (interactable != null)
             {
                 interactable.Deselect();
-                if (_stack.Remove(interactable)) _stack.Peek()?.Select();
+                _stack.Remove(interactable);
             }
         }
 
         #endregion
 
-        public override void OnStart()
+        public override void OnReset()
         {
             _stack = new BetterStack<IInteractable>(stackType);
         }
 
         public override void HandleInput(ref AvatarInput input)
         {
-            _button = input.Get(button);
-            if (_button != ButtonStates.Pressed) return;
-            // TODO: Is this how we want consumeable input to work? Feels like we need another ButtonStates.Consumed
-            if (UseInteraction()) input.Set(button, ButtonStates.Cancelled);
+            _interact = input.Get(interactButton);
+            if (_interact == ButtonStates.Pressed)
+            {
+                if (UseInteraction())
+                    input.Set(interactButton, ButtonStates.Cancelled);
+            }
+
+            _select = input.Get(selectButton);
+            if (_select == ButtonStates.Held)
+            {
+                UseSelect();
+            }
+            if (_select == ButtonStates.Cancelled)
+            {
+                UseDeselect();
+            }
         }
 
         public bool UseInteraction()
@@ -59,6 +73,18 @@ namespace RedOwl.Core
             if (_stack.Count <= 0) return false;
             _stack.Peek()?.Interact();
             return true;
+        }
+        
+        public void UseSelect()
+        {
+            if (_stack.Count <= 0) return;
+            _stack.Peek()?.Select();
+        }
+        
+        public void UseDeselect()
+        {
+            if (_stack.Count <= 0) return;
+            _stack.Peek()?.Deselect();
         }
     }
 }

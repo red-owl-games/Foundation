@@ -86,8 +86,16 @@ namespace RedOwl.Core
             {
                 ability.OnStart();
             }
-
             _isInitialized = true;
+            Respawn();
+        }
+
+        internal void Respawn()
+        {
+            foreach (var ability in Abilities.All.ToArray())
+            {
+                ability.OnReset();
+            }
         }
 
         private void OnDisable()

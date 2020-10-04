@@ -11,6 +11,7 @@ namespace RedOwl.Core
         int Priority { get; }
         bool Unlocked { get; }
         void OnStart();
+        void OnReset();
         void OnCleanup();
         void HandleInput(ref AvatarInput input);
     }
@@ -46,6 +47,7 @@ namespace RedOwl.Core
         }
 
         public virtual void OnStart() {}
+        public virtual void OnReset() {}
         public virtual void OnCleanup() {}
 
         public virtual void HandleInput(ref AvatarInput input) {}
