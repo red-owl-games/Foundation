@@ -54,15 +54,16 @@ namespace RedOwl.Core
         public AnimBoolProperty GroundedAnimParam = "Grounded";
 
         public AbilityCache Abilities { get; } = new AbilityCache();
-        public AnimatorManager AnimManager { get; private set; }
+        public Guid Id { get; private set; }
         public KinematicCharacterMotor Motor { get; private set; }
-
+        public AnimatorManager AnimManager { get; private set; }
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
         //private AvatarInputManager _input;
 
         private void Awake()
         {
+            Id = Guid.NewGuid();
             Motor = GetComponent<KinematicCharacterMotor>();
             if (animator == null) animator = this.EnsureComponent<Animator>();
             AnimManager = new AnimatorManager(animator);

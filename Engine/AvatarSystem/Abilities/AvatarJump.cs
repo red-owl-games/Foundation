@@ -25,7 +25,9 @@ namespace RedOwl.Core
 
         private ButtonStates _button;
         private float _gravity;
+        [ShowInInspector]
         private float _maxJumpVelocity;
+        [ShowInInspector]
         private float _minJumpVelocity;
         private bool _jumpRequested;
         private bool _isFalling;
@@ -71,10 +73,11 @@ namespace RedOwl.Core
         public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
             if (!Unlocked) return;
-            if (_button == ButtonStates.Cancelled)
-            {
-                if (currentVelocity.y > _minJumpVelocity) currentVelocity.y = _minJumpVelocity;
-            }
+            // TODO: this does not work its always evaluating - we need "if was cancelled this frame" kind of thing
+            // if (_button == ButtonStates.Cancelled)
+            // {
+            //     if (currentVelocity.y > _minJumpVelocity) currentVelocity.y = _minJumpVelocity;
+            // }
             if (_jumpRequested)
             {
                 Motor.ForceUnground(0.1f);
@@ -99,6 +102,7 @@ namespace RedOwl.Core
             }
         }
 
+        [Button]
         private void Jump()
         {
             jumpAnimParam.Trigger();

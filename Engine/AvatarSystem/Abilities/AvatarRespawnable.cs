@@ -1,3 +1,4 @@
+using System.Collections;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
@@ -77,20 +78,24 @@ namespace RedOwl.Core
             {
                 foreach (var player in Avatar.Players)
                 {
-                    player.Abilities.Find<AvatarRespawnable>()?.InternalKill();
+                    var respawnable = player.Abilities.Find<AvatarRespawnable>();
+                    if (respawnable != null) CoroutineManager.StartRoutine(respawnable.InternalKill());
                 }
 
                 Delayed.Run(Respawn, 2f);
             }
             else
             {
-                InternalKill();
+                CoroutineManager.StartRoutine(InternalKill());
             }
         }
 
-        private void InternalKill()
+        private IEnumerator InternalKill()
         {
-            Motor.BaseVelocity = Vector3.zero; 
+            Motor.SetPosition(LastCheckpointPosition);
+            Motor.BaseVelocity = Vector3.zero;
+            yield return null;
+            Motor.BaseVelocity = Vector3.zero;
             gameObject.SetActive(false);
         }
         
