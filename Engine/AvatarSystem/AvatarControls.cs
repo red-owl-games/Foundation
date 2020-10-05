@@ -428,7 +428,7 @@ namespace RedOwl.Core
                 {
                     ""name"": """",
                     ""id"": ""aebb7381-81cc-4dfb-bd15-3c94279ae573"",
-                    ""path"": ""<Keyboard>/numpad2"",
+                    ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Player2"",
@@ -450,10 +450,21 @@ namespace RedOwl.Core
                 {
                     ""name"": """",
                     ""id"": ""ae8d6883-a114-49cf-a1ed-32cb08d18346"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Player1"",
+                    ""action"": ""TriggerRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""404a3355-3e61-4ec5-beca-764737b21a87"",
+                    ""path"": ""<Keyboard>/rightCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Player2"",
                     ""action"": ""TriggerRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
