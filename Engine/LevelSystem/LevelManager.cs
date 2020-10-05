@@ -51,7 +51,7 @@ namespace RedOwl.Core
             _lastLevel = level;
             LevelState.SetState(level.state);
             OnLevelLoaded?.Invoke(level);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(1.5f);
             callback?.Invoke();
             if (asyncCallback != null) yield return asyncCallback();
             yield return LoadingScreen.Hide();
