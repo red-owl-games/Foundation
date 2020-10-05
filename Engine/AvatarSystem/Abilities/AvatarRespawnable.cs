@@ -87,6 +87,7 @@ namespace RedOwl.Core
             else
             {
                 CoroutineManager.StartRoutine(InternalKill());
+                Delayed.Run(Respawn, 2f);
             }
         }
 
