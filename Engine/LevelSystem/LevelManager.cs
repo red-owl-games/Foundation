@@ -8,6 +8,8 @@ namespace RedOwl.Core
     public static class LevelManager
     {
         private static GameLevel _lastLevel;
+
+        public static event Action<GameLevel> OnLevelLoaded;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
@@ -48,6 +50,7 @@ namespace RedOwl.Core
             Log.Always($"Finished Loading Level {level.sceneName}");
             _lastLevel = level;
             LevelState.SetState(level.state);
+            OnLevelLoaded?.Invoke(level);
             yield return new WaitForSeconds(0.5f);
             callback?.Invoke();
             if (asyncCallback != null) yield return asyncCallback();

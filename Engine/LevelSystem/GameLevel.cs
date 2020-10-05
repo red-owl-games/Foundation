@@ -11,6 +11,13 @@ namespace RedOwl.Core
         MultiPlayer
     }
 
+    public struct MusicParameters
+    {
+        public string parameterName;
+        public float value;
+        public float duration;
+    }
+
     public struct GameLevel
     {
         public static readonly List<GameLevel> Levels = new List<GameLevel>();
@@ -43,6 +50,9 @@ namespace RedOwl.Core
         public string title;
         public string subTitle;
 
+        public string musicEventPath;
+        public List<MusicParameters> musicParameters;
+
         public bool IsSkippable;
 
         public GameLevel(string name)
@@ -56,6 +66,9 @@ namespace RedOwl.Core
 
             type = LevelTypes.MultiPlayer;
             state = LevelStates.None;
+
+            musicEventPath = "";
+            musicParameters = new List<MusicParameters>();
 
             IsSkippable = false;
         }
@@ -88,6 +101,23 @@ namespace RedOwl.Core
         public GameLevel State(LevelStates value)
         {
             state = value;
+            return this;
+        }
+
+        public GameLevel Music(string eventPath)
+        {
+            musicEventPath = eventPath;
+            return this;
+        }
+
+        public GameLevel MusicParam(string parameterName, float value, float duration = 1f)
+        {
+            musicParameters.Add(new MusicParameters
+            {
+                parameterName = parameterName,
+                value = value,
+                duration = duration
+            });
             return this;
         }
         
@@ -147,6 +177,7 @@ namespace RedOwl.Core
         public static GameLevel Clone ( this GameLevel v )
         {
             v.id = Guid.NewGuid();
+            v.musicParameters = new List<MusicParameters>();
             return v;
         }
     }
