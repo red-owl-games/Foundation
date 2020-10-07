@@ -18,7 +18,7 @@ namespace RedOwl.Core.Editor
         }
         
         [AssetsOnly, HideIf("@Root == null")]
-        public ScriptableObject LevelData;
+        public LevelData Data;
 
         [AssetsOnly, InlineEditor, HideIf("@Root == null")]
         public LookupTableAsset Table;
@@ -35,13 +35,13 @@ namespace RedOwl.Core.Editor
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
         private void Refresh()
         {
-            GoogleSheetsEditor.Refresh(LevelData);
+            GoogleSheetsEditor.Refresh(Data);
         }
         
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
         private void Build()
         {
-            Root.Builder.Build(LevelData, Table.Table, Root.transform);
+            Root.Builder.Build(Data, Table.Table, Root.transform);
         }
         
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
