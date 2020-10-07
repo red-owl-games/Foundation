@@ -1,6 +1,7 @@
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 namespace RedOwl.Core.Editor
@@ -16,13 +17,7 @@ namespace RedOwl.Core.Editor
             get => Root.Builder;
             set => Root.Builder = value;
         }
-        
-        [AssetsOnly, HideIf("@Root == null")]
-        public LevelData Data;
 
-        [AssetsOnly, InlineEditor, HideIf("@Root == null")]
-        public LookupTableAsset Table;
-        
         [MenuItem("Project/Level Builder")]
         private static void ShowWindow()
         {
@@ -35,13 +30,13 @@ namespace RedOwl.Core.Editor
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
         private void Refresh()
         {
-            GoogleSheetsEditor.Refresh(Data);
+            GoogleSheetsEditor.Refresh(Root.Builder.Data);
         }
         
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
         private void Build()
         {
-            Root.Builder.Build(Data, Table.Table, Root.transform);
+            Root.Builder.Build(Root.transform);
         }
         
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
@@ -50,13 +45,17 @@ namespace RedOwl.Core.Editor
             Refresh();
             Build();
         }
-
-        [Button, ShowIf("@Root == null")]
-        private void CreateLevelRoot()
+        
+        [Button(ButtonSizes.Large), ShowIf("@Root == null")]
+        private void GetOrCreateLevelRoot()
         {
+            Root = FindObjectOfType<LevelRoot>();
+            if (Root != null) return;
             var go = new GameObject("Level");
-            go.AddComponent<LevelRoot>();
-            Root = go.GetComponent<LevelRoot>();
+            Root = go.AddComponent<LevelRoot>();
         }
+
+        [DidReloadScripts]
+        private static void OnScriptsReloaded() => GetWindow<LevelBuilderEditor>().GetOrCreateLevelRoot();
     }
 }
