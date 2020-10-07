@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using RedOwl.Core;
 
 namespace RedOwl.Core
 {
@@ -18,27 +17,8 @@ namespace RedOwl.Core
         public float duration;
     }
 
-    public struct GameLevel
+    public class GameLevel : Indexed<GameLevel>
     {
-        public static readonly List<GameLevel> Levels = new List<GameLevel>();
-
-        public static void Clear() => Levels.Clear();
-        public static void Add(GameLevel level) => Levels.Add(level);
-        public static GameLevel Next(GameLevel next)
-        {
-            int length = Levels.Count;
-            for (int i = 0; i < Levels.Count; i++)
-            {
-                if (Levels[i].id != next.id) continue;
-                if (i + 1 < length)
-                    return Levels[i + 1];
-            }
-
-            return Levels[0];
-        }
-        
-        public Guid id;
-        
         public LevelTypes type;
         public LevelStates state;
 
@@ -120,6 +100,16 @@ namespace RedOwl.Core
             });
             return this;
         }
+
+        public static GameLevel Find(string sceneName)
+        {
+            foreach (var level in All)
+            {
+                if (level.sceneName == sceneName) return level;
+            }
+
+            return All[0];
+        }
         
         #region SceneBuildSettings
 #if UNITY_EDITOR
@@ -143,8 +133,8 @@ namespace RedOwl.Core
         {
             var possibleScenes = GetScenes();
 
-            var current = new Dictionary<string, UnityEditor.EditorBuildSettingsScene>(Levels.Count);
-            foreach (var level in Levels)
+            var current = new Dictionary<string, UnityEditor.EditorBuildSettingsScene>(All.Count);
+            foreach (var level in All)
             {
                 if (possibleScenes.TryGetValue(level.sceneName, out var id))
                 {
@@ -160,20 +150,11 @@ namespace RedOwl.Core
         }
 #endif
         #endregion
-
-        public static GameLevel Find(string name)
-        {
-            foreach (var level in Levels)
-            {
-                if (level.sceneName == name) return level;
-            }
-
-            return Levels[0];
-        }
     }
 
     public static class GameLevelExtensions
     {
+        // TODO: Figure out how to properly deep clone
         public static GameLevel Clone ( this GameLevel v )
         {
             v.id = Guid.NewGuid();

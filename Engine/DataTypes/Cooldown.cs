@@ -4,6 +4,10 @@ using Unity.Mathematics;
 
 namespace RedOwl.Core
 {
+    // public Cooldown duration;
+    // duration.Use();
+    // duration.Tick(Time.deltaTime)
+    // if (duration.IsReady) ...do thing
     [Serializable, InlineProperty]
     public class Cooldown
     {

@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using Sirenix.OdinInspector;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace RedOwl.Core
@@ -46,23 +43,14 @@ namespace RedOwl.Core
     }
     
     [HideMonoScript]
-    public class LevelState : MonoBehaviour
+    public class LevelState : IndexedBehaviour<LevelState>
     {
-        private static readonly List<LevelState> All = new List<LevelState>(5);
+        public bool ensureDisabled = true;
         
         [NonSerialized, ShowInInspector, DisableInPlayMode]
         [OnValueChanged("TestState"), EnumToggleButtons, HideLabel]
         private LevelStates state;
-
-        private void Awake()
-        {
-            All.Add(this);
-        }
-
-        private void OnDestroy()
-        {
-            All.Remove(this);
-        }
+        
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -73,16 +61,16 @@ namespace RedOwl.Core
 
         private void EnsureDisabled(Scene scene, string path)
         {
+            if (!ensureDisabled) return;
             if (this == null) return;
             ApplyState(LevelStates.None);
         }
-#endif
-
-        [UsedImplicitly]
+        
         private void TestState()
         {
             ApplyState(state);
         }
+#endif
 
         public void ApplyState(LevelStates value)
         {

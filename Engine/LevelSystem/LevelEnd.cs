@@ -8,6 +8,7 @@ namespace RedOwl.Core
     {
         private void OnTriggerEnter(Collider other)
         {
+            // TODO: check tags?
             LevelManager.LoadNextLevel();
         }
     }

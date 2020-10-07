@@ -3,6 +3,9 @@ using Sirenix.OdinInspector;
 
 namespace RedOwl.Core
 {
+    // public Counter usages
+    // usages.Reset()
+    // if (usages.IsReady) usages.Use()
     [Serializable, InlineProperty]
     public class Counter
     {

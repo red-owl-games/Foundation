@@ -9,7 +9,6 @@ namespace RedOwl.Core
         private void OnTriggerEnter(Collider other)
         {
             // TODO: Check Tags
-            Log.Always($"Level Player Kill: {other.name}");
             other.WithComponent<AvatarRespawnable>(c => c.Kill());
         }
     }

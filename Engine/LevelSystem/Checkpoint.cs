@@ -5,11 +5,11 @@ namespace RedOwl.Core
 {
     [HideMonoScript]
     [RequireComponent(typeof(Collider))]
-    public class Checkpoint : MonoBehaviour
+    public class Checkpoint : IndexedBehaviour<Checkpoint>
     {
         public bool isLevelStart = false;
 
-        private void Awake()
+        private void Start()
         {
             GetComponent<Collider>().isTrigger = true;
         }
