@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RedOwl.Core
 {
     public interface IIndexable
     {
-        Guid Id { get; }
+        BetterGuid Id { get; }
     }
     
     public class IndexedList<T> : IEnumerable<T> where T : IIndexable
@@ -14,16 +15,16 @@ namespace RedOwl.Core
         [NonSerialized]
         private List<T> _data;
         [NonSerialized]
-        private Dictionary<Guid, int> _lookupTable;
+        private Dictionary<BetterGuid, int> _lookupTable;
 
         public IndexedList(int count = 0)
         {
             _data = new List<T>(count);
-            _lookupTable = new Dictionary<Guid, int>(count);
+            _lookupTable = new Dictionary<BetterGuid, int>(count);
         }
 
         public T this[int i] => i > _data.Count ? _data[0] : _data[i];
-        public T this[Guid id] => Get(id);
+        public T this[BetterGuid id] => Get(id);
 
         public int Count => _data.Count;
 
@@ -36,7 +37,20 @@ namespace RedOwl.Core
         public void Add(T item)
         {
             _data.Add(item);
-            _lookupTable.Add(item.Id, _data.Count);
+            
+            try
+            {
+                _lookupTable.Add(item.Id, _data.Count);
+            }
+            catch (Exception e)
+            {
+                Log.Always($"Failed to Add {item.Id}");
+                foreach (var key in _lookupTable.Keys)
+                {
+                    Log.Always(key.ToString());
+                }
+            }
+
         }
 
         public void Remove(int index)
@@ -59,7 +73,7 @@ namespace RedOwl.Core
             RebuildLookupTable();
         }
 
-        public T Get(Guid id)
+        public T Get(BetterGuid id)
         {
             return _lookupTable.TryGetValue(id, out int index) ? _data[index] : _data[0];
         }
@@ -97,6 +111,7 @@ namespace RedOwl.Core
         }
     }
 
+    [Serializable]
     public abstract class Indexed<T> : IIndexable where T : Indexed<T>
     {
         public static readonly IndexedList<T> All = new IndexedList<T>();
@@ -104,13 +119,24 @@ namespace RedOwl.Core
         public static void Clear() => All.Clear();
         public static void Add(T item) => All.Add(item);
         public static void Remove(int index) => All.Remove(index);
-        public static void Remove(Guid id) => All.Remove(id);
+        public static void Remove(BetterGuid id) => All.Remove(id);
         public static void Remove(T item) => All.Remove(item);
         public static T Get(int index) => All[index];
-        public static T Get(Guid id) => All.Get(id);
+        public static T Get(BetterGuid id) => All.Get(id);
         public static T Next(T item) => All.Next(item);
         
-        public Guid id;
-        public Guid Id => id;
+        [SerializeField]
+        private BetterGuid id;
+        public BetterGuid Id => id;
+
+        protected Indexed()
+        {
+            NewId();
+        }
+
+        public void NewId()
+        {
+            id = Guid.NewGuid();
+        }
     }
 }

@@ -35,10 +35,8 @@ namespace RedOwl.Core
 
         public bool IsSkippable;
 
-        public GameLevel(string name)
+        public GameLevel(string name) : base()
         {
-            id = Guid.NewGuid();
-            
             sceneName = name;
             isMainMenu = false;
             title = "";
@@ -150,16 +148,5 @@ namespace RedOwl.Core
         }
 #endif
         #endregion
-    }
-
-    public static class GameLevelExtensions
-    {
-        // TODO: Figure out how to properly deep clone
-        public static GameLevel Clone ( this GameLevel v )
-        {
-            v.id = Guid.NewGuid();
-            v.musicParameters = new List<MusicParameters>();
-            return v;
-        }
     }
 }
