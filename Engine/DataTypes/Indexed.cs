@@ -40,7 +40,7 @@ namespace RedOwl.Core
             
             try
             {
-                _lookupTable.Add(item.Id, _data.Count);
+                _lookupTable.Add(item.Id, _data.Count - 1);
             }
             catch (Exception e)
             {

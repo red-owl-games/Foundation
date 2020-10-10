@@ -5,7 +5,7 @@ namespace RedOwl.Core
 {
     public abstract class IndexedBehaviour<T> : MonoBehaviour, IIndexable where T : IndexedBehaviour<T>
     {
-        public static readonly IndexedList<T> All = new IndexedList<T>();
+        public static IndexedList<T> All { get; } = new IndexedList<T>();
         
         public static int Count => All.Count;
         public static void Clear() => All.Clear();
@@ -22,14 +22,26 @@ namespace RedOwl.Core
 
         public BetterGuid Id => id;
 
-        public virtual void Awake()
+        protected void Awake()
         {
             All.Add((T)this);
+            AfterAwake();
         }
 
-        public virtual void OnDestroy()
+        protected virtual void AfterAwake()
+        {
+            
+        }
+
+        protected void OnDestroy()
         {
             Remove((T)this);
+            AfterDestory();
+        }
+
+        protected virtual void AfterDestory()
+        {
+            
         }
     }
 }

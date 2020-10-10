@@ -10,104 +10,139 @@ namespace RedOwl.Core
     {
         Rows,
         Columns,
-        Special
+        Special,
     }
+
     
-    [Serializable]
-    public class CameraSettings : Settings<CameraSettings>
+    [HideMonoScript]
+    [RequireComponent(typeof(Camera))]
+    public class CameraSplitManager : IndexedBehaviour<CameraSplitManager>
     {
         [SerializeField]
         [LabelText("Split Options"), Tooltip("How to split the camera screen space for 2 or 3 local players")]
         private CameraSplitOptions splitOption = CameraSplitOptions.Special;
-        public static CameraSplitOptions SplitOption => Instance.splitOption;
         
         [SerializeField]
         [LabelText("Lerp Duration"), Tooltip("The amount of time for the cameras to lerp into position")]
         private float lerpDuration = 0.3f;
-        public static float LerpDuration => Instance.lerpDuration;
-    }
-    
-    [HideMonoScript]
-    [RequireComponent(typeof(Camera))]
-    public class CameraSplitManager : MonoBehaviour
-    {
-        private static readonly List<CameraSplitManager> All = new List<CameraSplitManager>();
-
-        private Camera cam;
         
-        private void Awake()
+        private Camera _cam;
+        private Tweener _tweener;
+
+        protected override void AfterAwake()
         {
-            cam = GetComponent<Camera>();
-            cam.rect = new Rect(0.5f,0.5f,0,0);
+            _cam = GetComponent<Camera>();
+            _cam.rect = new Rect(0.5f,0.5f,0,0);
+            UpdateCameras();
         }
 
-        private void OnEnable()
+        protected override void AfterDestory()
         {
-            All.Add(this);
-            UpdateCameraRects();
+            _tweener?.Kill();
+            UpdateCameras();
         }
 
-        private void OnDisable()
+        private void UpdateRect(Rect rect)
         {
-            if (RedOwlTools.IsShuttingDown) return;
-            All.Remove(this);
-            UpdateCameraRects();
+            _tweener?.Kill();
+            _tweener = _cam.DORect(rect, lerpDuration);
         }
-
-        private static void UpdateCameraRects()
+        
+        #region Static
+        private class TableEntry : Dictionary<CameraSplitOptions, List<Rect>> {}
+        private class TableData : Dictionary<int, TableEntry> {}
+        private static readonly List<Rect> One = new List<Rect> {new Rect(0, 0, 1f, 1f)};
+        private static readonly List<Rect> Four = new List<Rect>
         {
-            var duration = CameraSettings.LerpDuration;
-            switch (All.Count)
+            new Rect(0, 0.501f, 0.499f, 0.499f), new Rect(0.501f, 0.501f, 0.499f, 0.499f),
+            new Rect(0, 0, 0.499f, 0.499f), new Rect(0.501f, 0, 0.499f, 0.499f)
+        };
+        private static TableData _table = new TableData
             {
-                case 1:
-                    All[0].cam.DORect(new Rect(0, 0, 1f, 1f), duration);
-                    break;
-                case 2:
-                    switch (CameraSettings.SplitOption)
+                {
+                    1,
+                    new TableEntry
                     {
-                        case CameraSplitOptions.Rows:
-                            All[0].cam.DORect(new Rect(0, 0.501f, 1, 0.499f), duration);
-                            All[1].cam.DORect(new Rect(0, 0f, 1, 0.499f), duration);
-                            break;
-                        case CameraSplitOptions.Columns:
-                            All[0].cam.DORect(new Rect(0, 0, 0.499f, 1), duration);
-                            All[1].cam.DORect(new Rect(0.501f, 0f, 0.499f, 1), duration);
-                            break;
-                        case CameraSplitOptions.Special:
-                            All[0].cam.DORect(new Rect(0, 0.501f, 1, 0.499f), duration);
-                            All[1].cam.DORect(new Rect(0, 0f, 1, 0.499f), duration);
-                            break;
+                        {
+                            CameraSplitOptions.Rows,
+                            One
+                        },
+                        {
+                            CameraSplitOptions.Columns,
+                            One
+                        },
+                        {
+                            CameraSplitOptions.Special,
+                            One
+                        }
                     }
-
-                    break;
-                case 3:
-                    switch (CameraSettings.SplitOption)
+                },
+                {
+                    2,
+                    new TableEntry
                     {
-                        case CameraSplitOptions.Rows:
-                            All[0].cam.DORect(new Rect(0, 0.668f, 1, 0.331f), duration);
-                            All[1].cam.DORect(new Rect(0, 0.334f, 1, 0.332f), duration);
-                            All[2].cam.DORect(new Rect(0, 0, 1, 0.332f), duration);
-                            break;
-                        case CameraSplitOptions.Columns:
-                            All[0].cam.DORect(new Rect(0, 0, 0.332f, 1), duration);
-                            All[1].cam.DORect(new Rect(0.334f, 0, 0.332f, 1), duration);
-                            All[2].cam.DORect(new Rect(0.668f, 0, 0.331f, 1), duration);
-                            break;
-                        case CameraSplitOptions.Special:
-                            All[0].cam.DORect(new Rect(0, 0.501f, 0.499f, 0.499f), duration);
-                            All[1].cam.DORect(new Rect(0.501f, 0.501f, 0.499f, 0.499f), duration);
-                            All[2].cam.DORect(new Rect(0.25f, 0, 0.499f, 0.499f), duration);
-                            break;
+                        {
+                            CameraSplitOptions.Rows,
+                            new List<Rect> {new Rect(0, 0.501f, 1, 0.499f), new Rect(0, 0f, 1, 0.499f)}
+                        },
+                        {
+                            CameraSplitOptions.Columns,
+                            new List<Rect> {new Rect(0, 0, 0.499f, 1), new Rect(0.501f, 0f, 0.499f, 1)}
+                        },
+                        {
+                            CameraSplitOptions.Special,
+                            new List<Rect> {new Rect(0, 0.501f, 1, 0.499f), new Rect(0, 0f, 1, 0.499f)}
+                        }
                     }
+                },
+                {
+                    3,
+                    new TableEntry
+                    {
+                        {
+                            CameraSplitOptions.Rows,
+                            new List<Rect> {new Rect(0, 0.668f, 1, 0.331f), new Rect(0, 0.334f, 1, 0.332f),  new Rect(0, 0, 1, 0.332f)}
+                        },
+                        {
+                            CameraSplitOptions.Columns,
+                            new List<Rect> {new Rect(0, 0, 0.332f, 1), new Rect(0.334f, 0, 0.332f, 1), new Rect(0.668f, 0, 0.331f, 1)}
+                        },
+                        {
+                            CameraSplitOptions.Special,
+                            new List<Rect> {new Rect(0, 0.501f, 0.499f, 0.499f), new Rect(0.501f, 0.501f, 0.499f, 0.499f), new Rect(0.25f, 0, 0.499f, 0.499f)}
+                        }
+                    }
+                },
+                {
+                    4,
+                    new TableEntry
+                    {
+                        {
+                            CameraSplitOptions.Rows,
+                            Four
+                        },
+                        {
+                            CameraSplitOptions.Columns,
+                            Four
+                        },
+                        {
+                            CameraSplitOptions.Special,
+                            Four
+                        }
+                    }
+                }
+            };
 
-                    break;
-                case 4:
-                    All[0].cam.DORect(new Rect(0, 0.501f, 0.499f, 0.499f), duration);
-                    All[1].cam.DORect(new Rect(0.501f, 0.501f, 0.499f, 0.499f), duration);
-                    All[2].cam.DORect(new Rect(0, 0, 0.499f, 0.499f), duration);
-                    All[3].cam.DORect(new Rect(0.501f, 0, 0.499f, 0.499f), duration);
-                    break;
+        private static void UpdateCameras()
+        {
+            var data = _table[All.Count];
+            for (int i = 0; i < All.Count; i++)
+            {
+                var item = All[i];
+                item.UpdateRect(data[item.splitOption][i]);
             }
         }
+        
+        #endregion
     }
 }

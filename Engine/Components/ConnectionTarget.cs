@@ -28,6 +28,12 @@ namespace RedOwl.Core
             {
                 _sources.Add(source.GetComponent<IConnectionSource>());
             }
+
+            if (sources.Count == 0)
+            {
+                onTrue.Invoke();
+                onTriggered.Invoke(true);
+            }
         }
 
         private void OnEnable()

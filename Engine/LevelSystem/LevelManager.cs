@@ -28,6 +28,7 @@ namespace RedOwl.Core
         public static void Initialize()
         {
             string current = SceneManager.GetActiveScene().name;
+            _lastLevel = GameLevel.Find(current);
             if (current == LevelManagerSettings.BootstrapSceneName)
             {
                 LoadNextLevel();
@@ -44,6 +45,8 @@ namespace RedOwl.Core
             {
                 yield return null;
             }
+
+            _lastLevel = level;
             OnLoaded?.Invoke(level);
             yield return new WaitForSeconds(LevelManagerSettings.LoadDelay);
             OnCompleted?.Invoke(level);

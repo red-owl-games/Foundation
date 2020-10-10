@@ -1,5 +1,6 @@
 using System;
 using Sirenix.OdinInspector;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace RedOwl.Core
@@ -78,12 +79,17 @@ namespace RedOwl.Core
             gameObject.Children(c => c.SetActive(value.HasFlag((LevelStates) Enum.Parse(typeof(LevelStates), c.name))));
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+        public static void Initialize()
+        {
+            LevelManager.OnLoaded += OnLoaded;
+        }
 
-        public static void SetState(LevelStates state)
+        private static void OnLoaded(GameLevel level)
         {
             foreach (var component in All)
             {
-                component.ApplyState(state);
+                component.ApplyState(level.state);
             }
         }
     }

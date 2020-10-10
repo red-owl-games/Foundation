@@ -12,15 +12,37 @@ namespace RedOwl.Core
         
         public event Action ConnectionTriggered;
         public bool ConnectionState { get; private set; }
+        private Collider _presser;
+        private bool _pressed;
 
         private void OnTriggerEnter(Collider other)
         {
-            if (useTrigger) InternalInteract();
+            if (useTrigger && !_pressed)
+            {
+                _presser = other;
+                _pressed = true;
+                InternalInteract();
+            }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (useTrigger && !_pressed)
+            {
+                _presser = other;
+                _pressed = true;
+                InternalInteract();
+            }
         }
 
         private void OnTriggerExit(Collider other)
         {
-            if (useTrigger) InternalInteract();
+            if (useTrigger && _pressed && other == _presser)
+            {
+                _presser = null;
+                _pressed = false;
+                InternalInteract();
+            }
         }
 
         public void Select()
