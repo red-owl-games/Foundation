@@ -314,7 +314,7 @@
                 {
                     "name": "",
                     "id": "97804e13-3f07-40dd-ad5d-ea838fb1199e",
-                    "path": "<Keyboard>/leftShift",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "Player1",
@@ -325,7 +325,7 @@
                 {
                     "name": "",
                     "id": "90e55a9a-99cd-4ba1-9601-eb2d1ebbe176",
-                    "path": "<Keyboard>/numpad3",
+                    "path": "<Keyboard>/rightCtrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "Player2",
@@ -428,28 +428,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Player1;Player2",
-                    "action": "TriggerRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ae8d6883-a114-49cf-a1ed-32cb08d18346",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Player1",
-                    "action": "TriggerRight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "404a3355-3e61-4ec5-beca-764737b21a87",
-                    "path": "<Keyboard>/rightCtrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Player2",
                     "action": "TriggerRight",
                     "isComposite": false,
                     "isPartOfComposite": false
