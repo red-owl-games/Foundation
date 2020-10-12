@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -162,6 +163,34 @@ namespace RedOwl.Core
         {
             switch (type)
             {
+                case Types.Color:
+                    return target.DOColor(color, duration);
+            }
+
+            return null;
+        }
+    }
+    
+    public class TMPTween : TweenData<TMP_Text>
+    {
+        public enum Types
+        {
+            Fade,
+            Color,
+        }
+        
+        public Types type;
+        
+        [ShowIf("type", Types.Fade)] public float alpha;
+        [ShowIf("type", Types.Color)] public Color color;
+        
+        
+        protected override Tween GetTween()
+        {
+            switch (type)
+            {
+                case Types.Fade:
+                    return target.DOFade(alpha, duration);
                 case Types.Color:
                     return target.DOColor(color, duration);
             }

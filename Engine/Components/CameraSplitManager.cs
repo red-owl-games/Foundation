@@ -135,8 +135,10 @@ namespace RedOwl.Core
 
         private static void UpdateCameras()
         {
-            var data = _table[All.Count];
-            for (int i = 0; i < All.Count; i++)
+            int count = All.Count;
+            if (count < 1 || count > 4) return;
+            var data = _table[count];
+            for (int i = 0; i < count; i++)
             {
                 var item = All[i];
                 item.UpdateRect(data[item.splitOption][i]);
