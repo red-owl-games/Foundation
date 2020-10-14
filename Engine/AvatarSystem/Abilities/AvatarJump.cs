@@ -8,13 +8,6 @@ namespace RedOwl.Core
     public class AvatarJump : AvatarAbility
     {
         public override int Priority { get; } = -20;
-        
-        [DisableInPlayMode]
-        public float maxJumpHeight = 4f;
-        [DisableInPlayMode]
-        public float minJumpHeight = 2f;
-        [DisableInPlayMode]
-        public float jumpTime = .4f;
 
         public Cooldown coyoteTime;
         public Counter airJumpLimit;
@@ -24,11 +17,8 @@ namespace RedOwl.Core
         public AnimBoolProperty airJumpAnimParam = "AirJumpped";
 
         private ButtonStates _button;
-        private float _gravity;
-        [ShowInInspector]
         private float _maxJumpVelocity;
-        [ShowInInspector]
-        private float _minJumpVelocity;
+        //private float _minJumpVelocity;
         private bool _jumpRequested;
         private bool _isFalling;
 
@@ -36,18 +26,10 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            CalculateJumpVelocity();
-            Avatar.Abilities.Find<AvatarGravity>().Gravity = _gravity;
+            _maxJumpVelocity = AvatarSettings.Instance.MaxJumpVelocity;
             jumpAnimParam.Register(Avatar.AnimManager);
             airJumpAnimParam.Register(Avatar.AnimManager);
             airJumpLimit.Reset();
-        }
-
-        private void CalculateJumpVelocity()
-        {
-            _gravity = -(2 * maxJumpHeight) / math.pow(jumpTime, 2);
-            _maxJumpVelocity = math.abs(_gravity) * jumpTime;
-            _minJumpVelocity = math.sqrt(2 * math.abs(_gravity) * minJumpHeight);
         }
 
         public override void HandleInput(ref AvatarInput input)

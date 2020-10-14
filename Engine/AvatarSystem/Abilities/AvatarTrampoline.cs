@@ -22,7 +22,7 @@ namespace RedOwl.Core
 
         private void CalculateLaunchVelocity()
         {
-            var currentGravity = Avatar.Abilities.Find<AvatarGravity>().Gravity;
+            var currentGravity = AvatarSettings.Instance.Gravity;
             float duration = math.sqrt(-(2 * height) / currentGravity);
             _launchVelocity = math.abs(currentGravity) * duration;
         }
