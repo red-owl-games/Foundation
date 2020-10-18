@@ -5,7 +5,7 @@ namespace RedOwl.Core
 {
     public static class ListExtensions
     {
-        public static List<T> Shuffle<T>(this List<T> self, Random rng)
+        public static IList<T> Shuffle<T>(this IList<T> self, Random rng)
         {
             //Fisher Yates Shuffle
             int n = self.Count;
@@ -19,6 +19,11 @@ namespace RedOwl.Core
             }
 
             return self;
+        }
+        
+        public static T SafeGet<T>(this IList<T> self, int index, T defaultValue)
+        {
+            return index < self.Count ? self[index] : defaultValue;
         }
     }
 }

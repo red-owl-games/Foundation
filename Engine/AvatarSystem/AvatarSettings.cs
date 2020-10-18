@@ -24,9 +24,9 @@ namespace RedOwl.Core
         
         private void CalculateGravity()
         {
-            Gravity = -(2 * maxJumpHeight) / math.pow(jumpTime, 2);
-            MaxJumpVelocity = math.abs(Gravity) * jumpTime;
-            MinJumpVelocity = math.sqrt(2 * math.abs(Gravity) * minJumpHeight);
+            Gravity = Kinematic.CalculateGravity_Jump(maxJumpHeight, jumpTime);
+            MaxJumpVelocity = Kinematic.CalculateVelocity_Jump(maxJumpHeight, Gravity);
+            MinJumpVelocity = Kinematic.CalculateVelocity_Jump(minJumpHeight, Gravity);
         }
 
         internal static void Initialize()

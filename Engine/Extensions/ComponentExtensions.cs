@@ -1,30 +1,48 @@
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RedOwl.Core
 {
     public static class ComponentExtensions
     {
-        private static bool TryGetComponent<T>(this Component self, out T comp) where T : Component
+        public static void EnsureComponent<T>(this Component self, out T comp) where T : Component
         {
-            comp = self.GetComponent<T>();
-            return (comp != null);
-        }
-        
-        public static T EnsureComponent<T>(this Component self) where T : Component
-        {
-            T comp = self.GetComponent(typeof(T)) as T;
+            comp = self.GetComponent(typeof(T)) as T;
             if (!comp) comp = self.gameObject.AddComponent(typeof(T)) as T;
-            return comp;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void WithComponent<T>(this Component self, Action<T> callback) where T : Component
         {
-            if (self.TryGetComponent<T>(out T comp)) callback(comp);
+            if (self.TryGetComponent(out T comp)) callback(comp);
         }
         
+        public static void Children(this GameObject self, Action<GameObject> predicate)
+        {
+            self.transform.Children(t => predicate(t.gameObject));
+        }
+
+        public static void SetLayer(this GameObject self, int layer)
+        {
+            self.layer = layer;
+            self.Children(o => o.SetLayer(layer));
+        }
+        
+        public static void Clear(this GameObject self)
+        {
+            self.transform.Clear();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Destroy(this Component self) => self.gameObject.Destroy();
+        public static void Destroy(this GameObject self)
+        {
+#if UNITY_EDITOR
+            if (Application.isPlaying) Object.Destroy(self); else Object.DestroyImmediate(self);
+#else
+            Object.Destroy(self);
+#endif
+        }
     }
 }

@@ -43,6 +43,9 @@ namespace RedOwl.Core
     {
         public static List<Avatar> Players { get; } = new List<Avatar>(4);
 
+        [SerializeField] 
+        internal KinematicCharacterMotor Motor;
+
         [SerializeField]
         internal Animator animator;
 
@@ -55,7 +58,6 @@ namespace RedOwl.Core
 
         public AbilityCache Abilities { get; } = new AbilityCache();
         public Guid Id { get; private set; }
-        public KinematicCharacterMotor Motor { get; private set; }
         public AnimatorManager AnimManager { get; private set; }
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
@@ -64,8 +66,8 @@ namespace RedOwl.Core
         private void Awake()
         {
             Id = Guid.NewGuid();
-            Motor = GetComponent<KinematicCharacterMotor>();
-            if (animator == null) animator = this.EnsureComponent<Animator>();
+            this.Requires(Motor);
+            this.Requires(animator);
             AnimManager = new AnimatorManager(animator);
             //_input = new AvatarInputManager(this);
             VelocityXAnimParam.Register(AnimManager);

@@ -4,7 +4,7 @@ using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Core
 {
-    public static class ValidationExtensions
+    public static class Validation
     {
         [Conditional("UNITY_EDITOR")]
         public static void Requires<TSource, TComponent>(this TSource obj, TComponent component) where TSource : Object where TComponent : Object

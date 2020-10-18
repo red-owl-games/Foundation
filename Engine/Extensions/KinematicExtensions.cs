@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RedOwl.Core
 {
-    public static class KinematicUtility
+    public static class Kinematic
     {
         //s = displacement
         //u = initial velocity
@@ -13,9 +13,15 @@ namespace RedOwl.Core
         //t = time
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float CalculateGravity_Jump(float jumpHeight, float jumpTime)
+        {
+            return -(2 * jumpHeight) / math.pow(jumpTime, 2);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalculateVelocity_Jump(float jumpHeight, float gravity)
         {
-            return math.sqrt(-2 * gravity * jumpHeight);
+            return math.sqrt(-2 * math.abs(gravity) * jumpHeight);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

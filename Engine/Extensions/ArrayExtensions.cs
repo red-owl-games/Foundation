@@ -65,9 +65,9 @@ namespace RedOwl.Core
         }
         */
         
-        public static T TryGet<T>(this IList<T> self, int index, T defaultValue)
+        public static T SafeGet<T>(this T[] self, int index, T defaultValue)
         {
-            return index < self.Count ? self[index] : defaultValue;
+            return index < self.Length ? self[index] : defaultValue;
         }
     }
 }

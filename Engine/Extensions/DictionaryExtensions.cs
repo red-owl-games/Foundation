@@ -26,7 +26,7 @@ namespace RedOwl.Core
 			}
 		}
 		
-		public static T GetValueOrDefault<T, TK>(this IDictionary<TK, T> self, TK key) => self.TryGetValue(key, out T value) == false ? default : value;
+		public static T SafeGet<T, TK>(this IDictionary<TK, T> self, TK key) => self.TryGetValue(key, out T value) == false ? default : value;
 
 	}
 }

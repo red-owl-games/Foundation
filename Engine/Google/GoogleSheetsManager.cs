@@ -80,7 +80,7 @@ namespace RedOwl.Core
                 var row = new SheetRow(width);
                 for (int x = 0; x < width; x++)
                 {
-                    row.Add(new SheetRowItem(x, y, (string)data[y].TryGet(x, "")));
+                    row.Add(new SheetRowItem(x, y, (string)data[y].SafeGet(x, "")));
                 }
                 Data.Add(row);
             }
