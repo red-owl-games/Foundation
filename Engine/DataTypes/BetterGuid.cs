@@ -1,29 +1,19 @@
 using System;
 using Sirenix.OdinInspector;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable, InlineProperty]
     public class BetterGuid : IComparable, IComparable<BetterGuid>, IEquatable<BetterGuid>
     {
         [HideLabel, DisplayAsString]
-        public string value;
+        public readonly string value;
 
         private BetterGuid(string value)
         {
             this.value = value;
         }
 
-        public static implicit operator BetterGuid(Guid guid)
-        {
-            return new BetterGuid(guid.ToString());
-        }
-
-        public static implicit operator Guid(BetterGuid serializableGuid)
-        {
-            return new Guid(serializableGuid.value);
-        }
-        
         public int CompareTo(object other)
         {
             if (other == null)
@@ -38,10 +28,22 @@ namespace RedOwl.Core
         {
             return other.value == value ? 0 : 1;
         }
+        
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals((BetterGuid) obj);
+        }
 
         public bool Equals(BetterGuid other)
         {
             return value == other.value;
+        }
+        
+        public override int GetHashCode()
+        {
+            return (value != null ? value.GetHashCode() : 0);
         }
 
         public override string ToString()
@@ -57,6 +59,16 @@ namespace RedOwl.Core
         public static bool operator !=(BetterGuid lhs, BetterGuid rhs)
         {
             return !(lhs == rhs);
+        }
+        
+        public static implicit operator BetterGuid(Guid guid)
+        {
+            return new BetterGuid(guid.ToString());
+        }
+
+        public static implicit operator Guid(BetterGuid serializableGuid)
+        {
+            return new Guid(serializableGuid.value);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public enum SheetTypes
     {
@@ -23,15 +23,12 @@ namespace RedOwl.Core
     }
 
     [Serializable]
-    public class GoogleSheetsSettings : Settings<GoogleSheetsSettings>
+    public class GoogleSheetsSettings : Settings
     {
-        [Multiline(15), FoldoutGroup("Credentials"), HideLabel]
+        [FoldoutGroup("Credentials"), HideLabel, MultiLineProperty(10)]
         public string Credentials;
-
-        internal static string Creds => Instance.Credentials;
-
-        private bool HasCredentials => !string.IsNullOrEmpty(Credentials);
-        internal static bool HasCreds => Instance.HasCredentials;
+        
+        public bool HasCredentials => !string.IsNullOrEmpty(Credentials);
 
         [ShowIf("HasCredentials")]
         public List<GoogleSheetsRegistration> registrations;

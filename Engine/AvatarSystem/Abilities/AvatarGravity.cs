@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class AvatarGravity : AvatarAbility
     {
@@ -11,7 +11,7 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            _gravity = AvatarSettings.Instance.Gravity;
+            _gravity = Game.AvatarSettings.Gravity;
         }
 
         public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)

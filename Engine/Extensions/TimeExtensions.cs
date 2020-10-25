@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class TimeExtensions
     {

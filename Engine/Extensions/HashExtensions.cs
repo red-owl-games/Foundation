@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
 	public static class HashUtility
 	{

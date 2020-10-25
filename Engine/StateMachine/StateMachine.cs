@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class StateMachine : IStateEnter, IStateAsyncExecute, IStateExit, IStateIdentifiable
     {
@@ -282,30 +282,30 @@ namespace RedOwl.Core
             Add(from, new CallbackTransition(to, priority, guard));
         }
         
-        public void Permit<TTo>(ITelegram message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, autoReset, priority);
-        public void Permit(IState to, ITelegram message, bool autoReset = true, int priority = 0)
+        public void Permit<TTo>(IMessage message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, autoReset, priority);
+        public void Permit(IState to, IMessage message, bool autoReset = true, int priority = 0)
         {
             Ensure(to);
             AddAny(new EventTransition(to, priority, message, autoReset));
         }
 
-        public void Permit<TFrom, TTo>(ITelegram message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, autoReset, priority);
-        public void Permit(IState from, IState to, ITelegram message, bool autoReset = true, int priority = 0)
+        public void Permit<TFrom, TTo>(IMessage message, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, autoReset, priority);
+        public void Permit(IState from, IState to, IMessage message, bool autoReset = true, int priority = 0)
         {
             Ensure(from);
             Ensure(to);
             Add(from, new EventTransition(to, priority, message, autoReset));
         }
         
-        public void Permit<TTo>(ITelegram message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, guard, autoReset, priority);
-        public void Permit(IState to, ITelegram message, Func<bool> guard, bool autoReset = true, int priority = 0)
+        public void Permit<TTo>(IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TTo>()], message, guard, autoReset, priority);
+        public void Permit(IState to, IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0)
         {
             Ensure(to);
             AddAny(new EventTransition(to, priority, message, guard, autoReset));
         }
 
-        public void Permit<TFrom, TTo>(ITelegram message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, guard, autoReset, priority);
-        public void Permit(IState from, IState to, ITelegram message, Func<bool> guard, bool autoReset = true, int priority = 0)
+        public void Permit<TFrom, TTo>(IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0) => Permit(_states[GetId<TFrom>()], _states[GetId<TTo>()], message, guard, autoReset, priority);
+        public void Permit(IState from, IState to, IMessage message, Func<bool> guard, bool autoReset = true, int priority = 0)
         {
             Ensure(from);
             Ensure(to);

@@ -1,7 +1,7 @@
 using System;
 using UnityEditor;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public static partial class RedOwlEditor
     {

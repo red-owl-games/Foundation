@@ -3,18 +3,14 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable]
-    public class LevelManagerSettings : Settings<LevelManagerSettings>
+    public class LevelManagerSettings : Settings
     {
-        [SerializeField] 
-        private string bootstrapSceneName = "Bootstrap";
-        public static string BootstrapSceneName => Instance.bootstrapSceneName;
+        public string BootstrapSceneName = "Bootstrap";
 
-        [SerializeField] 
-        private float loadDelay = 1f;
-        public static float LoadDelay => Instance.loadDelay;
+        public float LoadDelay = 1f;
     }
 
     public static class LevelManager
@@ -29,7 +25,7 @@ namespace RedOwl.Core
         {
             string current = SceneManager.GetActiveScene().name;
             _lastLevel = GameLevel.Find(current);
-            if (current == LevelManagerSettings.BootstrapSceneName)
+            if (current == Game.LevelManagerSettings.BootstrapSceneName)
             {
                 LoadNextLevel();
             }
@@ -39,7 +35,7 @@ namespace RedOwl.Core
         private static IEnumerator LoadLevelAsync(GameLevel level)
         {
             yield return LoadingScreen.Show();
-            if (level.sceneName == LevelManagerSettings.BootstrapSceneName) level = GameLevel.Next(level);
+            if (level.sceneName == Game.LevelManagerSettings.BootstrapSceneName) level = GameLevel.Next(level);
             var async = SceneManager.LoadSceneAsync(level.sceneName);
             while (!async.isDone)
             {
@@ -48,7 +44,7 @@ namespace RedOwl.Core
 
             _lastLevel = level;
             OnLoaded?.Invoke(level);
-            yield return new WaitForSeconds(LevelManagerSettings.LoadDelay);
+            yield return new WaitForSeconds(Game.LevelManagerSettings.LoadDelay);
             OnCompleted?.Invoke(level);
             yield return LoadingScreen.Hide();
         }

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using RedOwl.Engine;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public class FlexibleLayoutProcessor : OdinPropertyProcessor<FlexibleLayout>
     {

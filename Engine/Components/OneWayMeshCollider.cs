@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [RequireComponent (typeof (MeshCollider))]
     public class OneWayMeshCollider : MonoBehaviour

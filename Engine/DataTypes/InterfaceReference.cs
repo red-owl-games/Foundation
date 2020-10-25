@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable]
     public class InterfaceReference<T> where T : class

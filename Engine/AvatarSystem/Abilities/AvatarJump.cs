@@ -2,7 +2,7 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [RequireComponent(typeof(AvatarGravity))]
     public class AvatarJump : AvatarAbility
@@ -26,7 +26,7 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            _maxJumpVelocity = AvatarSettings.Instance.MaxJumpVelocity;
+            _maxJumpVelocity = Game.AvatarSettings.MaxJumpVelocity;
             jumpAnimParam.Register(Avatar.AnimManager);
             airJumpAnimParam.Register(Avatar.AnimManager);
             airJumpLimit.Reset();

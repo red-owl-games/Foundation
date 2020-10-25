@@ -5,30 +5,26 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IRedOwlFile : ISerializationCallbackReceiver {}
     
     #region Settings
     
     [Serializable]
-    public class FileControllerSettings : Settings<FileControllerSettings>
+    public class FileControllerSettings : Settings
     {
         [SerializeField]
-        private bool useEncryption;
-        public static bool UseEncryption => Instance.useEncryption;
-        
+        public bool UseEncryption;
+
         [SerializeField]
-        private bool useCompression;
-        public static bool UseCompression => Instance.useCompression;
-        
+        public bool UseCompression;
+
         [SerializeField]
-        private string encryptionKey;
-        public static string EncryptionKey => Instance.encryptionKey;
-        
+        public string EncryptionKey;
+
         [SerializeField]
-        private string encryptionIV;
-        public static string EncryptionIV => Instance.encryptionIV;
+        public string EncryptionIV;
     }
     
     #endregion
@@ -42,8 +38,8 @@ namespace RedOwl.Core
         private static AesCryptoServiceProvider Provider =>
             _provider ?? (_provider = new AesCryptoServiceProvider
             {
-                Key = Encoding.ASCII.GetBytes(FileControllerSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
-                IV = Encoding.ASCII.GetBytes(FileControllerSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
+                Key = Encoding.ASCII.GetBytes(Game.FileControllerSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
+                IV = Encoding.ASCII.GetBytes(Game.FileControllerSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
             });
         
         #region Read
@@ -64,8 +60,8 @@ namespace RedOwl.Core
         {
             //Log.Always($"Reading File - {filepath}");
             Stream stream = new FileStream(filepath, FileMode.Open);
-            if (FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
-            if (FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
+            if (Game.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
+            if (Game.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
             using (var reader = new MemoryStream())
             {
                 stream.CopyTo(reader);
@@ -95,8 +91,8 @@ namespace RedOwl.Core
             //Log.Always($"Writing File - {filepath}");
             Directory.CreateDirectory(Path.GetDirectoryName(filepath) ?? string.Empty);
             Stream stream = new FileStream(filepath, FileMode.Create);
-            if (FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
-            if (FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
+            if (Game.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
+            if (Game.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
             stream.Write(data, 0, data.Length);
             stream.Dispose();
         }

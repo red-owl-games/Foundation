@@ -1,7 +1,7 @@
 using System;
 using DG.Tweening;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class Delayed
     {

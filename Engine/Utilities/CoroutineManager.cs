@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class Cancelled : CustomYieldInstruction
     {

@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace RedOwl.Core.Unsafe
+namespace RedOwl.Engine.Unsafe
 {
     public static class RedOwlHash
     {

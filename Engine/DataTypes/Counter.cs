@@ -1,7 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     // public Counter usages
     // usages.Reset()

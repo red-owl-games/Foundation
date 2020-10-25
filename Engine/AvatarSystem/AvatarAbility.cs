@@ -2,7 +2,7 @@ using KinematicCharacterController;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IAvatarAbility : ICharacterController
     {

@@ -3,10 +3,10 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable]
-    public class AvatarSettings : Settings<AvatarSettings>
+    public class AvatarSettings : Settings
     {
         [SerializeField, DisableInPlayMode]
         private float maxJumpHeight = 4f;
@@ -21,27 +21,17 @@ namespace RedOwl.Core
         public float MaxJumpVelocity { get; private set; }
         [ShowInInspector, DisableInPlayMode, DisableInEditorMode]
         public float MinJumpVelocity { get; private set; }
-        
+
+        public void Initialize()
+        {
+            CalculateGravity();
+        }
+
         private void CalculateGravity()
         {
             Gravity = Kinematic.CalculateGravity_Jump(maxJumpHeight, jumpTime);
             MaxJumpVelocity = Kinematic.CalculateVelocity_Jump(maxJumpHeight, Gravity);
             MinJumpVelocity = Kinematic.CalculateVelocity_Jump(minJumpHeight, Gravity);
-        }
-
-        internal static void Initialize()
-        {
-            var i = Instance;
-            i.CalculateGravity();
-        }
-    }
-
-    public static class AvatarSystemInitialization
-    {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void InitializeBeforeSplashScreen()
-        {
-            AvatarSettings.Initialize();
         }
     }
 }

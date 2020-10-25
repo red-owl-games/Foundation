@@ -1,16 +1,15 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [HideMonoScript]
     public class ActionToEvent : MonoBehaviour
     {
         public ActionReference input = new ActionReference();
         
-        public UnityEvent @event = new UnityEvent();
+        public GameEvent @event = new GameEvent();
 
         private void OnEnable()
         {

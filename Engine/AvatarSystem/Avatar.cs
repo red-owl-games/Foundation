@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.InputSystem.Users;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     // TODO: Remove Linq?
     
@@ -32,7 +32,7 @@ namespace RedOwl.Core
 
         private void Sort()
         {
-            All = new List<IAvatarAbility>(_cache.Values.Cast<IAvatarAbility>());
+            All = new List<IAvatarAbility>(cache.Values.Cast<IAvatarAbility>());
             All.Sort((a, b) => a.Priority.CompareTo(b.Priority));
         }
     }

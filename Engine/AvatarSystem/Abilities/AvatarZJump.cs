@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class AvatarZJump : AvatarAbility
     {

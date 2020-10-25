@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class AvatarAbilityManager
     {

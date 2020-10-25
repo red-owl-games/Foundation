@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using RedOwl.Engine;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public class GoogleSheetsRegistrationProcessor : OdinPropertyProcessor<GoogleSheetsRegistration>
     {
@@ -168,7 +169,7 @@ namespace RedOwl.Core.Editor
         public static void Refresh(string id)
         {
             var info = id.Split('.');
-            foreach (var registration in GoogleSheetsSettings.Instance.registrations)
+            foreach (var registration in Game.GoogleSheetsSettings.registrations)
             {
                 if (registration.Id == info[1] && registration.DataClass == info[0])
                     GoogleSheetsRegistrationProcessor.Generate(registration);

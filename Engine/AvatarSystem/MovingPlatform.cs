@@ -1,7 +1,7 @@
 ﻿using KinematicCharacterController;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
    public class MovingPlatform : MonoBehaviour, IMoverController
    {

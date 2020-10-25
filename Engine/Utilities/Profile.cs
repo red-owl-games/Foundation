@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Profiling;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     /*
     public void Example()

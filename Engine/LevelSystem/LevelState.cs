@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Flags]
     public enum LevelStates : int

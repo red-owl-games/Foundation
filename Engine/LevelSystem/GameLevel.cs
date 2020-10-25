@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public enum LevelTypes
     {
@@ -101,6 +101,8 @@ namespace RedOwl.Core
 
         public static GameLevel Find(string sceneName)
         {
+            if (string.IsNullOrEmpty(sceneName)) return null;
+            if (All.Count == 0) throw new RedOwlException($"Unable to find sceneName '{sceneName}' because the count of registered Game Levels is 0");
             foreach (var level in All)
             {
                 if (level.sceneName == sceneName) return level;

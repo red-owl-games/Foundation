@@ -1,10 +1,10 @@
+using RedOwl.Engine;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public class LevelBuilderEditor : OdinEditorWindow
     {
@@ -55,7 +55,7 @@ namespace RedOwl.Core.Editor
             Root = go.AddComponent<LevelRoot>();
         }
 
-        [DidReloadScripts]
-        private static void OnScriptsReloaded() => GetWindow<LevelBuilderEditor>().GetOrCreateLevelRoot();
+        //[DidReloadScripts]
+        //private static void OnScriptsReloaded() => GetWindow<LevelBuilderEditor>().GetOrCreateLevelRoot();
     }
 }

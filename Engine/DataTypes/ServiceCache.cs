@@ -4,7 +4,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine.Assertions;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [AttributeUsage( AttributeTargets.Field )]
     [MeansImplicitUse]
@@ -12,18 +12,18 @@ namespace RedOwl.Core
     
     public class ServiceCache
     {
-        protected readonly Dictionary<Type, object> _cache = new Dictionary<Type, object>();
+        protected readonly Dictionary<Type, object> cache = new Dictionary<Type, object>();
 
         public void Bind<T>(T instance)
         {
             //Log.Info($"Binding: {instance.GetType().FullName}");
-            _cache[instance.GetType()] = instance;
+            cache[instance.GetType()] = instance;
         }
         
         public void BindAs<T>(T instance)
         {
             //Log.Info($"Binding: {typeof(T).FullName}");
-            _cache[typeof(T)] = instance;
+            cache[typeof(T)] = instance;
         }
 
         public void BindAll<T>(T instance)
@@ -32,23 +32,23 @@ namespace RedOwl.Core
             {
                 if (type.Namespace != null && (type.Namespace.Contains("Unity") || type.Namespace.Contains("System"))) continue;
                 //Log.Info($"Binding: {type.FullName}");
-                _cache[type] = instance;
+                cache[type] = instance;
             }
         }
 
         public void Unbind<T>(T instance)
         {
-            _cache.Remove(instance.GetType());
+            cache.Remove(instance.GetType());
         }
 
         public void UnbindAs<T>(T instance)
         {
-            _cache.Remove(typeof(T));
+            cache.Remove(typeof(T));
         }
 
         private object Find(Type type)
         {
-            if (!_cache.TryGetValue(type, out object value))
+            if (!cache.TryGetValue(type, out object value))
             {
                 Log.Warn($"Unable to find service for: '{type.FullName}'");
             }
@@ -56,9 +56,9 @@ namespace RedOwl.Core
             return value;
         }
 
-        public T Find<T>() => _cache.TryGetValue(typeof(T), out object output) ? (T)output : default;
+        public T Find<T>() => cache.TryGetValue(typeof(T), out object output) ? (T)output : default;
 
-        public void Clear() => _cache.Clear();
+        public void Clear() => cache.Clear();
 
         public void Inject( object obj )
         {

@@ -1,4 +1,4 @@
-﻿namespace RedOwl.Core
+﻿namespace RedOwl.Engine
 {
 	public partial class EnsureThat
 	{

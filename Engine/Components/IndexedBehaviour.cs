@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public abstract class IndexedBehaviour<T> : MonoBehaviour, IIndexable where T : IndexedBehaviour<T>
     {

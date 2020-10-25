@@ -2,7 +2,7 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [RequireComponent(typeof(AvatarGravity))]
     public class AvatarTrampoline : AvatarAbility
@@ -22,7 +22,7 @@ namespace RedOwl.Core
 
         private void CalculateLaunchVelocity()
         {
-            var currentGravity = AvatarSettings.Instance.Gravity;
+            var currentGravity = Game.AvatarSettings.Gravity;
             float duration = math.sqrt(-(2 * height) / currentGravity);
             _launchVelocity = math.abs(currentGravity) * duration;
         }

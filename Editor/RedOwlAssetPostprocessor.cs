@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using RedOwl.Engine;
 using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public interface IAssetPostprocessor
     {

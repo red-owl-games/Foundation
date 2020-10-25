@@ -2,7 +2,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class Validation
     {

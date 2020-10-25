@@ -10,7 +10,7 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable]
     public class SheetRowItem
@@ -131,14 +131,14 @@ namespace RedOwl.Core
             _dict = new Dictionary<string, int>(1);
             _service = new SheetsService(new BaseClientService.Initializer
             {
-                HttpClientInitializer = GoogleCredential.FromJson(GoogleSheetsSettings.Creds).CreateScoped(Scopes),
+                HttpClientInitializer = GoogleCredential.FromJson(Game.GoogleSheetsSettings.Credentials).CreateScoped(Scopes),
                 ApplicationName = "unity",
             });
         }
 
         public GoogleSheetsManager(string sheetId) : this()
         {
-            if (!GoogleSheetsSettings.HasCreds) return;
+            if (!Game.GoogleSheetsSettings.HasCredentials) return;
             Read(sheetId);
         }
 

@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class Grid<T> where T : struct
     {

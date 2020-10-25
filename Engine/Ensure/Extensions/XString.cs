@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
 	internal static class XString
 	{

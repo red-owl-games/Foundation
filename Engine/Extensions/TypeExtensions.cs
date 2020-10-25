@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using System.Reflection;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class TypeExtensions
     {

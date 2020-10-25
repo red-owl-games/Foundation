@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IState { }
 

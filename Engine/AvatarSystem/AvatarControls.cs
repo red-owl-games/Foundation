@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class @AvatarControls : IInputActionCollection, IDisposable
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface ITransition
     {
@@ -35,12 +35,12 @@ namespace RedOwl.Core
     {
         public IState To { get; }
         public int Priority { get; }
-        private readonly ITelegram _message;
+        private readonly IMessage _message;
         private readonly Func<bool> _isAllowed;
         private readonly bool _hasGuard;
         private readonly bool _autoReset;
 
-        public EventTransition(IState to, int priority, ITelegram message, bool autoReset)
+        public EventTransition(IState to, int priority, IMessage message, bool autoReset)
         {
             To = to;
             Priority = priority;
@@ -49,7 +49,7 @@ namespace RedOwl.Core
             _autoReset = autoReset;
         }
 
-        public EventTransition(IState to, int priority, ITelegram message, Func<bool> guard, bool autoReset)
+        public EventTransition(IState to, int priority, IMessage message, Func<bool> guard, bool autoReset)
         {
             To = to;
             Priority = priority;
@@ -68,24 +68,17 @@ namespace RedOwl.Core
 
         public void Enable()
         {
-            _message.Subscribe(HandleEvent);
+            _message.OnAny += HandleEvent;
         }
 
         public void Disable()
         {
-            _message.Subscribe(HandleEvent);
+            _message.OnAny -= HandleEvent;
         }
 
         private void HandleEvent()
         {
-            if (_hasGuard)
-            {
-                IsReady = _isAllowed();
-            }
-            else
-            {
-                IsReady = true;
-            }
+            IsReady = !_hasGuard || _isAllowed();
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public enum BetterStackTypes
     {

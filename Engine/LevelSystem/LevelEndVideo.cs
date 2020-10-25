@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Video;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [RequireComponent(typeof(VideoPlayer))]
     public class LevelEndVideo : MonoBehaviour

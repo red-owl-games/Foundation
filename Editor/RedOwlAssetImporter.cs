@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using RedOwl.Engine;
 using Sirenix.OdinInspector;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     [HideMonoScript]
     public abstract class RedOwlAssetImporter<T> : ScriptedImporter where T : RedOwlAsset

@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [HideMonoScript]
     public class ConnectionTarget : MonoBehaviour, IConnectionTarget
@@ -14,8 +14,8 @@ namespace RedOwl.Core
 
         public bool HasSources => sources.Count > 0;
 
-        public UnityEvent onTrue = new UnityEvent();
-        public UnityEvent onFalse = new UnityEvent();
+        public GameEvent onTrue = new GameEvent();
+        public GameEvent onFalse = new GameEvent();
         public BoolEvent onTriggered = new BoolEvent();
 
         private bool _lastState;

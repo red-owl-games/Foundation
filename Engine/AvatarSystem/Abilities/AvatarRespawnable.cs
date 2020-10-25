@@ -3,9 +3,9 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
-    public class AvatarRespawnable : AvatarAbility, IPersistData
+    public class AvatarRespawnable : AvatarAbility//, IPersistData
     {
         public override int Priority { get; } = 10000;
 
@@ -31,7 +31,7 @@ namespace RedOwl.Core
 
         public override void OnStart()
         {
-            Game.Register(this);
+            //Game.Register(this);
             foreach (var checkpoint in FindObjectsOfType<Checkpoint>())
             {
                 if (checkpoint.isLevelStart) LastCheckpointPosition = checkpoint.transform.position;
@@ -46,13 +46,13 @@ namespace RedOwl.Core
 
         public override void OnCleanup()
         {
-            Game.Unregister(this);
+            //Game.Unregister(this);
         }
         
         private void SetCheckpointPosition(Transform target)
         {
             LastCheckpointPosition = target.position;
-            Game.Push(this);
+            //Game.Push(this);
         }
 
         [Button]
@@ -100,6 +100,7 @@ namespace RedOwl.Core
             gameObject.SetActive(false);
         }
         
+        /*
         public PersistenceTypes SaveDataPersistenceType => PersistenceTypes.SaveFile;
         public string SaveDataId => $"{name}.{GetType()}";
         public int SaveDataLength => 16;
@@ -114,5 +115,6 @@ namespace RedOwl.Core
             LastCheckpointPosition = reader.ReadVector3();
             Respawn();
         }
+        */
     }
 }

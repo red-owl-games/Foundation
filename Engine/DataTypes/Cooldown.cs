@@ -2,7 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using Unity.Mathematics;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     // public Cooldown duration;
     // duration.Use();

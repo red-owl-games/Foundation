@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Users;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public enum AvatarInputButtons
     {

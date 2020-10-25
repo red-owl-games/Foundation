@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [HideMonoScript]
     public class FlexibleLayout : LayoutGroup

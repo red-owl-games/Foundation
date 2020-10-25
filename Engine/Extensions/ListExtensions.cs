@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class ListExtensions
     {

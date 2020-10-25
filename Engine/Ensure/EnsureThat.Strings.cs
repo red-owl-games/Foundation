@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
 	public partial class EnsureThat
 	{

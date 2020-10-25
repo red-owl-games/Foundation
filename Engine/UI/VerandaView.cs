@@ -3,7 +3,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IVerandaView
     {
@@ -29,14 +29,14 @@ namespace RedOwl.Core
         }
 #endif
         public bool HideAtStart;
-        public TelegramReference ToggleView;
+        public GameMessageReference ToggleView;
 
         private RectTransform RectTransform;
         private CanvasGroup Group;
 
         private void Awake()
         {
-            if (ToggleView != null) ToggleView.Subscribe(Toggle);
+            if (ToggleView != null) ToggleView.message.On += Toggle;
             RectTransform = GetComponent<RectTransform>();
             Group = GetComponent<CanvasGroup>();
             RectTransform.anchoredPosition3D = Vector3.zero;
@@ -48,7 +48,7 @@ namespace RedOwl.Core
 
         private void OnDestroy()
         {
-            if (ToggleView != null) ToggleView.Subscribe(Toggle);
+            if (ToggleView != null) ToggleView.message.On -= Toggle;
         }
 
         public void Toggle()

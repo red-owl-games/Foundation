@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IConnectable
     {

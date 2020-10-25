@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public class RingBuffer<T> : IEnumerable<T>
     {

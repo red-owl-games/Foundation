@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     // TODO: Convert to a UI and prefab linked in the ConsoleSettings
     public class ConsoleUI : MonoBehaviour
@@ -21,12 +21,12 @@ namespace RedOwl.Core
 
         private void OnEnable()
         {
-            ConsoleSettings.ShowConsoleAction.Enable();
+            Game.ConsoleSettings.ShowConsoleAction.Enable();
         }
 
         private void Start()
         {
-            _history = new RingBuffer<string>(ConsoleSettings.HistoryBufferLength);
+            _history = new RingBuffer<string>(Game.ConsoleSettings.HistoryBufferLength);
             _history.PushFront("help");
             _history.PushFront("clear");
             
@@ -34,12 +34,12 @@ namespace RedOwl.Core
             _texture.SetPixel(0, 0, new Color(0, 0, 0, .9f));
             _texture.Apply();
 
-            ConsoleSettings.ShowConsoleAction.performed += ctx => ToggleShow();
+            Game.ConsoleSettings.ShowConsoleAction.performed += ctx => ToggleShow();
         }
 
         private void OnDisable()
         {
-            ConsoleSettings.ShowConsoleAction.Disable();
+            Game.ConsoleSettings.ShowConsoleAction.Disable();
         }
         
         private void OnApplicationQuit()
@@ -122,12 +122,12 @@ namespace RedOwl.Core
             
             // Draw Log Lines
             _scrollPosition = GUI.BeginScrollView(logs, _scrollPosition, scroll);
-            GUI.TextArea(scroll, logLines, new GUIStyle(GUI.skin.textArea) { richText = true, fontSize = ConsoleSettings.FontSize});
+            GUI.TextArea(scroll, logLines, new GUIStyle(GUI.skin.textArea) { richText = true, fontSize = Game.ConsoleSettings.FontSize});
             GUI.EndScrollView();
 
             GUI.SetNextControlName(FocusControlName);
             // Draw Commandline
-            _command = GUI.TextField(commandline, _command, new GUIStyle(GUI.skin.textField) { fontSize = ConsoleSettings.FontSize});
+            _command = GUI.TextField(commandline, _command, new GUIStyle(GUI.skin.textField) { fontSize = Game.ConsoleSettings.FontSize});
 
             if (_show)
             {

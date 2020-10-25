@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class ComponentExtensions
     {

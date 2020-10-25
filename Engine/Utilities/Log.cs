@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using Print = UnityEngine.Debug;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public enum LogLevel {
         Error,
@@ -13,11 +13,9 @@ namespace RedOwl.Core
     }
     
     [Serializable]
-    public class LogConfig : Settings<LogConfig>
+    public class LogSettings : Settings
     {
-        [SerializeField]
-        private LogLevel logLevel = LogLevel.Warn;
-        public static LogLevel LogLevel => Instance?.logLevel ?? LogLevel.Debug;
+        public LogLevel LogLevel = LogLevel.Warn;
     }
     
     public static class Log
@@ -36,7 +34,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Debug(string message)
         {
-            if (LogConfig.LogLevel >= LogLevel.Debug)
+            if (Game.LogSettings.LogLevel >= LogLevel.Debug)
             {
 #if DEBUG
                 Print.Log($"[RedOwl] <color=grey>{message}</color>");
@@ -49,7 +47,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Info(string message)
         {
-            if (LogConfig.LogLevel >= LogLevel.Info)
+            if (Game.LogSettings.LogLevel >= LogLevel.Info)
             {
 #if DEBUG
                 Print.Log($"[RedOwl] <color=teal>{message}</color>");
@@ -62,7 +60,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Warn(string message)
         {
-            if (LogConfig.LogLevel >= LogLevel.Warn)
+            if (Game.LogSettings.LogLevel >= LogLevel.Warn)
             {
 #if DEBUG
                 Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
@@ -75,7 +73,7 @@ namespace RedOwl.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Error(string message)
         {
-            if (LogConfig.LogLevel >= LogLevel.Error)
+            if (Game.LogSettings.LogLevel >= LogLevel.Error)
             {
 #if DEBUG
                 Print.LogError($"[RedOwl] <color=red>{message}</color>");

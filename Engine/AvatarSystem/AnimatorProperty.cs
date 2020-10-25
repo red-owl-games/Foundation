@@ -2,7 +2,7 @@ using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable, InlineProperty, FoldoutGroup("Animator Properties")]
     public abstract class AnimatorProperty

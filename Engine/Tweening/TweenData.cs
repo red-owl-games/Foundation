@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable, InlineProperty, HideReferenceObjectPicker]
     public abstract class TweenData

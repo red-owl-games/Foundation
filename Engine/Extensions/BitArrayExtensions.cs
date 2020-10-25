@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public static class BitArrayExtensions
     {

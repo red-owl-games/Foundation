@@ -7,29 +7,21 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Object = UnityEngine.Object;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     [Serializable]
-    public class ConsoleSettings : Settings<ConsoleSettings>
+    public class ConsoleSettings : Settings
     {
-        [SerializeField]
         [LabelText("Font Size")]
-        private int fontSize = 16;
-        public static int FontSize => Instance.fontSize;
+        public int FontSize = 16;
         
-        [SerializeField]
         [LabelText("Buffer Size")]
-        private int bufferLength = 5000;
-        public static int BufferLength => Instance.bufferLength;
+        public int BufferLength = 5000;
         
-        [SerializeField]
         [LabelText("History Buffer Size")]
-        private int historyBufferLength = 100;
-        public static int HistoryBufferLength => Instance.historyBufferLength;
+        public int HistoryBufferLength = 100;
         
-        [SerializeField]
-        private InputAction showConsoleAction = new InputAction();
-        public static InputAction ShowConsoleAction => Instance.showConsoleAction;
+        public InputAction ShowConsoleAction = new InputAction();
     }
     
     [Command("clear", "Clears the console GUI's Log Text")]
@@ -62,7 +54,7 @@ namespace RedOwl.Core
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeBeforeSceneLoad()
         {
-            Logs = new RingBuffer<string>(ConsoleSettings.BufferLength);
+            Logs = new RingBuffer<string>(Game.ConsoleSettings.BufferLength);
             Application.logMessageReceived += OnUnityLog;
         }
 
@@ -103,13 +95,13 @@ namespace RedOwl.Core
             switch (logtype)
             {
                 case LogType.Log:
-                    if (LogConfig.LogLevel >= LogLevel.Info) Write(message);
+                    if (Game.LogSettings.LogLevel >= LogLevel.Info) Write(message);
                     break;
                 case LogType.Warning:
-                    if (LogConfig.LogLevel >= LogLevel.Warn) Write(message);
+                    if (Game.LogSettings.LogLevel >= LogLevel.Warn) Write(message);
                     break;
                 case LogType.Error:
-                    if (LogConfig.LogLevel >= LogLevel.Error) Write(message);
+                    if (Game.LogSettings.LogLevel >= LogLevel.Error) Write(message);
                     break;
                 case LogType.Assert:
                     break;

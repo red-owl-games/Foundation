@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
 	public partial class EnsureThat
 	{

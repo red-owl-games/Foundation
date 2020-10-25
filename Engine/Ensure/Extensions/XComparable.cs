@@ -1,6 +1,6 @@
 using System;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
 	internal static class XComparable
 	{

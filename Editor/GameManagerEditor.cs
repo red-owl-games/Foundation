@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using RedOwl.Engine;
 using Sirenix.OdinInspector.Editor;
 using Sirenix.Utilities.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace RedOwl.Core.Editor
+namespace RedOwl.Editor
 {
     public class GameManagerEditor : OdinMenuEditorWindow
     {

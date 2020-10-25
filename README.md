@@ -9,39 +9,71 @@
     <a href="https://redowlgames.com/Foundation">Documentation</a>
 </p>
 
-# Key Features
+## External
+- Odin
+- DoTween
+- FMod
+- ProCamera2D
+- Mirror
+- Google
+- CoherentNoise
+- KinematicCharacterController?
+- Water?
+- Yaml?
 
+## Core
 - Extensions
 - Datatypes
-- Event/Message
-- Settings
-- Tweening
-- Input
-- Character
-- Level
-- Audio
-- Google/Data
-- Save Game
-- UI
-- WorldItems (Interactable/Connectable)
-- Misc Components
-- Common Resources/Assets
-- Grid/Tile
-- Console
-- Statemachine
-- Network
-- Pooling
-- Time/Calendar
-- Camera
-- Graph Editor
-- Localization
-- Dialogue
-- Inventory
+- Event/Message (Unity / Telegraph)
+- Settings (Needs Revamp)
+- Tweening (DoTween)
+- Data (Google / Databox / Charon)
+- Statemachine (Needs Revamp)
+- Time/Calendar (Chronos / Enviro)
+- Feedbacks (MMFeedbacks)
+- Grid/Tile (Grid<>)
+- Pooling (Pooly)
+- Localization (I2)
+- Random/Noise (Coherant Noise)
+- Splines (Bezier / Curvy )
+- Pathfinding
 - Stats
+- Graph Editor (Bolt?)
+
+## Systems
+- Input (Incontrol / HInput / Unity)
+- Character (Avatar)
+- WorldItems (Interactable/Connectable)
+- Level
+- Audio (Fmod)
+- UI (Doozy)
+- Network Highlevel (Mirror)
+- Camera (ProCamera2D / Timeline)
+- Save Game
+- Inventory (Inventory Pro / Corgi Inventory Engine / Rucksack)
+- Quests
+- Dialogue (Dialogue System)
+- AI (Behaviour Designer / Game Creator)
+- Environment (Enviro)
+- Relationships (Love/Hate)
+- Decals
 - Tutorial
-- Random/Noise
-- Procedural Generation
-- ECS
+
+## Build
+- Console
+- Commands
+- Cheat Protection
+- Build Report
+- Obfuscator
+
+# 3D Content Creation
+- ProBuilder
+- ProGrids
+- PolyBrush
+- Painter
+- Puppet3D
+- FBX Exporter
+- Mixamo
 
 #### NOTE: This is a library for programmers
 

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RedOwl.Core
+namespace RedOwl.Engine
 {
     public interface IIndexable
     {
@@ -42,7 +42,7 @@ namespace RedOwl.Core
             {
                 _lookupTable.Add(item.Id, _data.Count - 1);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Log.Always($"Failed to Add {item.Id}");
                 foreach (var key in _lookupTable.Keys)
