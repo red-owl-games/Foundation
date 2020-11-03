@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace RedOwl.Engine
@@ -27,7 +29,66 @@ namespace RedOwl.Engine
         public string EncryptionIV;
     }
     
+    public partial class Game
+    {
+        [FoldoutGroup("File Controller"), SerializeField]
+        private FileControllerSettings fileControllerSettings = new FileControllerSettings();
+        public static FileControllerSettings FileControllerSettings => Instance.fileControllerSettings;
+    }
+    
     #endregion
+    
+    [Serializable]
+    public struct PersistenceItem
+    {
+        public string key;
+        public byte[] value;
+    }
+    
+    [Serializable]
+    public class DataFile : IRedOwlFile
+    {
+        [SerializeField] 
+        private List<PersistenceItem> data;
+        private Dictionary<string, MemoryStream> cache;
+
+        public DataFile(int capacity = 100)
+        {
+            data = new List<PersistenceItem>(capacity);
+            cache = new Dictionary<string, MemoryStream>(capacity);
+        }
+
+        public MemoryStream Allocate(string key)
+        {
+            cache[key] = new MemoryStream();
+            return cache[key];
+        }
+
+        public bool Get(string key, out MemoryStream stream)
+        {
+            return cache.TryGetValue(key, out stream);
+        }
+
+        public void OnBeforeSerialize()
+        {
+            if (data == null) data = new List<PersistenceItem>(cache.Count);
+            else data.Clear();
+            foreach (var kvp in cache)
+            {
+                data.Add(new PersistenceItem{ key = kvp.Key, value = kvp.Value.ToArray() });
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            if (cache == null) cache = new Dictionary<string, MemoryStream>(data.Count);
+            else cache.Clear();
+            foreach (var item in data)
+            {
+                cache[item.key] = new MemoryStream(item.value);
+            }
+        }
+    }
 
     public static class FileController
     {
@@ -46,8 +107,7 @@ namespace RedOwl.Engine
         
         public static void Read<T>(string relativePath, out T file) where T : IRedOwlFile
         {
-            file = JsonUtility.FromJson<T>(Encoding.ASCII.GetString(Read(relativePath)));
-            file.OnAfterDeserialize();
+            file = RedOwlTools.FromBytes<T>(Read(relativePath));
         }
         
         public static byte[] Read(string relativePath)
@@ -76,8 +136,7 @@ namespace RedOwl.Engine
         
         public static void Write<T>(string relativePath, T file) where T : IRedOwlFile
         {
-            file.OnBeforeSerialize();
-            Write(relativePath, Encoding.UTF8.GetBytes(JsonUtility.ToJson(file)));
+            Write(relativePath, RedOwlTools.ToBytes(file));
         }
         
         public static void Write(string relativePath, byte[] data)

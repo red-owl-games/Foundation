@@ -33,4 +33,11 @@ namespace RedOwl.Engine
         [ShowIf("HasCredentials")]
         public List<GoogleSheetsRegistration> registrations;
     }
+
+    public partial class Game
+    {
+        [FoldoutGroup("Google Sheets"), SerializeField]
+        private GoogleSheetsSettings googleSheetsSettings = new GoogleSheetsSettings();
+        public static GoogleSheetsSettings GoogleSheetsSettings => Instance.googleSheetsSettings;
+    }
 }

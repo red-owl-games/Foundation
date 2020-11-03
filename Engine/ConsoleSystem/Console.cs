@@ -9,6 +9,8 @@ using Object = UnityEngine.Object;
 
 namespace RedOwl.Engine
 {
+    #region Settings
+    
     [Serializable]
     public class ConsoleSettings : Settings
     {
@@ -23,6 +25,15 @@ namespace RedOwl.Engine
         
         public InputAction ShowConsoleAction = new InputAction();
     }
+
+    public partial class Game
+    {
+        [FoldoutGroup("Console"), SerializeField]
+        private ConsoleSettings consoleSettings = new ConsoleSettings();
+        public static ConsoleSettings ConsoleSettings => Instance.consoleSettings;
+    }
+    
+    #endregion
     
     [Command("clear", "Clears the console GUI's Log Text")]
     public class ClearCommand : ICommand

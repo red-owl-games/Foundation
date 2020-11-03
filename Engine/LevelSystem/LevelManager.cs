@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace RedOwl.Engine
 {
+    #region Settings
+    
     [Serializable]
     public class LevelManagerSettings : Settings
     {
@@ -13,6 +16,15 @@ namespace RedOwl.Engine
         public float LoadDelay = 1f;
     }
 
+    public partial class Game
+    {
+        [FoldoutGroup("Level Manager"), SerializeField]
+        private LevelManagerSettings levelManagerSettings = new LevelManagerSettings();
+        public static LevelManagerSettings LevelManagerSettings => Instance.levelManagerSettings;    
+    }
+    
+    #endregion
+    
     public static class LevelManager
     {
         private static GameLevel _lastLevel;
@@ -25,6 +37,7 @@ namespace RedOwl.Engine
         {
             string current = SceneManager.GetActiveScene().name;
             _lastLevel = GameLevel.Find(current);
+            if (_lastLevel == null) return;
             if (current == Game.LevelManagerSettings.BootstrapSceneName)
             {
                 LoadNextLevel();

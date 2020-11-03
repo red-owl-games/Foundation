@@ -1,18 +1,26 @@
 using System;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace RedOwl.Engine
 {
     [Serializable, InlineProperty]
     public class BetterGuid : IComparable, IComparable<BetterGuid>, IEquatable<BetterGuid>
     {
-        [HideLabel, DisplayAsString]
-        public readonly string value;
+        [SerializeField, HideLabel, DisplayAsString, InlineButton("GenerateNewId", "New")]
+        private string value;
 
+        private BetterGuid()
+        {
+            GenerateNewId();
+        }
+        
         private BetterGuid(string value)
         {
             this.value = value;
         }
+        
+        private void GenerateNewId() => value = Guid.NewGuid().ToString();
 
         public int CompareTo(object other)
         {
@@ -38,7 +46,7 @@ namespace RedOwl.Engine
 
         public bool Equals(BetterGuid other)
         {
-            return value == other.value;
+            return !(other is null) && value == other.value;
         }
         
         public override int GetHashCode()
@@ -48,7 +56,7 @@ namespace RedOwl.Engine
 
         public override string ToString()
         {
-            return value != null ? new Guid(value).ToString() : string.Empty;
+            return value;
         }
         
         public static bool operator ==(BetterGuid lhs, BetterGuid rhs)
@@ -69,6 +77,11 @@ namespace RedOwl.Engine
         public static implicit operator Guid(BetterGuid serializableGuid)
         {
             return new Guid(serializableGuid.value);
+        }
+
+        public static implicit operator string(BetterGuid serializableGuid)
+        {
+            return serializableGuid.ToString();
         }
     }
 }

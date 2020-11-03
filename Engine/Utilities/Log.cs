@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Print = UnityEngine.Debug;
 
@@ -12,11 +13,22 @@ namespace RedOwl.Engine
         Debug
     }
     
+    #region Settings
+    
     [Serializable]
     public class LogSettings : Settings
     {
         public LogLevel LogLevel = LogLevel.Warn;
     }
+
+    public partial class Game
+    {
+        [FoldoutGroup("Log"), SerializeField]
+        private LogSettings logSettings = new LogSettings();
+        public static LogSettings LogSettings => Instance.logSettings;
+    }
+    
+    #endregion
     
     public static class Log
     {

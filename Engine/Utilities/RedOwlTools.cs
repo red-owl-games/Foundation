@@ -1,3 +1,4 @@
+using System.Text;
 using UnityEngine;
 
 namespace RedOwl.Engine
@@ -48,6 +49,16 @@ namespace RedOwl.Engine
 #elif UNITY_WEBGL
             Application.OpenURL("about:blank");
 #endif
+        }
+
+        public static T FromBytes<T>(byte[] bytes)
+        {
+            return JsonUtility.FromJson<T>(Encoding.UTF8.GetString(bytes));
+        }
+
+        public static byte[] ToBytes<T>(T item)
+        {
+            return Encoding.UTF8.GetBytes(JsonUtility.ToJson(item));
         }
     }
 }

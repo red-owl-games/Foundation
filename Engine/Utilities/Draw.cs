@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
+    #region Settings
+    
     [Serializable]
     public class DrawSettings : Settings
     {
@@ -14,6 +16,15 @@ namespace RedOwl.Engine
         [HorizontalGroup("Draw"), ShowIf("ShowDebugDraw"), HideLabel]
         public Color DrawColor = Color.magenta;
     }
+    
+    public partial class Game
+    {
+        [FoldoutGroup("Debug Draw"), SerializeField]
+        private DrawSettings drawSettings = new DrawSettings();
+        public static DrawSettings DrawSettings => Instance.drawSettings;
+    }
+    
+    #endregion
     
     public static class Draw
     {

@@ -1,83 +1,166 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Text;
 
 namespace RedOwl.Engine
 {
     // TODO: Listing Save Files
     // TODO: Picking a Save File
     // TODO: Events
-    // TODO: More Types in Reader/Writer
-    // TODO: System Endian-ness https://www.codeproject.com/Articles/1130187/A-More-Powerful-BinaryReader-Writer
     
-    [Command("Game.Save", "Triggers a Save of the Game - [True]")]
+    [Command("SaveSystem.Save", "Triggers a Save of the Game")]
     public class SaveCommand : ICommand
     {
-        public void Invoke(string[] args) => Game.Save(); //Force Update - args.Length <= 0 || bool.Parse(args[0]));
+        public void Invoke(string[] args) => Game.SaveSystem.Save();
     }
-    
-    [Command("Game.Load", "Triggers a Load of the Game - [True]")]
+
+    [Command("SaveSystem.Load", "Triggers a Load of the Game")]
     public class LoadCommand : ICommand
     {
-        public void Invoke(string[] args) => Game.Load(); //Force update - args.Length <= 0 || bool.Parse(args[0]));
-    }
-
-    [Serializable]
-    public class DataStore
-    {
-        private Dictionary<string, string> cache;
-
-        public DataStore()
-        {
-            cache = new Dictionary<string, string>();
-        }
-
-        public T Get<T>(string key, T defaultValue)
-        {
-            return cache.TryGetValue(key, out string output) ? JsonUtility.FromJson<T>(output) : defaultValue;
-        }
-
-        public void Set<T>(string key, T value)
-        {
-            cache[key] = JsonUtility.ToJson(value);
-        }
+        public void Invoke(string[] args) => Game.SaveSystem.Load();
     }
     
-    public partial class Game
+    [Command("SaveSystem.Write", "Triggers a Write of the Game")]
+    public class WriteCommand : ICommand
     {
-        private static ulong _saveableIds;
-        public static readonly DataStore SaveMeta = new DataStore();
-        public static readonly DataStore SaveData = new DataStore();
-        private static readonly Dictionary<ulong, ISaveable> Saveables = new Dictionary<ulong, ISaveable>();
+        public void Invoke(string[] args) => Game.SaveSystem.Write();
+    }
+    
+    [Command("SaveSystem.Read", "Triggers a Read of the Game")]
+    public class ReadCommand : ICommand
+    {
+        public void Invoke(string[] args) => Game.SaveSystem.Read();
+    }
 
-        public static ulong Subscribe<T>(Saveable<T> pref)
-        {
-            _saveableIds += 1;
-            Saveables.Add(_saveableIds, pref);
-            return _saveableIds;
-        }
+    public class SaveSystem
+    {
+        private static ulong _ids;
 
-        public static void Unsubscribe(ulong id)
-        {
-            Saveables.Remove(id);
-        }
+        private DataFile data;
+        private DataFile meta;
+        private DataFile prefs;
+        private readonly Dictionary<ulong, ISaveable> saveables = new Dictionary<ulong, ISaveable>();
+        private string current;
 
-        public static void Save()
+        private DataFile GetFile(SaveableTypes type)
         {
-            foreach (var pref in Saveables.Values)
+            switch (type)
             {
-                pref.Save();
+                case SaveableTypes.Data:
+                    if (data == null)
+                    {
+                        Log.Always("Creating Data File");
+                        data = new DataFile(100);
+                    }
+
+                    return data;
+                case SaveableTypes.Meta:
+                    if (meta == null)
+                    {
+                        Log.Always("Creating Meta File");
+                        meta = new DataFile(100);
+                    }
+
+                    return meta;
+                case SaveableTypes.Pref:
+                    if (prefs == null)
+                    {
+                        Log.Always("Creating Prefs File");
+                        prefs = new DataFile(100);
+                    }
+                    
+                    return prefs;
+            }
+            Log.Always($"WTF {type}");
+            return null;
+        }
+        
+        private void WriteTo(ISaveable value)
+        {
+            var file = GetFile(value.Type);
+            if (!file.Get(value.Key, out var stream))
+            {
+                stream = file.Allocate(value.Key);
+            };
+            using (var w = new SaveWriter(stream, Encoding.UTF8, true))
+            {
+                Log.Always($"Saving Data For: {value.Key}");
+                w.BaseStream.Position = 0;
+                value.Write(w);
             }
         }
 
-        public static void Load()
+        private void ReadFrom(ISaveable value)
         {
-            foreach (var prefs in Saveables.Values)
-            {    
-                prefs.Load();
+            var file = GetFile(value.Type);
+            if (!file.Get(value.Key, out var stream)) return;
+            using (var r = new SaveReader(stream, Encoding.UTF8, true))
+            {
+                Log.Always($"Loading Data For: {value.Key}");
+                r.BaseStream.Position = 0;
+                value.Read(r);
             }
+        }
+
+        public ulong Subscribe(ISaveable value)
+        {
+            _ids += 1;
+            //Log.Always($"Subscribing: {_ids} = {value.Key} | {value.Type}");
+            saveables.Add(_ids, value);
+            // TODO: Should this ReadFrom be 1 frame delay?
+            ReadFrom(value);
+            return _ids;
+        }
+
+        public void Unsubscribe(ulong id)
+        {
+            //Log.Always($"Unsubscribe: {id} = {saveables[id].Key}");
+            WriteTo(saveables[id]);
+            saveables.Remove(id);
+        }
+        
+        public void Save()
+        {
+            foreach (var item in saveables.Values)
+            {
+                WriteTo(item);
+            }
+        }
+
+        public void Load()
+        {
+            foreach (var item in saveables.Values)
+            {
+                ReadFrom(item);
+            }
+        }
+
+        public void Write() => Write(current);
+        public void Write(string name)
+        {
+            current = name;
+            Log.Always($"Writing Save: {current}");
+            Save();
+            FileController.Write("prefs.data", prefs);
+            FileController.Write($"saves/{current}.meta", meta);
+            FileController.Write($"saves/{current}.data", data);
+        }
+
+        public void Read() => Read(current);
+        public void Read(string name)
+        {
+            current = name;
+            Log.Always($"Reading Save: {current}");
+            FileController.Read("prefs.data", out prefs);
+            FileController.Read($"saves/{current}.meta", out meta);
+            FileController.Read($"saves/{current}.data", out data);
+            Load();
         }
     }
 
+
+    public partial class Game
+    {
+        public static readonly SaveSystem SaveSystem = new SaveSystem();
+    }
 
 }

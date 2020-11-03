@@ -34,4 +34,18 @@ namespace RedOwl.Engine
             MinJumpVelocity = Kinematic.CalculateVelocity_Jump(minJumpHeight, Gravity);
         }
     }
+
+    public partial class Game
+    {
+        [FoldoutGroup("Avatar System"), SerializeField]
+        private AvatarSettings avatarSettings = new AvatarSettings();
+        public static AvatarSettings AvatarSettings => Instance.avatarSettings;
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        internal static void InitializeAvatarSettings()
+        {
+            Log.Always("[Avatar Settings] Initialize RedOwl Game!");
+            AvatarSettings.Initialize();
+        }
+    }
 }

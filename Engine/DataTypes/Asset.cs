@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using RedOwl.Engine;
 using Sirenix.OdinInspector;
-using Sirenix.Utilities;
 using UnityEngine;
 
 namespace RedOwl.Engine
@@ -20,7 +18,6 @@ namespace RedOwl.Engine
     [HideMonoScript]
     public abstract class Asset<T> : Asset where T : Asset<T>
     {
-        protected bool Intialized;
         private static T _instance;
         public static T Instance
         {
@@ -29,7 +26,6 @@ namespace RedOwl.Engine
                 if (_instance != null) return _instance;
                 _instance = Application.isPlaying ? GetInstanceRuntime() : GetInstanceEditor();
                 _instance.hideFlags = HideFlags.DontUnloadUnusedAsset;
-                _instance.Intialized = true;
                 return _instance;
             }
         }
@@ -77,7 +73,7 @@ namespace RedOwl.Engine
     }
     
 #if UNITY_EDITOR
-    public static class ManagerInitialization
+    public static class AssetInitialization
     {
         [UnityEditor.InitializeOnLoadMethod]
         public static void Initialize()
