@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace RedOwl.Engine
 {
@@ -24,7 +26,11 @@ namespace RedOwl.Engine
             get
             {
                 if (_instance != null) return _instance;
+#if UNITY_EDITOR
                 _instance = Application.isPlaying ? GetInstanceRuntime() : GetInstanceEditor();
+#else
+                _instance = GetInstanceRuntime();
+#endif
                 _instance.hideFlags = HideFlags.DontUnloadUnusedAsset;
                 return _instance;
             }
@@ -47,10 +53,10 @@ namespace RedOwl.Engine
 
             return results[0];
         }
-
+        
+#if UNITY_EDITOR
         private static T GetInstanceEditor()
         {
-#if UNITY_EDITOR
             var results = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).FullName}");
             if (results.Length == 0)
             {
@@ -68,8 +74,8 @@ namespace RedOwl.Engine
             }
 
             return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(UnityEditor.AssetDatabase.GUIDToAssetPath(results[0]));
-#endif
         }
+#endif
     }
     
 #if UNITY_EDITOR
