@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -26,14 +25,19 @@ namespace RedOwl.Engine
             get
             {
                 if (_instance != null) return _instance;
-#if UNITY_EDITOR
-                _instance = Application.isPlaying ? GetInstanceRuntime() : GetInstanceEditor();
-#else
-                _instance = GetInstanceRuntime();
-#endif
+                _instance = GetInstance();
                 _instance.hideFlags = HideFlags.DontUnloadUnusedAsset;
                 return _instance;
             }
+        }
+
+        private static T GetInstance()
+        {
+#if UNITY_EDITOR
+            return Application.isPlaying ? GetInstanceRuntime() : GetInstanceEditor();
+#else
+            return GetInstanceRuntime();
+#endif
         }
 
         private static T GetInstanceRuntime()
