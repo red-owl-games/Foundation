@@ -98,7 +98,7 @@ namespace RedOwl.Engine
 
         public static CoroutineManager Instance {
             get {
-                if (!_initialized && !RedOwlTools.IsShuttingDown)
+                if (!_initialized && !Game.IsShuttingDown)
                 {
                     var obj = new GameObject($"{nameof(CoroutineManager)}");
                     DontDestroyOnLoad(obj);
@@ -119,7 +119,7 @@ namespace RedOwl.Engine
 
         public static CoroutineWrapper StartRoutine(Func<bool> callback)
         {
-            if (RedOwlTools.IsShuttingDown) return null;
+            if (Game.IsShuttingDown) return null;
             var output = new CoroutineWrapper(CallbackWrapper(callback));
             output.Start();
             return output;
@@ -127,7 +127,7 @@ namespace RedOwl.Engine
 
         public static Coroutine StartRoutine(IEnumerator wrapper)
         {
-            if (RedOwlTools.IsShuttingDown) return null;
+            if (Game.IsShuttingDown) return null;
             return Instance.StartCoroutine(wrapper);
         }
 

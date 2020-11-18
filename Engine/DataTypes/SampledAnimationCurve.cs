@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
 
 namespace RedOwl.Engine
 {
-    public struct SampledAnimationCurve : System.IDisposable
+    public struct SampledAnimationCurve : IDisposable
     {
         private NativeArray<float> _data;
         

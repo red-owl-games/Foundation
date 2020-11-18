@@ -16,24 +16,14 @@ namespace RedOwl.Engine
 
         public void Bind<T>(T instance)
         {
-            //Log.Info($"Binding: {instance.GetType().FullName}");
+            Log.Info($"Binding: {instance.GetType().FullName}");
             cache[instance.GetType()] = instance;
         }
         
         public void BindAs<T>(T instance)
         {
-            //Log.Info($"Binding: {typeof(T).FullName}");
+            Log.Info($"Binding: {typeof(T).FullName}");
             cache[typeof(T)] = instance;
-        }
-
-        public void BindAll<T>(T instance)
-        {
-            foreach (var type in instance.GetType().GetInheritanceHierarchy(true))
-            {
-                if (type.Namespace != null && (type.Namespace.Contains("Unity") || type.Namespace.Contains("System"))) continue;
-                //Log.Info($"Binding: {type.FullName}");
-                cache[type] = instance;
-            }
         }
 
         public void Unbind<T>(T instance)
@@ -62,7 +52,8 @@ namespace RedOwl.Engine
 
         public void Inject( object obj )
         {
-            if (RedOwlTools.IsShuttingDown) return;
+            if (Game.IsShuttingDown) return;
+            Log.Info($"Injecting: {obj.GetType().FullName}");
             foreach (var field in Reflector.Reflect(obj.GetType()))
             {
                 field.SetValue(obj, Find(field.FieldType));

@@ -5,50 +5,30 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    // TODO: Convert to a UI and prefab linked in the ConsoleSettings
-    public class ConsoleUI : MonoBehaviour
+    public interface IConsoleView
     {
-        private const string FocusControlName = "CommandLine";
-        [ShowInInspector]
-        private bool _show;
-        private Vector2 _scrollPosition;
-        private string _command;
-        private Texture2D _texture;
-        private int _historyIndex = -1;
-        private RingBuffer<string> _history;
-        
-        // TODO: Replace IMGUI with UIElements or dynamically generated UI objects
+        void Toggle();
+    }
+    
+    [HideMonoScript]
+    public class ConsoleView : MonoBehaviour, IConsoleView
+    {
+        // private const string FocusControlName = "CommandLine";
+        // private Vector2 _scrollPosition;
+        // private string _command;
 
-        private void OnEnable()
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
+        private void Awake()
         {
-            Game.ConsoleSettings.ShowConsoleAction.Enable();
+            canvasGroup = GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0;
         }
 
-        private void Start()
-        {
-            _history = new RingBuffer<string>(Game.ConsoleSettings.HistoryBufferLength);
-            _history.PushFront("help");
-            _history.PushFront("clear");
-            
-            _texture = new Texture2D(1,1);
-            _texture.SetPixel(0, 0, new Color(0, 0, 0, .9f));
-            _texture.Apply();
+        public void Toggle() => canvasGroup.alpha = canvasGroup.alpha > 0 ? 0 : 1;
 
-            Game.ConsoleSettings.ShowConsoleAction.performed += ctx => ToggleShow();
-        }
-
-        private void OnDisable()
-        {
-            Game.ConsoleSettings.ShowConsoleAction.Disable();
-        }
-        
-        private void OnApplicationQuit()
-        {
-            _show = false;
-        }
-
-        private void ToggleShow() => _show = !_show;
-
+        /*
         private void OnGUI()
         {
             if (!_show || Console.Logs == null)
@@ -134,5 +114,6 @@ namespace RedOwl.Engine
                 GUI.FocusControl(FocusControlName);
             }
         }
+        */
     }
 }

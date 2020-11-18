@@ -34,7 +34,7 @@ namespace RedOwl.Engine
         private static T GetInstance()
         {
 #if UNITY_EDITOR
-            return Application.isPlaying ? GetInstanceRuntime() : GetInstanceEditor();
+            return Game.IsRunning ? GetInstanceRuntime() : GetInstanceEditor();
 #else
             return GetInstanceRuntime();
 #endif

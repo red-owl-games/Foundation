@@ -34,12 +34,14 @@ namespace RedOwl.Engine
 
         public static IEnumerator Show()
         {
-            yield return Game.Find<ILoadingScreen>().DoShow();
+            var screen = Game.Find<ILoadingScreen>();
+            if (screen != null) yield return screen.DoShow();
         }
         
         public static IEnumerator Hide()
         {
-            yield return Game.Find<ILoadingScreen>().DoHide();
+            var screen = Game.Find<ILoadingScreen>();
+            if (screen != null) yield return screen.DoHide();
         }
     }
 }

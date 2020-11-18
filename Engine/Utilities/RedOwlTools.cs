@@ -5,16 +5,6 @@ namespace RedOwl.Engine
 {
     public static class RedOwlTools
     {
-        public static bool IsRunning => Application.isPlaying;
-        
-        public static bool IsShuttingDown { get; internal set; }
-        
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void BeforeSplashScreen()
-        {
-            Application.quitting += HandleQuit;
-        }
-
         public static T Create<T>(GameObject parent = null, string name = "", bool selectGameObjectAfterCreation = true) where T : Component
         {
             var type = typeof(T);
@@ -31,24 +21,6 @@ namespace RedOwl.Engine
             if (selectGameObjectAfterCreation) UnityEditor.Selection.activeObject = go;
 #endif
             return go.GetComponent<T>();
-        }
-
-        private static void HandleQuit()
-        {
-            CoroutineManager.StopAllRoutines();
-            IsShuttingDown = true;
-        }
-
-        public static void Quit()
-        {
-            IsShuttingDown = true;
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.ExitPlaymode();
-#elif UNITY_STANDALONE 
-            Application.Quit();
-#elif UNITY_WEBGL
-            Application.OpenURL("about:blank");
-#endif
         }
 
         public static T FromBytes<T>(byte[] bytes)

@@ -75,10 +75,20 @@ namespace RedOwl.Engine
 
         public static IEnumerable<Type> GetAllTypes<T>()
         {
-            var attrType = typeof(T);
+            var requestedType = typeof(T);
             foreach (var type in GetAllTypes())
             {
-                if (attrType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                if (requestedType.IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface)
+                    yield return type;
+            }
+        }
+        
+        public static IEnumerable<Type> GetAllSubclasses<T>()
+        {
+            var requestedType = typeof(T);
+            foreach (var type in GetAllTypes<T>())
+            {
+                if (type.IsClass && type.IsSubclassOf(requestedType))
                     yield return type;
             }
         }
@@ -124,25 +134,6 @@ namespace RedOwl.Engine
             {
                 if (info.IsDefined(attrType, inherit))
                     yield return info;
-            }
-        }
-        
-        public static IEnumerable<Type> GetInheritanceHierarchy(this Type type, bool includeInterfaces = false)
-        {
-            for (var current = type; current != null; current = current.BaseType)
-            {
-                if (includeInterfaces)
-                {
-                    foreach (var @interface in current.GetInterfaces())
-                    {
-                        yield return @interface;
-                        //foreach (var interfaceBase in @interface.GetInheritanceHierarchy(true))
-                        //{
-                        //    yield return interfaceBase;
-                        //}
-                    }
-                }
-                yield return current;
             }
         }
     }

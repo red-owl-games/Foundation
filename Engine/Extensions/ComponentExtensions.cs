@@ -39,7 +39,7 @@ namespace RedOwl.Engine
         public static void Destroy(this GameObject self)
         {
 #if UNITY_EDITOR
-            if (Application.isPlaying) Object.Destroy(self); else Object.DestroyImmediate(self);
+            if (Game.IsRunning) Object.Destroy(self); else Object.DestroyImmediate(self);
 #else
             Object.Destroy(self);
 #endif

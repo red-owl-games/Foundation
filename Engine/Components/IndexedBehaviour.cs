@@ -28,10 +28,7 @@ namespace RedOwl.Engine
             AfterAwake();
         }
 
-        protected virtual void AfterAwake()
-        {
-            
-        }
+        protected virtual void AfterAwake() {}
 
         protected void OnDestroy()
         {
@@ -39,9 +36,6 @@ namespace RedOwl.Engine
             AfterDestory();
         }
 
-        protected virtual void AfterDestory()
-        {
-            
-        }
+        protected virtual void AfterDestory() {}
     }
 }
