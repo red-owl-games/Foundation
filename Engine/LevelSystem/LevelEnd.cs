@@ -1,4 +1,3 @@
-using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -7,20 +6,10 @@ namespace RedOwl.Engine
     [HideMonoScript]
     public class LevelEnd : MonoBehaviour
     {
-        public int count = 2;
-
-        private int current;
-        
-        private void OnTriggerEnter(Collider other)
+        [Button]
+        public void NextLevel()
         {
-            current += 1;
-            // TODO: check tags?
-            if (current >= count) LevelManager.LoadNextLevel();
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            current -= 1;
+            LevelManager.LoadNextLevel();
         }
     }
 }

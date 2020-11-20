@@ -3,6 +3,7 @@ using System.Collections;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace RedOwl.Engine
 {
@@ -14,6 +15,9 @@ namespace RedOwl.Engine
         public string BootstrapSceneName = "Bootstrap";
 
         public float LoadDelay = 1f;
+        
+        [AssetsOnly, AssetSelector(Filter = "t:ILoadingScreen")]
+        public GameObject prefab;
     }
 
     public partial class Game
@@ -35,6 +39,11 @@ namespace RedOwl.Engine
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
         {
+            if (Game.LevelManagerSettings.prefab != null)
+            {
+                Object.DontDestroyOnLoad(Object.Instantiate(Game.LevelManagerSettings.prefab));
+            }
+            
             string current = SceneManager.GetActiveScene().name;
             _lastLevel = GameLevel.Find(current);
             if (_lastLevel == null) return;
