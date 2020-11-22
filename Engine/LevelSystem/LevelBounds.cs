@@ -12,6 +12,8 @@ namespace RedOwl.Engine
     public class LevelBounds : MonoBehaviour, ILevelBounds
     {
         [OnValueChanged("CalculateBounds")]
+        public Vector3 offset;
+        [OnValueChanged("CalculateBounds")]
         public Vector3 extents;
 
         public Bounds Bounds { get; private set; }
@@ -37,7 +39,7 @@ namespace RedOwl.Engine
 
         protected virtual void CalculateBounds()
         {
-            Bounds = new Bounds(transform.position, extents);
+            Bounds = new Bounds(transform.position + offset, extents);
         }
     }
 }

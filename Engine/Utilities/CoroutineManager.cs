@@ -138,7 +138,7 @@ namespace RedOwl.Engine
         
         public static void StopAllRoutines()
         {
-            Instance.StopAllCoroutines();
+            if (!Game.IsShuttingDown) Instance.StopAllCoroutines();
         }
     }
 }

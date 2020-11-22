@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -35,6 +36,7 @@ namespace RedOwl.Engine
 
         public static event Action<GameLevel> OnLoaded;
         public static event Action<GameLevel> OnCompleted;
+
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
@@ -43,6 +45,8 @@ namespace RedOwl.Engine
             {
                 Object.DontDestroyOnLoad(Object.Instantiate(Game.LevelManagerSettings.prefab));
             }
+
+            OnLoaded += LevelLoaded;
             
             string current = SceneManager.GetActiveScene().name;
             _lastLevel = GameLevel.Find(current);
@@ -51,7 +55,16 @@ namespace RedOwl.Engine
             {
                 LoadNextLevel();
             }
-            OnCompleted?.Invoke(GameLevel.Find(current));
+            else
+            {
+                OnLoaded?.Invoke(_lastLevel);
+                OnCompleted?.Invoke(_lastLevel);
+            }
+        }
+
+        private static void LevelLoaded(GameLevel level)
+        {
+            FmodController.Set(level.fmodEvents);
         }
 
         private static IEnumerator LoadLevelAsync(GameLevel level)
@@ -63,14 +76,14 @@ namespace RedOwl.Engine
             {
                 yield return null;
             }
-
+            
             _lastLevel = level;
             OnLoaded?.Invoke(level);
             yield return new WaitForSeconds(Game.LevelManagerSettings.LoadDelay);
             OnCompleted?.Invoke(level);
             yield return LoadingScreen.Hide();
         }
-        
+
         public static void LoadLevel(GameLevel level)
         {
             CoroutineManager.StartRoutine(LoadLevelAsync(level));

@@ -10,30 +10,22 @@ namespace RedOwl.Engine
         MultiPlayer
     }
 
-    public struct MusicParameters
-    {
-        public string parameterName;
-        public float value;
-        public float duration;
-    }
-
     public class GameLevel : Indexed<GameLevel>
     {
-        public LevelTypes type;
-        public LevelStates state;
+        public LevelTypes type { get; private set; }
+        public LevelStates state { get; private set; }
 
-        public string sceneName;
+        public string sceneName { get; private set; }
 
-        public bool isMainMenu;
+        public bool isMainMenu { get; private set; }
         
         //TODO: Localization Key
-        public string title;
-        public string subTitle;
+        public string title { get; private set; }
+        public string subTitle { get; private set; }
 
-        public string musicEventPath;
-        public List<MusicParameters> musicParameters;
+        public List<FmodEvent> fmodEvents { get; private set; }
 
-        public bool IsSkippable;
+        public bool IsSkippable { get; private set; }
 
         public GameLevel(string name) : base()
         {
@@ -45,8 +37,7 @@ namespace RedOwl.Engine
             type = LevelTypes.MultiPlayer;
             state = LevelStates.None;
 
-            musicEventPath = "";
-            musicParameters = new List<MusicParameters>();
+            fmodEvents = new List<FmodEvent>();
 
             IsSkippable = false;
         }
@@ -82,20 +73,9 @@ namespace RedOwl.Engine
             return this;
         }
 
-        public GameLevel Music(string eventPath)
+        public GameLevel FMOD(string path, params FmodParam[] parameters)
         {
-            musicEventPath = eventPath;
-            return this;
-        }
-
-        public GameLevel MusicParam(string parameterName, float value, float duration = 1f)
-        {
-            musicParameters.Add(new MusicParameters
-            {
-                parameterName = parameterName,
-                value = value,
-                duration = duration
-            });
+            fmodEvents.Add(new FmodEvent(path, parameters: parameters));
             return this;
         }
 

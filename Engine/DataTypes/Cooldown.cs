@@ -17,6 +17,7 @@ namespace RedOwl.Engine
 
         public event Action OnReady;
         public event Action<float> OnChanged;
+        public event Action<float> OnChangedPercent;
 
         [HorizontalGroup("Cooldown", 0.2f)]
         [ShowInInspector, HideLabel, DisableInPlayMode, DisableInEditorMode]
@@ -35,6 +36,7 @@ namespace RedOwl.Engine
             if (IsReady) return;
             _cooldown = math.max(0, _cooldown - deltaTime);
             OnChanged?.Invoke(_cooldown);
+            OnChangedPercent?.Invoke(_cooldown / threshold);
             if (IsReady) OnReady?.Invoke();
         }
 
@@ -42,12 +44,14 @@ namespace RedOwl.Engine
         {
             _cooldown = threshold;
             OnChanged?.Invoke(_cooldown);
+            OnChangedPercent?.Invoke(_cooldown / threshold);
         }
 
         public void Reset()
         {
             _cooldown = 0;
             OnChanged?.Invoke(_cooldown);
+            OnChangedPercent?.Invoke(_cooldown / threshold);
         }
 
         public static implicit operator Cooldown(float threshold) => new Cooldown(threshold);
