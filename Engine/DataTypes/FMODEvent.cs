@@ -10,8 +10,8 @@ namespace RedOwl.Engine
     {
         public readonly string path;
         public readonly FmodParam[] parameters;
-        public readonly STOP_MODE stopMode;
-        public FmodEvent(string path, STOP_MODE stopMode = STOP_MODE.ALLOWFADEOUT, params FmodParam[] parameters)
+        public readonly FMOD.Studio.STOP_MODE stopMode;
+        public FmodEvent(string path, FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT, params FmodParam[] parameters)
         {
             this.path = path;
             this.parameters = parameters;
@@ -39,7 +39,7 @@ namespace RedOwl.Engine
         
         private bool _isPlaying;
         private EventInstance _event;
-        private STOP_MODE _stopMode;
+        private FMOD.Studio.STOP_MODE _stopMode;
 
         public FmodController(FmodEvent fmodEvent)
         {
