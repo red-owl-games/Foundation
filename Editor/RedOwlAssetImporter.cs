@@ -3,7 +3,8 @@ using System.IO;
 using System.Linq;
 using RedOwl.Engine;
 using Sirenix.OdinInspector;
-using UnityEditor.Experimental.AssetImporters;
+using UnityEditor.AssetImporters;
+
 using UnityEngine;
 
 namespace RedOwl.Editor
