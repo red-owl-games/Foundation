@@ -30,7 +30,7 @@ namespace RedOwl.Engine
             runSpeed = Speed * RunSpeedFactor;
         }
 
-        protected override void HandleInput(ref IAvatarInput3DTopdown input)
+        protected override void ProcessInput(ref IAvatarInput3DTopdown input)
         {
             movement = input.Move;
             running = input.Run != ButtonStates.Cancelled;
@@ -38,8 +38,8 @@ namespace RedOwl.Engine
 
         public override void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
-            if (movement.magnitude > 0.001f)
-                currentRotation = Quaternion.Slerp(currentRotation, Quaternion.LookRotation(new Vector3(-movement.x, 0f, -movement.y)), 1 - math.exp(-rotationSpeed * deltaTime));
+            //if (movement.magnitude > 0.001f)
+            //    currentRotation = Quaternion.Slerp(currentRotation, Quaternion.LookRotation(new Vector3(-movement.x, 0f, -movement.y)), 1 - math.exp(-rotationSpeed * deltaTime));
         }
 
         public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)

@@ -17,13 +17,13 @@ namespace RedOwl.Engine
         public AnimTriggerProperty dashAnimParam = "Dashed";
         
         private bool _dashRequested;
-        
-        public override void OnStart()
+
+        public override void RegisterAnimatorParams(AnimatorController controller)
         {
-            dashAnimParam.Register(Avatar.AnimController);
+            dashAnimParam.Register(controller);
         }
 
-        protected override void HandleInput(ref IAvatarDashInput input)
+        protected override void ProcessInput(ref IAvatarDashInput input)
         {
             if (input.Dash == ButtonStates.Pressed && cooldown.IsReady)
             {

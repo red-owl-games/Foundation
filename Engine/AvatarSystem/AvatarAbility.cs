@@ -13,7 +13,8 @@ namespace RedOwl.Engine
         void OnStart();
         void OnReset();
         void OnCleanup();
-        void HandleInput(ref IAvatarInput input);
+        void RegisterAnimatorParams(AnimatorController controller);
+        void ProcessInput(ref IAvatarInput input);
     }
     
     [HideMonoScript]
@@ -46,11 +47,12 @@ namespace RedOwl.Engine
             Avatar.Remove(this);
         }
 
+        public virtual void RegisterAnimatorParams(AnimatorController controller) {}
         public virtual void OnStart() {}
         public virtual void OnReset() {}
         public virtual void OnCleanup() {}
 
-        public virtual void HandleInput(ref IAvatarInput input) {}
+        public virtual void ProcessInput(ref IAvatarInput input) {}
 
         public virtual void BeforeCharacterUpdate(float deltaTime) {}
 
@@ -75,11 +77,11 @@ namespace RedOwl.Engine
 
     public abstract class AvatarAbility<TInput> : AvatarAbility where TInput : IAvatarInput
     {
-        public override void HandleInput(ref IAvatarInput input)
+        public override void ProcessInput(ref IAvatarInput input)
         {
-            if (input is TInput casted) HandleInput(ref casted);
+            if (input is TInput casted) ProcessInput(ref casted);
         }
 
-        protected abstract void HandleInput(ref TInput input);
+        protected abstract void ProcessInput(ref TInput input);
     }
 }

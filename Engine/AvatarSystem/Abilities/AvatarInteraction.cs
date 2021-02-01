@@ -49,7 +49,7 @@ namespace RedOwl.Engine
             _stack = new BetterStack<IInteractable>(stackType);
         }
 
-        protected override void HandleInput(ref IAvatarInputInteraction input)
+        protected override void ProcessInput(ref IAvatarInputInteraction input)
         {
             if (input.Interact == ButtonStates.Pressed)
             {

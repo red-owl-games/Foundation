@@ -40,20 +40,22 @@ namespace RedOwl.Engine
         private float _jumpForce;
         private float _maxJumpVelocity;
         private float _minJumpVelocity;
-
-        private AnimatorController controller;
+        
+        public override void RegisterAnimatorParams(AnimatorController controller)
+        {
+            jumpAnimParam.Register(controller);
+            airJumpAnimParam.Register(controller);
+        }
 
         public override void OnStart()
         {
             _state = States.Grounded;
             _maxJumpVelocity = Game.AvatarSettings.MaxJumpVelocity;
             _minJumpVelocity = Game.AvatarSettings.MinJumpVelocity;
-            jumpAnimParam.Register(Avatar.AnimController);
-            airJumpAnimParam.Register(Avatar.AnimController);
             airJumpLimit.Reset();
         }
 
-        protected override void HandleInput(ref IAvatarInputJump input)
+        protected override void ProcessInput(ref IAvatarInputJump input)
         {
             if (input.Jump == ButtonStates.Cancelled)
             {

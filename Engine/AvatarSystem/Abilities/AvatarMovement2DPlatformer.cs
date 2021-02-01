@@ -20,7 +20,7 @@ namespace RedOwl.Engine
         private float movement;
         private float velocityXSmoothing;
 
-        protected override void HandleInput(ref IAvatarInput2DPlatformer input)
+        protected override void ProcessInput(ref IAvatarInput2DPlatformer input)
         {
             movement = input.Move.x;
         }

@@ -16,7 +16,7 @@ namespace RedOwl.Engine
         void AssignAvatar(Avatar avatar);
     }
 
-    public abstract class AvatarInput : IAvatarInput
+    public abstract class AvatarInputBase
     {
         private Avatar _avatar;
 
@@ -25,9 +25,9 @@ namespace RedOwl.Engine
             _avatar = avatar;
         }
         
-        protected void ProcessInput()
+        protected void ApplyInputImmediately()
         {
-            _avatar.HandleInput();
+            _avatar.ProcessInput();
         }
         
         public static ButtonStates GetState(InputAction.CallbackContext context)

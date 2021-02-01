@@ -20,13 +20,13 @@ namespace RedOwl.Engine
 
         private int _zIndex;
 
-        public override void OnStart()
+        public override void RegisterAnimatorParams(AnimatorController controller)
         {
-            jumpAnimParam.Register(Avatar.AnimController);
-            jumpIndexAnimParam.Register(Avatar.AnimController);
+            jumpAnimParam.Register(controller);
+            jumpIndexAnimParam.Register(controller);
         }
 
-        protected override void HandleInput(ref IAvatarInputZJump input)
+        protected override void ProcessInput(ref IAvatarInputZJump input)
         {
             if (input.ZJumpUp == ButtonStates.Pressed && _zIndex < steps)
             {

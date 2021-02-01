@@ -24,8 +24,8 @@ namespace RedOwl.Engine
             controller.RegisterFloat(Name, out Parameter);
         }
 
-        public float Get() => Controller.GetFloat(Parameter);
-        public void Set(float value) => Controller.SetFloat(Parameter, value);
+        public float Get() => Controller?.GetFloat(Parameter) ?? 0f;
+        public void Set(float value) => Controller?.SetFloat(Parameter, value);
         
         public static implicit operator AnimFloatProperty(string name) => new AnimFloatProperty {Name = name};
     }
@@ -39,8 +39,8 @@ namespace RedOwl.Engine
             controller.RegisterInt(Name, out Parameter);
         }
         
-        public int Get() => Controller.GetInt(Parameter);
-        public void Set(int value) => Controller.SetInt(Parameter, value);
+        public int Get() => Controller?.GetInt(Parameter) ?? 0;
+        public void Set(int value) => Controller?.SetInt(Parameter, value);
         
         public static implicit operator AnimIntProperty(string name) => new AnimIntProperty {Name = name};
     }
@@ -54,8 +54,8 @@ namespace RedOwl.Engine
             controller.RegisterBool(Name, out Parameter);
         }
         
-        public bool Get() => Controller.GetBool(Parameter);
-        public void Set(bool value) => Controller.SetBool(Parameter, value);
+        public bool Get() => Controller?.GetBool(Parameter) ?? false;
+        public void Set(bool value) => Controller?.SetBool(Parameter, value);
 
         public void Trigger(float delay = 0.2f)
         {
@@ -81,7 +81,7 @@ namespace RedOwl.Engine
             controller.RegisterTrigger(Name, out Parameter);
         }
         
-        public void Set() => Controller.SetTrigger(Parameter);
+        public void Set() => Controller?.SetTrigger(Parameter);
         
         public static implicit operator AnimTriggerProperty(string name) => new AnimTriggerProperty {Name = name};
     }

@@ -59,7 +59,8 @@ namespace RedOwl.Engine
 
         public AbilityCache Abilities { get; } = new AbilityCache();
         public Guid Id { get; private set; }
-        public AnimatorController AnimController { get; private set; }
+        private bool _hasAnimator;
+        private AnimatorController _animController;
         private IAvatarInput _inputHandler;
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
@@ -69,31 +70,34 @@ namespace RedOwl.Engine
         {
             Id = Guid.NewGuid();
             this.Requires(Motor);
-            this.Requires(animator);
-            AnimController = new AnimatorController(animator);
-            //_input = new AvatarInputManager(this);
-            VelocityXAnimParam.Register(AnimController);
-            VelocityYAnimParam.Register(AnimController);
-            VelocityZAnimParam.Register(AnimController);
-            LandedAnimParam.Register(AnimController);
-            GroundedAnimParam.Register(AnimController);
+            _hasAnimator = animator != null;
             Motor.CharacterController = this;
             if (isPlayer) Players.Add(this);
         }
 
-        private void OnEnable()
-        {
-            //_input?.Enable();
-        }
-
         private void Start()
         {
+            if (_hasAnimator)
+            {
+                _animController = new AnimatorController(animator);
+                VelocityXAnimParam.Register(_animController);
+                VelocityYAnimParam.Register(_animController);
+                VelocityZAnimParam.Register(_animController);
+                LandedAnimParam.Register(_animController);
+                GroundedAnimParam.Register(_animController);
+            }
             foreach (var ability in Abilities.All.ToArray().Reverse())
             {
+                if (_hasAnimator) ability.RegisterAnimatorParams(_animController);
                 ability.OnStart();
             }
             _isInitialized = true;
             Respawn();
+        }
+
+        private void Update()
+        {
+            ProcessInput();
         }
 
         internal void Respawn()
@@ -102,11 +106,6 @@ namespace RedOwl.Engine
             {
                 ability.OnReset();
             }
-        }
-
-        private void OnDisable()
-        {
-            //_input?.Disable();
         }
 
         private void OnDestroy()
@@ -128,11 +127,17 @@ namespace RedOwl.Engine
             Abilities.Remove(ability);
             ability.OnCleanup();
         }
+        
+        public void SetInputHandler<T>(T handler) where T : class, IAvatarInput
+        {
+            handler.AssignAvatar(this);
+            _inputHandler = handler;
+        }
 
-        public void HandleInput()
+        public void ProcessInput()
         {
             if (_inputHandler == null) return;
-            foreach (var ability in Abilities.Unlocked) ability.HandleInput(ref _inputHandler);
+            foreach (var ability in Abilities.Unlocked) ability.ProcessInput(ref _inputHandler);
         }
 
         public void BeforeCharacterUpdate(float deltaTime)
@@ -191,12 +196,6 @@ namespace RedOwl.Engine
         public void OnDiscreteCollisionDetected(Collider hitCollider)
         {
             foreach (var ability in Abilities.Unlocked) ability.OnDiscreteCollisionDetected(hitCollider);
-        }
-
-        public void InputHandler<T>(ref T handler) where T : IAvatarInput
-        {
-            handler.AssignAvatar(this);
-            _inputHandler = handler;
         }
     }
 }

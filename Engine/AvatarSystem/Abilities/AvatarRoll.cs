@@ -26,10 +26,14 @@ namespace RedOwl.Engine
         private float _originalHeight;
         private float _originalYOffset;
         private float _direction;
-        
+
+        public override void RegisterAnimatorParams(AnimatorController controller)
+        {
+            animParam.Register(controller);
+        }
+
         public override void OnStart()
         {
-            animParam.Register(Avatar.AnimController);
             _originalRadius = Motor.Capsule.radius;
             _originalHeight = Motor.Capsule.height;
             _originalYOffset = Motor.Capsule.center.y;
@@ -38,7 +42,7 @@ namespace RedOwl.Engine
             _velocity = distance / duration;
         }
 
-        protected override void HandleInput(ref IAvatarInputRoll input)
+        protected override void ProcessInput(ref IAvatarInputRoll input)
         {
             if (input.Roll == ButtonStates.Pressed && cooldown.IsReady)
             {
