@@ -13,7 +13,7 @@ namespace RedOwl.Engine
         void OnStart();
         void OnReset();
         void OnCleanup();
-        void HandleInput(ref AvatarInput input);
+        void HandleInput(ref IAvatarInput input);
     }
     
     [HideMonoScript]
@@ -50,7 +50,7 @@ namespace RedOwl.Engine
         public virtual void OnReset() {}
         public virtual void OnCleanup() {}
 
-        public virtual void HandleInput(ref AvatarInput input) {}
+        public virtual void HandleInput(ref IAvatarInput input) {}
 
         public virtual void BeforeCharacterUpdate(float deltaTime) {}
 
@@ -71,5 +71,15 @@ namespace RedOwl.Engine
         public virtual void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) {}
         
         public virtual void OnDiscreteCollisionDetected(Collider hitCollider) {}
+    }
+
+    public abstract class AvatarAbility<TInput> : AvatarAbility where TInput : IAvatarInput
+    {
+        public override void HandleInput(ref IAvatarInput input)
+        {
+            if (input is TInput casted) HandleInput(ref casted);
+        }
+
+        protected abstract void HandleInput(ref TInput input);
     }
 }

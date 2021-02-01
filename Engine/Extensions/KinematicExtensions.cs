@@ -21,7 +21,7 @@ namespace RedOwl.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float CalculateVelocity_Jump(float jumpHeight, float gravity)
         {
-            return math.sqrt(-2 * math.abs(gravity) * jumpHeight);
+            return math.sqrt(2 * math.abs(gravity) * jumpHeight);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

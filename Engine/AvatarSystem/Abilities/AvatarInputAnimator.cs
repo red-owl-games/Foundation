@@ -1,3 +1,5 @@
+
+/*
 namespace RedOwl.Engine
 {
     public class AvatarInputAnimator : AvatarAbility
@@ -150,3 +152,4 @@ namespace RedOwl.Engine
         }
     }
 }
+*/

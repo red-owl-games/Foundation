@@ -3,19 +3,20 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
+    public interface IAvatarInputInteraction : IAvatarInput
+    {
+        ButtonStates Select { get; }
+        ButtonStates Interact { get; set; }
+    }
+    
     [HideMonoScript]
-    public class AvatarInteraction : AvatarAbility
+    public class AvatarInteraction : AvatarAbility<IAvatarInputInteraction>
     {
         public override int Priority { get; } = -200;
-        
-        public AvatarInputButtons selectButton = AvatarInputButtons.TriggerRight;
-        public AvatarInputButtons interactButton = AvatarInputButtons.ButtonSouth;
-        
 
         public BetterStackTypes stackType = BetterStackTypes.Fifo;
         
         private ButtonStates _select;
-        private ButtonStates _interact;
 
         private BetterStack<IInteractable> _stack;
 
@@ -48,23 +49,22 @@ namespace RedOwl.Engine
             _stack = new BetterStack<IInteractable>(stackType);
         }
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarInputInteraction input)
         {
-            _interact = input.Get(interactButton);
-            if (_interact == ButtonStates.Pressed)
+            if (input.Interact == ButtonStates.Pressed)
             {
                 if (UseInteraction())
-                    input.Set(interactButton, ButtonStates.Cancelled);
+                    input.Interact = ButtonStates.Cancelled;
             }
 
-            _select = input.Get(selectButton);
-            if (_select == ButtonStates.Held)
+            switch (input.Select)
             {
-                UseSelect();
-            }
-            if (_select == ButtonStates.Cancelled)
-            {
-                UseDeselect();
+                case ButtonStates.Held:
+                    UseSelect();
+                    break;
+                case ButtonStates.Cancelled:
+                    UseDeselect();
+                    break;
             }
         }
 

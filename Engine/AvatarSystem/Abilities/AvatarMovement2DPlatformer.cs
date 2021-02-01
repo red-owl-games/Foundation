@@ -3,7 +3,12 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class Avatar2DPlatformerMovement : AvatarAbility
+    public interface IAvatarInput2DPlatformer : IAvatarInput
+    {
+        float2 Move { get; }
+    }
+    
+    public class AvatarMovement2DPlatformer : AvatarAbility<IAvatarInput2DPlatformer>
     {
         public override int Priority { get; } = 0;
 
@@ -15,7 +20,7 @@ namespace RedOwl.Engine
         private float movement;
         private float velocityXSmoothing;
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarInput2DPlatformer input)
         {
             movement = input.Move.x;
         }

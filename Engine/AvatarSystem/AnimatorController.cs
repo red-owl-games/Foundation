@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class AnimatorManager
+    public class AnimatorController
     {
         private readonly Animator _animator;
         private readonly List<int> _availableParameters;
         
-        public AnimatorManager(Animator animator)
+        public AnimatorController(Animator animator)
         {
             _animator = animator;
             _availableParameters = new List<int>();

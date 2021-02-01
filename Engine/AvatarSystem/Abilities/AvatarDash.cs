@@ -2,11 +2,15 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class AvatarDash : AvatarAbility
+    public interface IAvatarDashInput : IAvatarInput
+    {
+        ButtonStates Dash { get; }
+    }
+    
+    public class AvatarDash : AvatarAbility<IAvatarDashInput>
     {
         public override int Priority { get; } = -10;
 
-        public AvatarInputButtons button = AvatarInputButtons.ButtonNorth;
         public Cooldown cooldown;
         public Vector2 velocity = new Vector2(30, 10f);
         
@@ -16,12 +20,12 @@ namespace RedOwl.Engine
         
         public override void OnStart()
         {
-            dashAnimParam.Register(Avatar.AnimManager);
+            dashAnimParam.Register(Avatar.AnimController);
         }
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarDashInput input)
         {
-            if (input.Get(button) == ButtonStates.Pressed && cooldown.IsReady)
+            if (input.Dash == ButtonStates.Pressed && cooldown.IsReady)
             {
                 dashAnimParam.Set();
                 _dashRequested = true;

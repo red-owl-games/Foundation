@@ -2,7 +2,12 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class AvatarRoll : AvatarAbility
+    public interface IAvatarInputRoll : IAvatarInput
+    {
+        ButtonStates Roll { get; }
+    }
+    
+    public class AvatarRoll : AvatarAbility<IAvatarInputRoll>
     {
         public override int Priority { get; } = 10;
 
@@ -10,7 +15,6 @@ namespace RedOwl.Engine
         public float capsuleHeight = 0.5f;
         public float capsuleYOffset = 0.25f;
 
-        public AvatarInputButtons button = AvatarInputButtons.ButtonNorth;
         public Cooldown cooldown = 2;
         public Cooldown duration = 1;
         public float distance = 5; 
@@ -25,7 +29,7 @@ namespace RedOwl.Engine
         
         public override void OnStart()
         {
-            animParam.Register(Avatar.AnimManager);
+            animParam.Register(Avatar.AnimController);
             _originalRadius = Motor.Capsule.radius;
             _originalHeight = Motor.Capsule.height;
             _originalYOffset = Motor.Capsule.center.y;
@@ -34,9 +38,9 @@ namespace RedOwl.Engine
             _velocity = distance / duration;
         }
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarInputRoll input)
         {
-            if (input.Get(button) == ButtonStates.Pressed && cooldown.IsReady)
+            if (input.Roll == ButtonStates.Pressed && cooldown.IsReady)
             {
                 Roll();
             }

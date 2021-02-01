@@ -1,50 +1,86 @@
 using Sirenix.OdinInspector;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    [RequireComponent(typeof(AvatarGravity))]
-    public class AvatarJump : AvatarAbility
+    // TODO: Needs a State Machine
+    // Grounded -> JumpRequested -> Jumping -> AirJump -> Jumping
+    //                                                 -> MinJump -> AirJump
+    //                                      -> MinJump
+    // TODO: Coyote Time is not working - the Cooldown is wonky and i'm not sure about the logic
+
+    public interface IAvatarInputJump : IAvatarInput
     {
+        ButtonStates Jump { get; }
+    }
+
+    [RequireComponent(typeof(AvatarGravity))]
+    public class AvatarJump : AvatarAbility<IAvatarInputJump>
+    {
+        public enum States
+        {
+            Grounded,
+            JumpRequested,
+            Falling,
+            MinJump,
+            AirJump,
+        }
+        
         public override int Priority { get; } = -20;
 
         public Cooldown coyoteTime;
         public Counter airJumpLimit;
-        public AvatarInputButtons button = AvatarInputButtons.ButtonSouth;
         
         public AnimBoolProperty jumpAnimParam = "Jumpped";
         public AnimBoolProperty airJumpAnimParam = "AirJumpped";
 
-        private ButtonStates _button;
-        private float _maxJumpVelocity;
-        //private float _minJumpVelocity;
-        private bool _jumpRequested;
-        private bool _isFalling;
+        [ShowInInspector]
+        private States _state;
 
-        private AnimatorManager _manager;
+        private float _jumpForce;
+        private float _maxJumpVelocity;
+        private float _minJumpVelocity;
+
+        private AnimatorController controller;
 
         public override void OnStart()
         {
+            _state = States.Grounded;
             _maxJumpVelocity = Game.AvatarSettings.MaxJumpVelocity;
-            jumpAnimParam.Register(Avatar.AnimManager);
-            airJumpAnimParam.Register(Avatar.AnimManager);
+            _minJumpVelocity = Game.AvatarSettings.MinJumpVelocity;
+            jumpAnimParam.Register(Avatar.AnimController);
+            airJumpAnimParam.Register(Avatar.AnimController);
             airJumpLimit.Reset();
         }
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarInputJump input)
         {
-            _button = input.Get(button);
-            if (_button == ButtonStates.Pressed)
+            if (input.Jump == ButtonStates.Cancelled)
             {
-                if (Motor.GroundingStatus.FoundAnyGround || !coyoteTime.IsReady)
+                switch (_state)
                 {
-                    coyoteTime.Reset();
+                    case States.JumpRequested:
+                        _jumpForce = _minJumpVelocity;
+                        break;
+                    case States.Falling:
+                        _state = States.MinJump;
+                        break;
+                }
+            }
+            if (input.Jump == ButtonStates.Pressed)
+            {
+                if (_state == States.Grounded)
+                {
+                    // if (!coyoteTime.IsReady)
+                    // {
+                    //     coyoteTime.Reset();
+                    //     Jump();
+                    // }
                     Jump();
                 }
                 else
                 {
-                    if (airJumpLimit.IsReady)
+                    if ((_state == States.Falling || _state == States.MinJump) && airJumpLimit.IsReady)
                     {
                         AirJump();
                     }
@@ -55,31 +91,38 @@ namespace RedOwl.Engine
         public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
             if (!Unlocked) return;
-            // TODO: this does not work its always evaluating - we need "if was cancelled this frame" kind of thing
-            // if (_button == ButtonStates.Cancelled)
-            // {
-            //     if (currentVelocity.y > _minJumpVelocity) currentVelocity.y = _minJumpVelocity;
-            // }
-            if (_jumpRequested)
+            if (_state == States.MinJump)
+            {
+                if (currentVelocity.y > _minJumpVelocity) currentVelocity.y = _minJumpVelocity;
+                _state = States.Falling;
+            }
+            
+            if (_state == States.JumpRequested)
             {
                 Motor.ForceUnground(0.1f);
-                currentVelocity.y = _maxJumpVelocity;
-                _jumpRequested = false;
+                currentVelocity.y = _jumpForce;
+                _state = States.Falling;
+            }
+
+            if (_state == States.AirJump)
+            {
+                currentVelocity.y = _jumpForce;
+                _state = States.Falling;
             }
         }
 
         public override void AfterCharacterUpdate(float deltaTime)
         {
-            if (Motor.GroundingStatus.IsStableOnGround)
+            if (Motor.GroundingStatus.IsStableOnGround && !Motor.MustUnground())
             {
-                if (_isFalling) coyoteTime.Use();
-                _isFalling = false;
+                coyoteTime.Use();
+                _state = States.Grounded;
                 airJumpAnimParam.Off();
                 airJumpLimit.Reset();
             }
             else
             {
-                _isFalling = true;
+                _state = States.Falling;
                 coyoteTime.Tick(deltaTime);
             }
         }
@@ -88,14 +131,16 @@ namespace RedOwl.Engine
         private void Jump()
         {
             jumpAnimParam.Trigger();
-            _jumpRequested = true;
+            _jumpForce = _maxJumpVelocity;
+            _state = States.JumpRequested;
         }
 
         private void AirJump()
         {
             airJumpAnimParam.Trigger();
             airJumpLimit.Use();
-            _jumpRequested = true;
+            _jumpForce = _maxJumpVelocity;
+            _state = States.AirJump;
         }
     }
 }

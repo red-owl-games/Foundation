@@ -8,12 +8,16 @@ namespace RedOwl.Engine
     [Serializable]
     public class AvatarSettings : Settings
     {
-        [SerializeField, DisableInPlayMode]
+        [SerializeField, DisableInPlayMode, OnValueChanged("Initialize")]
         private float maxJumpHeight = 4f;
-        [SerializeField, DisableInPlayMode]
+        [SerializeField, DisableInPlayMode, OnValueChanged("Initialize")]
         private float minJumpHeight = 2f;
-        [SerializeField, DisableInPlayMode]
+        [SerializeField, DisableInPlayMode, OnValueChanged("Initialize")]
         private float jumpTime = .4f;
+        [SerializeField, DisableInPlayMode, OnValueChanged("Initialize")]
+        private float gravityFallFactor = 3f;
+
+        public float GravityFallFactor => gravityFallFactor;
         
         [ShowInInspector, DisableInPlayMode, DisableInEditorMode]
         public float Gravity { get; private set; }

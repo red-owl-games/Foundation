@@ -2,12 +2,15 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class AvatarZJump : AvatarAbility
+    public interface IAvatarInputZJump : IAvatarInput
+    {
+        ButtonStates ZJumpUp { get; }
+        ButtonStates ZJumpDown { get; }
+    }
+    
+    public class AvatarZJump : AvatarAbility<IAvatarInputZJump>
     {
         public override int Priority { get; } = 100;
-
-        public AvatarInputButtons upButton = AvatarInputButtons.North;
-        public AvatarInputButtons downButton = AvatarInputButtons.South;
 
         public int steps = 1;
         public float stepSize = 5f;
@@ -19,19 +22,19 @@ namespace RedOwl.Engine
 
         public override void OnStart()
         {
-            jumpAnimParam.Register(Avatar.AnimManager);
-            jumpIndexAnimParam.Register(Avatar.AnimManager);
+            jumpAnimParam.Register(Avatar.AnimController);
+            jumpIndexAnimParam.Register(Avatar.AnimController);
         }
 
-        public override void HandleInput(ref AvatarInput input)
+        protected override void HandleInput(ref IAvatarInputZJump input)
         {
-            if (input.Get(upButton) == ButtonStates.Pressed && _zIndex < steps)
+            if (input.ZJumpUp == ButtonStates.Pressed && _zIndex < steps)
             {
                 jumpAnimParam.Set();
                 _zIndex += 1;
             }
 
-            if (input.Get(downButton) == ButtonStates.Pressed && _zIndex > -steps)
+            if (input.ZJumpDown == ButtonStates.Pressed && _zIndex > -steps)
             {
                 jumpAnimParam.Set();
                 _zIndex -= 1;

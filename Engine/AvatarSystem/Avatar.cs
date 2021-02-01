@@ -53,12 +53,14 @@ namespace RedOwl.Engine
 
         public AnimFloatProperty VelocityXAnimParam = "VelocityX";
         public AnimFloatProperty VelocityYAnimParam = "VelocityY";
+        public AnimFloatProperty VelocityZAnimParam = "VelocityZ";
         public AnimTriggerProperty LandedAnimParam = "Landed";
         public AnimBoolProperty GroundedAnimParam = "Grounded";
 
         public AbilityCache Abilities { get; } = new AbilityCache();
         public Guid Id { get; private set; }
-        public AnimatorManager AnimManager { get; private set; }
+        public AnimatorController AnimController { get; private set; }
+        private IAvatarInput _inputHandler;
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
         //private AvatarInputManager _input;
@@ -68,12 +70,13 @@ namespace RedOwl.Engine
             Id = Guid.NewGuid();
             this.Requires(Motor);
             this.Requires(animator);
-            AnimManager = new AnimatorManager(animator);
+            AnimController = new AnimatorController(animator);
             //_input = new AvatarInputManager(this);
-            VelocityXAnimParam.Register(AnimManager);
-            VelocityYAnimParam.Register(AnimManager);
-            LandedAnimParam.Register(AnimManager);
-            GroundedAnimParam.Register(AnimManager);
+            VelocityXAnimParam.Register(AnimController);
+            VelocityYAnimParam.Register(AnimController);
+            VelocityZAnimParam.Register(AnimController);
+            LandedAnimParam.Register(AnimController);
+            GroundedAnimParam.Register(AnimController);
             Motor.CharacterController = this;
             if (isPlayer) Players.Add(this);
         }
@@ -126,9 +129,10 @@ namespace RedOwl.Engine
             ability.OnCleanup();
         }
 
-        public void HandleInput(ref AvatarInput input)
+        public void HandleInput()
         {
-            foreach (var ability in Abilities.Unlocked) ability.HandleInput(ref input);
+            if (_inputHandler == null) return;
+            foreach (var ability in Abilities.Unlocked) ability.HandleInput(ref _inputHandler);
         }
 
         public void BeforeCharacterUpdate(float deltaTime)
@@ -146,6 +150,7 @@ namespace RedOwl.Engine
             foreach (var ability in Abilities.Unlocked) ability.UpdateVelocity(ref currentVelocity, deltaTime);
             VelocityXAnimParam.Set(currentVelocity.x);
             VelocityYAnimParam.Set(currentVelocity.y);
+            VelocityZAnimParam.Set(currentVelocity.z);
         }
 
         public void PostGroundingUpdate(float deltaTime)
@@ -186,6 +191,12 @@ namespace RedOwl.Engine
         public void OnDiscreteCollisionDetected(Collider hitCollider)
         {
             foreach (var ability in Abilities.Unlocked) ability.OnDiscreteCollisionDetected(hitCollider);
+        }
+
+        public void InputHandler<T>(ref T handler) where T : IAvatarInput
+        {
+            handler.AssignAvatar(this);
+            _inputHandler = handler;
         }
     }
 }
