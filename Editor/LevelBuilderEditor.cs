@@ -30,7 +30,7 @@ namespace RedOwl.Editor
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]
         private void Refresh()
         {
-            GoogleSheetsEditor.Refresh(Root.Builder.Data);
+            //GoogleSheetsEditor.Refresh(Root.Builder.Data);
         }
         
         [Button(ButtonSizes.Large), ButtonGroup("Commands"), HideIf("@Root == null || Builder == null")]

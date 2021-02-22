@@ -19,6 +19,13 @@ namespace RedOwl.Engine
     [Singleton]
     public partial class Game : Asset<Game>
     {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void SubsystemRegistration()
+        {
+            Container = new Container();
+            Services = new ServiceCache();
+        }
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void BeforeSplashScreen()
         {
@@ -57,7 +64,7 @@ namespace RedOwl.Engine
         
         #region Container
 
-        public static Container Container { get; } = new Container();
+        public static Container Container { get; private set; }
         
         public static T Add<T>(string key = null) where T : IService, new() => Container.AddService<T>(key);
 
@@ -74,9 +81,7 @@ namespace RedOwl.Engine
         #region Services
         
         //TODO: Combind "container" and "service cache"?
-
-        private static ServiceCache _services;
-        public static ServiceCache Services => _services ?? (_services = new ServiceCache());
+        public static ServiceCache Services { get; private set; }
 
         public static void Bind<T>(T instance) => Services.Bind(instance);
         public static void BindAs<T>(T instance) => Services.BindAs(instance);
