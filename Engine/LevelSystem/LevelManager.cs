@@ -18,7 +18,7 @@ namespace RedOwl.Engine
         public float LoadDelay = 1f;
         
         [AssetsOnly, AssetSelector(Filter = "t:ILoadingScreen")]
-        public GameObject prefab;
+        public GameObject loadingScreenPrefab;
     }
 
     public partial class Game
@@ -41,9 +41,9 @@ namespace RedOwl.Engine
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()
         {
-            if (Game.LevelManagerSettings.prefab != null)
+            if (Game.LevelManagerSettings.loadingScreenPrefab != null)
             {
-                Object.DontDestroyOnLoad(Object.Instantiate(Game.LevelManagerSettings.prefab));
+                Object.DontDestroyOnLoad(Object.Instantiate(Game.LevelManagerSettings.loadingScreenPrefab));
             }
 
             OnLoaded += LevelLoaded;
