@@ -74,51 +74,56 @@ namespace RedOwl.Engine
         private bool _needsGUI;
         private IManagerGUI _gui;
 
-        private void Awake()
-        {
-            Game.Inject(_reference);
-            switch (_reference)
-            {
-                case IBindable bind:
-                    bind.DoBind();
-                    break;
-                case IInjectable inject:
-                    inject.DoInject();
-                    break;
-                case IManagerAwake awake:
-                    awake.WhenAwake();
-                    break;
-                case IManagerUpdate update:
-                    _needsUpdate = true;
-                    _update = update;
-                    break;
-                case IManagerFixedUpdate fixedUpdate:
-                    _needsFixedUpdate = true;
-                    _fixedUpdate = fixedUpdate;
-                    break;
-                case IManagerLateUpdate lateUpdate:
-                    _needsLateUpdate = true;
-                    _lateUpdate = lateUpdate;
-                    break;
-                case IManagerDrawGizmos gizmos:
-                    _needsDrawGizmos = true;
-                    _gizmos = gizmos;
-                    break;
-                case IManagerGUI gui:
-                    _needsGUI = true;
-                    _gui = gui;
-                    break;
-            }
-        }
-
         private void OnEnable()
         {
+            Log.Always($"{name} OnEnable");
             if (_reference is IManagerEnable casted) casted.WhenEnable();
         }
 
         private IEnumerator Start()
         {
-            if (_reference is IManagerStart casted) casted.WhenStart();
+            Log.Always($"{name} Start");
+            if (_reference is IBindable bind)
+            {
+                bind.DoBind();
+            }
+            if (_reference is IInjectable inject)
+            {
+                inject.DoInject();
+            }
+            if (_reference is IManagerAwake awake)
+            {
+                awake.WhenAwake();
+            }
+            if (_reference is IManagerUpdate update)
+            {
+                _needsUpdate = true;
+                _update = update;
+            }
+            if (_reference is IManagerFixedUpdate fixedUpdate)
+            {
+                _needsFixedUpdate = true;
+                _fixedUpdate = fixedUpdate;
+            }
+            if (_reference is IManagerLateUpdate lateUpdate)
+            {
+                _needsLateUpdate = true;
+                _lateUpdate = lateUpdate;
+            }
+            if (_reference is IManagerDrawGizmos gizmos)
+            {
+                _needsDrawGizmos = true;
+                _gizmos = gizmos;
+            }
+            if (_reference is IManagerGUI gui)
+            {
+                _needsGUI = true;
+                _gui = gui;
+            }
+            if (_reference is IManagerStart casted)
+            {
+                casted.WhenStart();
+            }
             if (_reference is IManagerStartAsync castedAsync) yield return castedAsync.WhenStart();
         }
 
