@@ -15,7 +15,7 @@ namespace RedOwl.Engine
         
         private void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<Checkpoint>() == null) return;
+            if (other.GetComponent<LevelCheckpoint>() == null) return;
             if (killAllPlayers)
             {
                 foreach (var player in Avatar.Players)
@@ -32,7 +32,7 @@ namespace RedOwl.Engine
         public override void OnStart()
         {
             //Game.Register(this);
-            foreach (var checkpoint in FindObjectsOfType<Checkpoint>())
+            foreach (var checkpoint in FindObjectsOfType<LevelCheckpoint>())
             {
                 if (checkpoint.isLevelStart) LastCheckpointPosition = checkpoint.transform.position;
             }

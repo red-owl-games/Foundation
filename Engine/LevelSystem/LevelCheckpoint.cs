@@ -5,7 +5,7 @@ namespace RedOwl.Engine
 {
     [HideMonoScript]
     [RequireComponent(typeof(Collider))]
-    public class Checkpoint : IndexedBehaviour<Checkpoint>
+    public class LevelCheckpoint : MonoBehaviour
     {
         public bool isLevelStart = false;
 
@@ -18,7 +18,7 @@ namespace RedOwl.Engine
         private void ForceIsLevelStart()
         {
             isLevelStart = true;
-            foreach (var checkpoint in FindObjectsOfType<Checkpoint>())
+            foreach (var checkpoint in FindObjectsOfType<LevelCheckpoint>())
             {
                 if (checkpoint == this) continue;
                 if (checkpoint.isLevelStart) checkpoint.isLevelStart = false;
