@@ -61,7 +61,8 @@ namespace RedOwl.Engine
 #if UNITY_EDITOR
         private static T GetInstanceEditor()
         {
-            var results = Resources.FindObjectsOfTypeAll<T>();
+            UnityEditor.AssetDatabase.Refresh();
+            var results = UnityEditor.AssetDatabase.FindAssets($"t:{typeof(T).FullName}");
             if (results.Length == 0)
             {
                 Debug.LogWarning($"No instances of '{typeof(T).FullName}' found - creating a asset instance");
@@ -74,10 +75,10 @@ namespace RedOwl.Engine
 
             if (results.Length > 1)
             {
-                Debug.LogWarning($"Multiple instances of '{typeof(T).FullName}' found - using '{results[0].name}'");
+                Debug.LogWarning($"Multiple instances of '{typeof(T).FullName}' found - using '{UnityEditor.AssetDatabase.GUIDToAssetPath(results[0])}'");
             }
 
-            return results[0];
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(UnityEditor.AssetDatabase.GUIDToAssetPath(results[0]));
         }
 #endif
     }
