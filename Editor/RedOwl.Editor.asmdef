@@ -1,7 +1,8 @@
 {
     "name": "RedOwl.Editor",
     "references": [
-        "RedOwl.Engine"
+        "RedOwl.Engine",
+        "Unity.Mathematics"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [
