@@ -32,6 +32,10 @@ namespace RedOwl.Engine
         
         public static ButtonStates GetState(InputAction.CallbackContext context)
         {
+            if (context.canceled)
+            {
+                return ButtonStates.Cancelled;
+            }
             if (context.started)
             {
                 return ButtonStates.Pressed;
