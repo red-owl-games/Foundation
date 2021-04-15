@@ -4,6 +4,7 @@
         "Unity.Mathematics",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
+        "Unity.Entities",
         "DOTween.Modules",
         "KinematicCharacterController",
         "FMODUnity"

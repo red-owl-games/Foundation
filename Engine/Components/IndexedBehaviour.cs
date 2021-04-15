@@ -5,7 +5,7 @@ namespace RedOwl.Engine
 {
     public abstract class IndexedBehaviour<T> : MonoBehaviour, IIndexable where T : IndexedBehaviour<T>
     {
-        public static IndexedList<T> All { get; } = new IndexedList<T>();
+        public static IndexedList<T> All { get; private set; }
         
         public static int Count => All.Count;
         public static void Clear() => All.Clear();
@@ -24,6 +24,7 @@ namespace RedOwl.Engine
 
         protected void Awake()
         {
+            if (All == null) All = new IndexedList<T>();
             All.Add((T)this);
             AfterAwake();
         }
@@ -32,10 +33,16 @@ namespace RedOwl.Engine
 
         protected void OnDestroy()
         {
-            Remove((T)this);
+            if (All != null) Remove((T)this);
             AfterDestory();
         }
 
         protected virtual void AfterDestory() {}
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void OnSubsystemRegistration()
+        {
+            All = null;
+        }
     }
 }

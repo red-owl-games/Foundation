@@ -12,9 +12,9 @@ namespace RedOwl.Engine
         Columns,
         Special,
     }
-
     
     [HideMonoScript]
+    [ExecuteInEditMode]
     [RequireComponent(typeof(Camera))]
     public class CameraSplitManager : IndexedBehaviour<CameraSplitManager>
     {

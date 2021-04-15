@@ -25,7 +25,7 @@ namespace RedOwl.Editor
             var bounds = new Bounds((min + max) / 2f, max - min);
             return bounds;
         }
-        
+
         public override void OnToolGUI(EditorWindow window)
         {
             Event = Event.current;

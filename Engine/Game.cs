@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Unity.Entities;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -20,17 +21,25 @@ namespace RedOwl.Engine
     public partial class Game : Asset<Game>
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void SubsystemRegistration()
+        private static void OnSubsystemRegistration()
         {
+            Log.Always("OnSubsystemRegistration RedOwl Game!");
             Container = new Container();
             Services = new ServiceCache();
         }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void BeforeSplashScreen()
+        private static void OnBeforeSplashScreen()
         {
-            Log.Always("Setup RedOwl Game!");
+            Log.Always("OnBeforeSplashScreen RedOwl Game!");
             Application.quitting += HandleQuit;
+        }
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        internal static void Initialize()
+        {
+            Log.Always("Initialize RedOwl Game!");
+            DotsInit();
         }
 
         public static bool IsRunning => Application.isPlaying;
@@ -89,7 +98,7 @@ namespace RedOwl.Engine
         public static void Inject(object obj) => Services.Inject(obj);
         
         #endregion
-        
+
         public static float ScreenHalfWidth => Screen.width * 0.5f;
         public static float ScreenHalfHeight => Screen.height * 0.5f;
         public static Vector3 ScreenCenter => new Vector3(ScreenHalfWidth, ScreenHalfHeight, 0f);

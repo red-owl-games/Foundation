@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 namespace RedOwl.Engine
 {
@@ -68,6 +69,48 @@ namespace RedOwl.Engine
         public static T SafeGet<T>(this T[] self, int index, T defaultValue)
         {
             return index < self.Length ? self[index] : defaultValue;
+        }
+        
+        public static void Reconcile(int[] self, int[] other, Action<int> onAdd = null, Action<int> onRemove = null, Action<int> onKeep = null)
+        {
+            int i = 0;
+            int j = 0;
+            int iLength = self.Length;
+            int jLength = other.Length;
+            Array.Sort(self);
+            Array.Sort(other);
+            
+            while (i < iLength && j < jLength)
+            {
+                if (self[i] == other[j])
+                {
+                    onKeep?.Invoke(self[i]);
+                    i += 1;
+                    j += 1;
+                }
+                else if (self[i] < other[j])
+                {
+                    onRemove?.Invoke(self[i]);
+                    i += 1;
+                }
+                else
+                {
+                    onAdd?.Invoke(other[j]);
+                    j += 1;
+                }
+            }
+
+            while (i < iLength)
+            {
+                onRemove?.Invoke(self[i]);
+                i += 1;
+            }
+
+            while (j < jLength)
+            {
+                onAdd?.Invoke(other[j]);
+                j += 1;
+            }
         }
     }
 }
