@@ -34,6 +34,8 @@ namespace RedOwl.Engine
         [ShowInInspector, ReadOnly] 
         public int Id { get; private set; }
 
+        public string Name => $"Player {Id}";
+
         [Button]
         private void OnEnable()
         {

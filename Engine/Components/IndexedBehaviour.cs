@@ -5,7 +5,13 @@ namespace RedOwl.Engine
 {
     public abstract class IndexedBehaviour<T> : MonoBehaviour, IIndexable where T : IndexedBehaviour<T>
     {
-        public static IndexedList<T> All { get; private set; }
+        private static IndexedList<T> all;
+
+        public static IndexedList<T> All
+        {
+            get => all ?? (all = new IndexedList<T>());
+            set => all = value;
+        }
         
         public static int Count => All.Count;
         public static void Clear() => All.Clear();
@@ -17,14 +23,11 @@ namespace RedOwl.Engine
         public static T Get(BetterGuid id) => All.Get(id);
         public static T Next(T item) => All.Next(item);
 
-        [SerializeField]
-        private BetterGuid id = Guid.NewGuid();
-
-        public BetterGuid Id => id;
+        public BetterGuid Id { get; private set; }
 
         protected void Awake()
         {
-            if (All == null) All = new IndexedList<T>();
+            Id = Guid.NewGuid();
             All.Add((T)this);
             AfterAwake();
         }
@@ -33,7 +36,7 @@ namespace RedOwl.Engine
 
         protected void OnDestroy()
         {
-            if (All != null) Remove((T)this);
+            Remove((T)this);
             AfterDestory();
         }
 
