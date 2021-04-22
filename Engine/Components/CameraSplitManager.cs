@@ -16,7 +16,7 @@ namespace RedOwl.Engine
     [HideMonoScript]
     [ExecuteInEditMode]
     [RequireComponent(typeof(Camera))]
-    public class CameraSplitManager : IndexedBehaviour<CameraSplitManager>
+    public class CameraSplitManager : MonoBehaviour
     {
         [SerializeField]
         [LabelText("Split Options"), Tooltip("How to split the camera screen space for 2 or 3 local players")]
@@ -29,23 +29,34 @@ namespace RedOwl.Engine
         private Camera _cam;
         private Tweener _tweener;
 
-        protected override void AfterAwake()
+        private void OnEnable()
         {
             _cam = GetComponent<Camera>();
             _cam.rect = new Rect(0.5f,0.5f,0,0);
             UpdateCameras();
         }
 
-        protected override void AfterDestory()
+        private void OnDisable()
+        {
+            UpdateCameras();
+        }
+
+        private void OnDestory()
         {
             _tweener?.Kill();
-            UpdateCameras();
         }
 
         private void UpdateRect(Rect rect)
         {
-            _tweener?.Kill();
-            _tweener = _cam.DORect(rect, lerpDuration);
+            if (Game.IsRunning)
+            {
+                _tweener?.Kill();
+                _tweener = _cam.DORect(rect, lerpDuration);
+            }
+            else
+            {
+                _cam.rect = rect;
+            }
         }
         
         #region Static
@@ -135,12 +146,14 @@ namespace RedOwl.Engine
 
         private static void UpdateCameras()
         {
-            int count = All.Count;
+            var all = FindObjectsOfType<CameraSplitManager>();
+            Array.Sort(all, (x, y) => string.Compare(x.gameObject.name, y.gameObject.name, StringComparison.Ordinal));
+            int count = all.Length;
             if (count < 1 || count > 4) return;
             var data = _table[count];
             for (int i = 0; i < count; i++)
             {
-                var item = All[i];
+                var item = all[i];
                 item.UpdateRect(data[item.splitOption][i]);
             }
         }

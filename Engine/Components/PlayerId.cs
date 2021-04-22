@@ -7,7 +7,6 @@ namespace RedOwl.Engine
     [ExecuteInEditMode]
     public class PlayerId : MonoBehaviour
     {
-        [ShowInInspector]
         private static Dictionary<int, GameObject> _players;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -34,7 +33,7 @@ namespace RedOwl.Engine
         [ShowInInspector, ReadOnly] 
         public int Id { get; private set; }
 
-        public string Name => $"Player {Id}";
+        public string Name => $"Player{Id}";
 
         [Button]
         private void OnEnable()
