@@ -7,13 +7,13 @@ using Object = UnityEngine.Object;
 
 namespace RedOwl.Engine
 {
-    public interface IConsoleService : IService
+    public interface IConsoleService
     {
         void Clear();
         IEnumerable<ICommandRegistration> Commands { get; }
     }
     
-    public class ConsoleService : Service, IConsoleService, IDisposable
+    public class ConsoleService : IServiceInit, IConsoleService, IDisposable
     {
         private Dictionary<string, ICommandRegistration> _commands;
         private RingBuffer<string> _logs;
@@ -23,7 +23,7 @@ namespace RedOwl.Engine
 
         public IEnumerable<ICommandRegistration> Commands => _commands.Values;
         
-        public override void Init()
+        public void Init()
         {
             //Log.Always("Console Initialization!");
             SetupView();
@@ -33,20 +33,20 @@ namespace RedOwl.Engine
 
         public void Dispose()
         {
-            Game.ConsoleSettings.ShowConsoleAction.Disable();
+            GameSettings.ConsoleSettings.ShowConsoleAction.Disable();
         }
 
         #region View
         
         private void SetupView()
         {
-            if (Game.ConsoleSettings.prefab != null)
+            if (GameSettings.ConsoleSettings.prefab != null)
             {
-                var go = Object.Instantiate(Game.ConsoleSettings.prefab);
+                var go = Object.Instantiate(GameSettings.ConsoleSettings.prefab);
                 _consoleView = go.GetComponent<IConsoleView>();
                 Object.DontDestroyOnLoad(go);
-                Game.ConsoleSettings.ShowConsoleAction.performed += ctx => _consoleView.Toggle();
-                Game.ConsoleSettings.ShowConsoleAction.Enable();
+                GameSettings.ConsoleSettings.ShowConsoleAction.performed += ctx => _consoleView.Toggle();
+                GameSettings.ConsoleSettings.ShowConsoleAction.Enable();
             }
         }
         
@@ -57,7 +57,7 @@ namespace RedOwl.Engine
         private void FindCommands()
         {
             _commands = new Dictionary<string, ICommandRegistration>();
-            _commandHistory = new RingBuffer<string>(Game.ConsoleSettings.HistoryBufferLength);
+            _commandHistory = new RingBuffer<string>(GameSettings.ConsoleSettings.HistoryBufferLength);
             _commandHistory.PushFront("help");
             _commandHistory.PushFront("clear");
             // TODO: Could Probably just support Classes
@@ -109,7 +109,7 @@ namespace RedOwl.Engine
         
         private void SetupLogCollection()
         {
-            _logs = new RingBuffer<string>(Game.ConsoleSettings.BufferLength);
+            _logs = new RingBuffer<string>(GameSettings.ConsoleSettings.BufferLength);
             Application.logMessageReceived += OnUnityLog;
         }
         
@@ -123,13 +123,13 @@ namespace RedOwl.Engine
             switch (logtype)
             {
                 case LogType.Log:
-                    if (Game.LogSettings.LogLevel >= LogLevel.Info) Write(message);
+                    if (GameSettings.LogSettings.LogLevel >= LogLevel.Info) Write(message);
                     break;
                 case LogType.Warning:
-                    if (Game.LogSettings.LogLevel >= LogLevel.Warn) Write(message);
+                    if (GameSettings.LogSettings.LogLevel >= LogLevel.Warn) Write(message);
                     break;
                 case LogType.Error:
-                    if (Game.LogSettings.LogLevel >= LogLevel.Error) Write(message);
+                    if (GameSettings.LogSettings.LogLevel >= LogLevel.Error) Write(message);
                     break;
                 case LogType.Assert:
                     break;
@@ -147,8 +147,8 @@ namespace RedOwl.Engine
     
     public partial class Game
     {
-        public static IConsoleService Console => Get<IConsoleService>();
+        public static IConsoleService Console => Find<IConsoleService>();
 
-        public static void AddConsoleService() => Add<IConsoleService>(new ConsoleService());
+        public static void BindConsoleService() => Bind<IConsoleService>(new ConsoleService());
     }
 }

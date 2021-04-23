@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public class AvatarRespawnable : AvatarAbility//, IPersistData
+    public class AvatarRespawnable : AvatarAbility
     {
         public override int Priority { get; } = 10000;
 
@@ -20,7 +20,7 @@ namespace RedOwl.Engine
             {
                 foreach (var player in Avatar.Players)
                 {
-                    player.Abilities.Find<AvatarRespawnable>()?.SetCheckpointPosition(other.transform);
+                    player.Abilities.Get<AvatarRespawnable>()?.SetCheckpointPosition(other.transform);
                 }
             }
             else
@@ -44,15 +44,9 @@ namespace RedOwl.Engine
             gameObject.SetActive(true);
         }
 
-        public override void OnCleanup()
-        {
-            //Game.Unregister(this);
-        }
-        
         private void SetCheckpointPosition(Transform target)
         {
             LastCheckpointPosition = target.position;
-            //Game.Push(this);
         }
 
         [Button]
@@ -78,7 +72,7 @@ namespace RedOwl.Engine
             {
                 foreach (var player in Avatar.Players)
                 {
-                    var respawnable = player.Abilities.Find<AvatarRespawnable>();
+                    var respawnable = player.Abilities.Get<AvatarRespawnable>();
                     if (respawnable != null) CoroutineManager.StartRoutine(respawnable.InternalKill());
                 }
 
@@ -99,22 +93,5 @@ namespace RedOwl.Engine
             Motor.BaseVelocity = Vector3.zero;
             gameObject.SetActive(false);
         }
-        
-        /*
-        public PersistenceTypes SaveDataPersistenceType => PersistenceTypes.SaveFile;
-        public string SaveDataId => $"{name}.{GetType()}";
-        public int SaveDataLength => 16;
-
-        public void SaveData(PersistenceWriter writer)
-        {
-            writer.Write((float3)LastCheckpointPosition);
-        }
-
-        public void LoadData(PersistenceReader reader)
-        {
-            LastCheckpointPosition = reader.ReadVector3();
-            Respawn();
-        }
-        */
     }
 }

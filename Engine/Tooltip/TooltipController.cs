@@ -32,7 +32,7 @@ namespace RedOwl.Engine
         public void OnSelect(BaseEventData eventData)
         {
             _useMousePosition = false;
-            _tween = Delayed.Run(Show, Game.TooltipSettings.delay);
+            _tween = Delayed.Run(Show, GameSettings.TooltipSettings.delay);
         }
 
         public void OnDeselect(BaseEventData eventData)
@@ -43,7 +43,7 @@ namespace RedOwl.Engine
         public void OnPointerEnter(PointerEventData eventData)
         {
             _useMousePosition = true;
-            _tween = Delayed.Run(Show, Game.TooltipSettings.delay);
+            _tween = Delayed.Run(Show, GameSettings.TooltipSettings.delay);
         }
 
         public void OnPointerExit(PointerEventData eventData)

@@ -13,8 +13,8 @@ namespace RedOwl.Engine
 
         public override void OnStart()
         {
-            _gravity = Game.AvatarSettings.Gravity;
-            _gravityFactor = Game.AvatarSettings.GravityFallFactor;
+            _gravity = GameSettings.AvatarSettings.Gravity;
+            _gravityFactor = GameSettings.AvatarSettings.GravityFallFactor;
         }
 
         public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)

@@ -50,8 +50,8 @@ namespace RedOwl.Engine
         public override void OnStart()
         {
             _state = States.Grounded;
-            _maxJumpVelocity = Game.AvatarSettings.MaxJumpVelocity;
-            _minJumpVelocity = Game.AvatarSettings.MinJumpVelocity;
+            _maxJumpVelocity = GameSettings.AvatarSettings.MaxJumpVelocity;
+            _minJumpVelocity = GameSettings.AvatarSettings.MinJumpVelocity;
             airJumpLimit.Reset();
         }
 

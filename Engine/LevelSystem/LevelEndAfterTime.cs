@@ -6,7 +6,7 @@ namespace RedOwl.Engine
     public class LevelEndAfterTime : MonoBehaviour
     {
         public Cooldown duration;
-        
+
         private void Start()
         {
             duration.Use();
@@ -16,7 +16,7 @@ namespace RedOwl.Engine
         {
             duration.Tick(Time.deltaTime);
             if (!duration.IsReady) return;
-            LevelManager.LoadNextLevel();
+            Game.LoadNextLevel();
             Destroy(this);
         }
     }

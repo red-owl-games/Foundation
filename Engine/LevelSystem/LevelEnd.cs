@@ -1,3 +1,4 @@
+using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace RedOwl.Engine
         [Button]
         public void NextLevel()
         {
-            LevelManager.LoadNextLevel();
+            Game.LoadNextLevel();
         }
     }
 }

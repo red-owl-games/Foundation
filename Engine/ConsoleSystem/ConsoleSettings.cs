@@ -23,7 +23,7 @@ namespace RedOwl.Engine
         public GameObject prefab;
     }
     
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("Console"), SerializeField]
         private ConsoleSettings consoleSettings = new ConsoleSettings();

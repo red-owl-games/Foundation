@@ -47,7 +47,7 @@ namespace RedOwl.Engine
                 case BoundsBehavior.Constrain:
                     return constrain;
                 case BoundsBehavior.Kill:
-                    if (constrain) Avatar.Abilities.Find<AvatarRespawnable>()?.Kill();
+                    if (constrain) Avatar.Abilities.Get<AvatarRespawnable>()?.Kill();
                     break;
             }
             return false;

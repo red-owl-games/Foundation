@@ -12,7 +12,6 @@ namespace RedOwl.Engine
         bool Unlocked { get; }
         void OnStart();
         void OnReset();
-        void OnCleanup();
         void RegisterAnimatorParams(AnimatorController controller);
         void ProcessInput(ref IAvatarInput input);
     }
@@ -50,8 +49,6 @@ namespace RedOwl.Engine
         public virtual void RegisterAnimatorParams(AnimatorController controller) {}
         public virtual void OnStart() {}
         public virtual void OnReset() {}
-        public virtual void OnCleanup() {}
-
         public virtual void ProcessInput(ref IAvatarInput input) {}
 
         public virtual void BeforeCharacterUpdate(float deltaTime) {}

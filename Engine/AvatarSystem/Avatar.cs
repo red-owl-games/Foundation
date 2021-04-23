@@ -10,24 +10,18 @@ namespace RedOwl.Engine
 {
     // TODO: Remove Linq?
     
-    public class AbilityCache : ServiceCache
+    public class AbilityCache : Container
     {
         // TODO: ServiceCache should have maintain a list which can be sorted
         public List<IAvatarAbility> All = new List<IAvatarAbility>();
         
         public IEnumerable<IAvatarAbility> Enabled => All.Where(a => a.Enabled);
         public IEnumerable<IAvatarAbility> Unlocked => Enabled.Where(a => a.Unlocked);
-        
-        public void Add<T>(T ability) where T : IAvatarAbility
-        {
-            Bind(ability);
-            Sort();
-        }
 
-        public void Remove<T>(T ability) where T : IAvatarAbility
+        public AbilityCache() : base()
         {
-            Unbind(ability);
-            Sort();
+            OnAdded += Sort;
+            OnRemoved += Sort;
         }
 
         private void Sort()
@@ -110,10 +104,7 @@ namespace RedOwl.Engine
 
         private void OnDestroy()
         {
-            foreach (var ability in Abilities.All.ToArray())
-            {
-                ability.OnCleanup();
-            }
+            Abilities.Dispose();
         }
 
         internal void Add(AvatarAbility ability)
@@ -125,7 +116,6 @@ namespace RedOwl.Engine
         internal void Remove(AvatarAbility ability)
         {
             Abilities.Remove(ability);
-            ability.OnCleanup();
         }
         
         public void SetInputHandler<T>(T handler) where T : class, IAvatarInput

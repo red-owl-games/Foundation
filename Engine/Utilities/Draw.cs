@@ -17,7 +17,7 @@ namespace RedOwl.Engine
         public Color DrawColor = Color.magenta;
     }
     
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("Debug Draw"), SerializeField]
         private DrawSettings drawSettings = new DrawSettings();
@@ -181,8 +181,8 @@ namespace RedOwl.Engine
         [Conditional("UNITY_EDITOR")]
         public static void Label(Vector3 point, string text, Color? color = null)
         {
-            if (!Game.DrawSettings.ShowDebugDraw) return;
-            var style = new GUIStyle {normal = {textColor = color ?? Game.DrawSettings.DrawColor}};
+            if (!GameSettings.DrawSettings.ShowDebugDraw) return;
+            var style = new GUIStyle {normal = {textColor = color ?? GameSettings.DrawSettings.DrawColor}};
             #if UNITY_EDITOR
             UnityEditor.Handles.Label(point, text, style);
             #endif
@@ -191,8 +191,8 @@ namespace RedOwl.Engine
         [Conditional("UNITY_EDITOR")]
         public static void Line(Vector3 start, Vector3 end, Color? color = null)
         {
-            if (!Game.DrawSettings.ShowDebugDraw) return;
-            UnityEngine.Debug.DrawLine(start, end, color ?? Game.DrawSettings.DrawColor, 0f, true);
+            if (!GameSettings.DrawSettings.ShowDebugDraw) return;
+            UnityEngine.Debug.DrawLine(start, end, color ?? GameSettings.DrawSettings.DrawColor, 0f, true);
         }
         
         [Conditional("UNITY_EDITOR")]

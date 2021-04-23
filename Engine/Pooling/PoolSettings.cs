@@ -32,7 +32,7 @@ namespace RedOwl.Engine
         
     }
     
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("Pooling"), SerializeField]
         private PoolSettings poolSettings = new PoolSettings();

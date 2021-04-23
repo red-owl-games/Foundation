@@ -44,14 +44,15 @@ namespace RedOwl.Engine
     }
     
     [HideMonoScript]
-    public class LevelState : IndexedBehaviour<LevelState>
+    public class LevelState : MonoBehaviour
     {
         public bool ensureDisabled = true;
         
         [NonSerialized, ShowInInspector, DisableInPlayMode]
         [OnValueChanged("TestState"), EnumToggleButtons, HideLabel]
         private LevelStates state;
-        
+
+        [Inject] private LevelManager _manager;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -73,24 +74,16 @@ namespace RedOwl.Engine
         }
 #endif
 
+        private void OnEnable()
+        {
+            Game.Inject(this);
+            ApplyState(_manager.LevelHistory.Current.state);
+        }
+
         public void ApplyState(LevelStates value)
         {
             state = value;
             gameObject.Children(c => c.SetActive(value.HasFlag((LevelStates) Enum.Parse(typeof(LevelStates), c.name))));
-        }
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        public static void Initialize()
-        {
-            LevelManager.OnLoaded += OnLoaded;
-        }
-
-        private static void OnLoaded(GameLevel level)
-        {
-            foreach (var component in All)
-            {
-                component.ApplyState(level.state);
-            }
         }
     }
 }

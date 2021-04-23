@@ -9,7 +9,7 @@ namespace RedOwl.Engine
         void Awake()
         {
             var videoPlayer = GetComponent<VideoPlayer>();
-            videoPlayer.loopPointReached += v => LevelManager.LoadNextLevel();
+            videoPlayer.loopPointReached += v => Game.LoadNextLevel();
         }
     }
 }

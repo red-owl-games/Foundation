@@ -13,7 +13,7 @@ namespace RedOwl.Engine
         public GameObject prefab;
     }
     
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("Tooltip"), SerializeField]
         private TooltipSettings tooltipSettings = new TooltipSettings();

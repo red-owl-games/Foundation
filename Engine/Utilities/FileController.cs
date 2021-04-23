@@ -29,7 +29,7 @@ namespace RedOwl.Engine
         public string EncryptionIV;
     }
     
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("File Controller"), SerializeField]
         private FileControllerSettings fileControllerSettings = new FileControllerSettings();
@@ -99,8 +99,8 @@ namespace RedOwl.Engine
         private static AesCryptoServiceProvider Provider =>
             _provider ?? (_provider = new AesCryptoServiceProvider
             {
-                Key = Encoding.ASCII.GetBytes(Game.FileControllerSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
-                IV = Encoding.ASCII.GetBytes(Game.FileControllerSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
+                Key = Encoding.ASCII.GetBytes(GameSettings.FileControllerSettings.EncryptionKey.PadRight(16, 'X').Substring(0, 16)),
+                IV = Encoding.ASCII.GetBytes(GameSettings.FileControllerSettings.EncryptionIV.PadRight(16, 'X').Substring(0, 16))
             });
         
         #region Read
@@ -120,8 +120,8 @@ namespace RedOwl.Engine
         {
             //Log.Always($"Reading File - {filepath}");
             Stream stream = new FileStream(filepath, FileMode.Open);
-            if (Game.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
-            if (Game.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
+            if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
+            if (GameSettings.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
             using (var reader = new MemoryStream())
             {
                 stream.CopyTo(reader);
@@ -150,8 +150,8 @@ namespace RedOwl.Engine
             //Log.Always($"Writing File - {filepath}");
             Directory.CreateDirectory(Path.GetDirectoryName(filepath) ?? string.Empty);
             Stream stream = new FileStream(filepath, FileMode.Create);
-            if (Game.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
-            if (Game.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
+            if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
+            if (GameSettings.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
             stream.Write(data, 0, data.Length);
             stream.Dispose();
         }

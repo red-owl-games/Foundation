@@ -26,7 +26,7 @@ namespace RedOwl.Engine
         private void Awake()
         {
             CalculateBounds();
-            Game.BindAs<ILevelBounds>(this);
+            Game.Bind<ILevelBounds>(this);
         }
 
         private void OnDrawGizmos()

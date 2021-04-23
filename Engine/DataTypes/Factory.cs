@@ -19,15 +19,6 @@ namespace RedOwl.Engine
             }
         }
 
-        public T1 Get<T1>(string key = null) where T1 : class, new()
-        {
-            if (_types.TryGetValue(key ?? typeof(T1).Name, out Type type))
-            {
-                return Activator.CreateInstance(type) as T1;
-            }
-            return null;
-        }
-
         public IEnumerator<string> GetEnumerator() => _types.Keys.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

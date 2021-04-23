@@ -19,7 +19,7 @@ namespace RedOwl.Engine
         private void Awake()
         {
             _view = GetComponent<VerandaView>();
-            Game.BindAs<ILoadingScreen>(this);
+            Game.Bind<ILoadingScreen>(this);
         }
 
         public IEnumerator DoShow()

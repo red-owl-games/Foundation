@@ -22,7 +22,7 @@ namespace RedOwl.Editor
 
         private static List<object> FindGameManagers()
         {
-            foreach (var type in TypeExtensions.GetAllTypesWithAttribute<GameManagerAttribute>())
+            foreach (var type in TypeExtensions.GetAllTypesWithAttribute<Singleton>())
             {
                 
             }

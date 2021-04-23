@@ -10,12 +10,12 @@ namespace RedOwl.Engine
         public int count = 2;
 
         private int current;
-        
+
         private void OnTriggerEnter(Collider other)
         {
             current += 1;
             // TODO: check tags?
-            if (current >= count) LevelManager.LoadNextLevel();
+            if (current >= count) Game.LoadNextLevel();
         }
 
         private void OnTriggerExit(Collider other)

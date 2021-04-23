@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -15,49 +16,92 @@ namespace RedOwl.Engine
     
     [Serializable, InlineProperty, HideLabel]
     public abstract class Settings {}
-    
-    [Singleton]
-    public partial class Game : Asset<Game>
+
+    public class GameInstance : IDisposable
     {
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void OnSubsystemRegistration()
+        public Random Random { get; }
+        public Container Container { get; }
+
+        private Coroutine _update;
+
+        public GameInstance()
         {
-            //Log.Always("OnSubsystemRegistration RedOwl Game!");
+            Random = new Random((uint)Environment.TickCount);
             Container = new Container();
-            Services = new ServiceCache();
         }
-#endif
-        
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
-        private static void OnBeforeSplashScreen()
+
+        public IEnumerator Start()
         {
-            //Log.Always("OnBeforeSplashScreen RedOwl Game!");
-            Application.quitting += HandleQuit;
-#if !UNITY_EDITOR
-            Container = new Container();
-            Services = new ServiceCache();
-#endif
+            // TODO: this should move to the FmodService probably
+            while (FMODUnity.RuntimeManager.HasBankLoaded("Master Bank"))
+            {
+                yield return null;
+            }
+            Log.Info("Master Bank Loaded");
+            Container.Start();
+            _update = CoroutineManager.StartRoutine(Container.Update());
         }
-        
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        internal static void Initialize()
+
+        public void Dispose()
         {
-            //Log.Always("Initialize RedOwl Game!");
-#if REDOWL_DOTS
-            DotsInit();
-#endif
+            CoroutineManager.StopRoutine(_update);
+            Container?.Dispose();
         }
+    }
+    
+    public partial class Game
+    {
+        private static GameInstance _instance;
+        public static GameInstance Instance => _instance ?? (_instance = new GameInstance());
 
         public static bool IsRunning => Application.isPlaying;
 
         public static bool IsShuttingDown { get; internal set; }
+
+        #region Random
+
+        public static Random Random => Instance.Random;
+
+        #endregion
+        
+        #region Container
+
+        public static T Bind<T>(string key = null) where T : new() => Instance.Container.Add<T>(key);
+        public static T Bind<T>(T system, string key = null) => Instance.Container.Add(system, key);
+        public static T Find<T>(string key = null) => Instance.Container.Get<T>(key);
+        public static void Inject(object obj) => Instance.Container.Inject(obj);
+
+        #endregion
+
+        public static float ScreenHalfWidth => Screen.width * 0.5f;
+        public static float ScreenHalfHeight => Screen.height * 0.5f;
+        public static Vector3 ScreenCenter => new Vector3(ScreenHalfWidth, ScreenHalfHeight, 0f);
+        
+        public static void Initialize()
+        {
+            IsShuttingDown = false;
+            Log.Always("Initialize RedOwl Game!");
+            Application.quitting -= HandleQuit;
+            Application.quitting += HandleQuit;
+            _instance = new GameInstance();
+#if REDOWL_DOTS
+            DotsInit();
+#endif
+            // Register Systems Initialize
+            // TODO: should these move to Container.Initialize?
+            GameSettings.AvatarSettings.Initialize();
+        }
+
+        public static void Start()
+        {
+            CoroutineManager.StartRoutine(Instance.Start());
+        }
         
         private static void HandleQuit()
         {
             IsShuttingDown = true;
             CoroutineManager.StopAllRoutines();
-            Dispose();
+            Instance.Dispose();
         }
         
         public static void Quit()
@@ -70,49 +114,6 @@ namespace RedOwl.Engine
 #elif UNITY_WEBGL
             Application.OpenURL("about:blank");
 #endif
-        }
-        
-        #region Random
-
-        public static Random Random => new Random((uint)Environment.TickCount);
-
-        #endregion
-        
-        #region Container
-
-        public static Container Container { get; private set; }
-        
-        public static T Add<T>(string key = null) where T : IService, new() => Container.AddService<T>(key);
-
-        public static T Add<T>(T system, string key = null) where T : IService => Container.AddService(system, key);
-
-        public static T Get<T>(string key = null) where T : IService => Container.GetService<T>(key);
-
-        public static ICollection<IService> Systems() => Container.Services();
-        
-        public static void Dispose() => Container.Dispose();
-
-        #endregion
-        
-        #region Services
-        
-        //TODO: Combind "container" and "service cache"?
-        public static ServiceCache Services { get; private set; }
-
-        public static void Bind<T>(T instance) => Services.Bind(instance);
-        public static void BindAs<T>(T instance) => Services.BindAs(instance);
-        public static T Find<T>() => Services.Find<T>();
-        public static void Inject(object obj) => Services.Inject(obj);
-        
-        #endregion
-
-        public static float ScreenHalfWidth => Screen.width * 0.5f;
-        public static float ScreenHalfHeight => Screen.height * 0.5f;
-        public static Vector3 ScreenCenter => new Vector3(ScreenHalfWidth, ScreenHalfHeight, 0f);
-
-        public static void Start()
-        {
-            Container.Start();
         }
     }
 }

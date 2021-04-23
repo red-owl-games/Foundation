@@ -93,17 +93,15 @@ namespace RedOwl.Engine
 
     public class CoroutineManager : MonoBehaviour
     {
-        private static bool _initialized;
         private static CoroutineManager _instance;
 
         public static CoroutineManager Instance {
             get {
-                if (!_initialized && !Game.IsShuttingDown)
+                if (_instance == null)
                 {
                     var obj = new GameObject($"{nameof(CoroutineManager)}");
                     DontDestroyOnLoad(obj);
                     _instance = obj.AddComponent<CoroutineManager>();
-                    _initialized = true;
                 }
                 return _instance;
             }

@@ -1,6 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using Engine.DataTypes;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,7 +25,7 @@ namespace RedOwl.Engine
         public GameObject loadingScreenPrefab;
     }
 
-    public partial class Game
+    public partial class GameSettings
     {
         [FoldoutGroup("Level Manager"), SerializeField]
         private LevelManagerSettings levelManagerSettings = new LevelManagerSettings();
@@ -29,84 +33,148 @@ namespace RedOwl.Engine
     }
     
     #endregion
-    
-    public static class LevelManager
+
+    public class LevelCollection : BetterKeyedCollection<string, GameLevel>
     {
-        private static GameLevel _lastLevel;
+        protected override string GetKeyForItem(GameLevel item) => item.sceneName;
+    }
 
-        public static event Action<GameLevel> OnLoaded;
-        public static event Action<GameLevel> OnCompleted;
-
+    public class LevelManager : IServiceInit, IServiceStart
+    {
+        public event Action<GameLevel> OnLoaded;
+        public event Action<GameLevel> OnCompleted;
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        public static void Initialize()
-        {
-            if (Game.LevelManagerSettings.loadingScreenPrefab != null)
-            {
-                Object.DontDestroyOnLoad(Object.Instantiate(Game.LevelManagerSettings.loadingScreenPrefab));
-            }
+        public readonly LevelCollection Levels;
+        public readonly History<GameLevel> LevelHistory;
 
-            OnLoaded += LevelLoaded;
-            
+        [Inject]
+        private FmodService _fmodService;
+
+        public LevelManager()
+        {
+            Levels = new LevelCollection();
+            LevelHistory = new History<GameLevel>();
+        }
+
+        public void Init()
+        {
+            if (GameSettings.LevelManagerSettings.loadingScreenPrefab != null)
+            {
+                Object.DontDestroyOnLoad(Object.Instantiate(GameSettings.LevelManagerSettings.loadingScreenPrefab));
+            }
+            OnCompleted += AfterLevelLoaded;
+        }
+        
+        public void Start()
+        {
             string current = SceneManager.GetActiveScene().name;
-            _lastLevel = GameLevel.Find(current);
-            if (_lastLevel == null) return;
-            if (current == Game.LevelManagerSettings.BootstrapSceneName)
+            if (Levels.TryGetValue(current, out var level))
             {
-                LoadNextLevel();
-            }
-            else
-            {
-                OnLoaded?.Invoke(_lastLevel);
-                OnCompleted?.Invoke(_lastLevel);
+                LevelHistory.Set(level);
+                Game.LoadLevel(level);
             }
         }
 
-        private static void LevelLoaded(GameLevel level)
+        internal IEnumerator LoadLevelAsync(GameLevel level)
         {
-            FmodController.Set(level.fmodEvents);
-        }
-
-        private static IEnumerator LoadLevelAsync(GameLevel level)
-        {
-            while (FMODUnity.RuntimeManager.HasBankLoaded("Master Bank"))
-            {
-                yield return null;
-            }
-            Log.Always("Master Bank Loaded");
             yield return LoadingScreen.Show();
-            if (level.sceneName == Game.LevelManagerSettings.BootstrapSceneName) level = GameLevel.Next(level);
+            if (level.sceneName == GameSettings.LevelManagerSettings.BootstrapSceneName) level = Levels.Next(level);
             var async = SceneManager.LoadSceneAsync(level.sceneName);
             while (!async.isDone)
             {
                 yield return null;
             }
             
-            _lastLevel = level;
+            LevelHistory.Set(level);
             OnLoaded?.Invoke(level);
-            yield return new WaitForSeconds(Game.LevelManagerSettings.LoadDelay);
+            yield return new WaitForSeconds(GameSettings.LevelManagerSettings.LoadDelay);
             OnCompleted?.Invoke(level);
             yield return LoadingScreen.Hide();
         }
+        
+        private void AfterLevelLoaded(GameLevel level)
+        {
+            _fmodService.Set(level.fmodEvents);
+        }
 
+        public void RegisterLevels(IEnumerable<GameLevel> levels)
+        {
+            foreach (var level in levels)
+            {
+                Levels.Add(level);
+            }
+        }
+    }
+    
+    public partial class Game
+    {
+        public static LevelManager LevelManager => Find<LevelManager>();
+
+        public static void BindLevelManager() => Bind(new LevelManager());
+        
         public static void LoadLevel(GameLevel level)
         {
-            CoroutineManager.StartRoutine(LoadLevelAsync(level));
+            if (LevelManager != null) CoroutineManager.StartRoutine(LevelManager.LoadLevelAsync(level));
         }
 
         public static void LoadNextLevel()
         {
-            CoroutineManager.StartRoutine(LoadLevelAsync(GameLevel.Next(_lastLevel)));
+            if (LevelManager != null) CoroutineManager.StartRoutine(LevelManager.LoadLevelAsync(LevelManager.Levels.Next(LevelManager.LevelHistory.Current)));
+        }
+        
+        public static void LoadPreviousLevel()
+        {
+            if (LevelManager != null) CoroutineManager.StartRoutine(LevelManager.LoadLevelAsync(LevelManager.LevelHistory.Previous));
         }
 
         public static void LoadMainMenu()
         {
-            foreach (var level in GameLevel.All)
+            foreach (var level in LevelManager.Levels)
             {
                 if (!level.isMainMenu) continue;
                 LoadLevel(level);
                 return;
             }
         }
+        
+        #region SceneBuildSettings
+#if UNITY_EDITOR
+        // The following ensures that the designed level order levels are in the build settings
+        private static Dictionary<string, UnityEditor.GUID> GetScenes()
+        {
+            var output = new Dictionary<string, UnityEditor.GUID>();
+            foreach (string scene in UnityEditor.AssetDatabase.FindAssets("t:Scene"))
+            {
+                UnityEditor.GUID.TryParse(scene, out UnityEditor.GUID id);
+                string key = Path.GetFileName(UnityEditor.AssetDatabase.GUIDToAssetPath(scene)).Replace(".unity", "");
+                if (!output.TryGetValue(key, out UnityEditor.GUID _))
+                {
+                    output.Add(key, id);
+                }
+            }
+            return output;
+        }
+        
+        public static void EnsureLevelBuildSettings(List<GameLevel> levels)
+        {
+            var possibleScenes = GetScenes();
+
+            var current = new Dictionary<string, UnityEditor.EditorBuildSettingsScene>(levels.Count);
+            foreach (var level in levels)
+            {
+                if (possibleScenes.TryGetValue(level.sceneName, out var id))
+                {
+                    if (!current.TryGetValue(level.sceneName, out var _))
+                        current.Add(level.sceneName, new UnityEditor.EditorBuildSettingsScene(id, true));
+                }
+                else
+                {
+                    Log.Warn($"Unable to Find Scene: '{level.sceneName}'");
+                }
+            }
+            UnityEditor.EditorBuildSettings.scenes = new List<UnityEditor.EditorBuildSettingsScene>(current.Values).ToArray();
+        }
+#endif
+        #endregion
     }
 }
