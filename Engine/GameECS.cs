@@ -1,3 +1,4 @@
+#if REDOWL_DOTS
 using System.Collections.Generic;
 using Unity.Entities;
 
@@ -47,3 +48,4 @@ namespace RedOwl.Engine
         }
     }
 }
+#endif

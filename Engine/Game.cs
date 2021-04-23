@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using Unity.Entities;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
@@ -45,7 +44,9 @@ namespace RedOwl.Engine
         internal static void Initialize()
         {
             //Log.Always("Initialize RedOwl Game!");
+#if REDOWL_DOTS
             DotsInit();
+#endif
         }
 
         public static bool IsRunning => Application.isPlaying;
