@@ -69,6 +69,11 @@ namespace RedOwl.Engine
 
         private static IEnumerator LoadLevelAsync(GameLevel level)
         {
+            while (FMODUnity.RuntimeManager.HasBankLoaded("Master Bank"))
+            {
+                yield return null;
+            }
+            Log.Always("Master Bank Loaded");
             yield return LoadingScreen.Show();
             if (level.sceneName == Game.LevelManagerSettings.BootstrapSceneName) level = GameLevel.Next(level);
             var async = SceneManager.LoadSceneAsync(level.sceneName);

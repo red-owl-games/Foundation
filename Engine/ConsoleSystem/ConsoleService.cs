@@ -25,7 +25,7 @@ namespace RedOwl.Engine
         
         public override void Init()
         {
-            Log.Always("Console Initialization!");
+            //Log.Always("Console Initialization!");
             SetupView();
             FindCommands();
             SetupLogCollection();

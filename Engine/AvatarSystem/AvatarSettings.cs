@@ -48,7 +48,7 @@ namespace RedOwl.Engine
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         internal static void InitializeAvatarSettings()
         {
-            Log.Always("[Avatar Settings] Initialize RedOwl Game!");
+            //Log.Always("[Avatar Settings] Initialize RedOwl Game!");
             AvatarSettings.Initialize();
         }
     }

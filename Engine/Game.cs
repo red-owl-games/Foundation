@@ -20,25 +20,31 @@ namespace RedOwl.Engine
     [Singleton]
     public partial class Game : Asset<Game>
     {
+#if UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void OnSubsystemRegistration()
         {
-            Log.Always("OnSubsystemRegistration RedOwl Game!");
+            //Log.Always("OnSubsystemRegistration RedOwl Game!");
             Container = new Container();
             Services = new ServiceCache();
         }
+#endif
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
         private static void OnBeforeSplashScreen()
         {
-            Log.Always("OnBeforeSplashScreen RedOwl Game!");
+            //Log.Always("OnBeforeSplashScreen RedOwl Game!");
             Application.quitting += HandleQuit;
+#if !UNITY_EDITOR
+            Container = new Container();
+            Services = new ServiceCache();
+#endif
         }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         internal static void Initialize()
         {
-            Log.Always("Initialize RedOwl Game!");
+            //Log.Always("Initialize RedOwl Game!");
             DotsInit();
         }
 

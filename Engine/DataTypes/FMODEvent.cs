@@ -39,7 +39,7 @@ namespace RedOwl.Engine
         
         private bool _isPlaying;
         private EventInstance _event;
-        private FMOD.Studio.STOP_MODE _stopMode;
+        private STOP_MODE _stopMode;
 
         public FmodController(FmodEvent fmodEvent)
         {

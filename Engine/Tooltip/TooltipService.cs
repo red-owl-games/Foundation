@@ -17,7 +17,7 @@ namespace RedOwl.Engine
         
         public override void Init()
         {
-            Log.Always("Tooltips Initialization!");
+            //Log.Always("Tooltips Initialization!");
             if (Game.TooltipSettings.prefab != null)
             {
                 var go = Object.Instantiate(Game.TooltipSettings.prefab);
