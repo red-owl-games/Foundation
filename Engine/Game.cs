@@ -54,9 +54,12 @@ namespace RedOwl.Engine
         private static GameInstance _instance;
         public static GameInstance Instance => _instance ?? (_instance = new GameInstance());
 
+        #region State
         public static bool IsRunning => Application.isPlaying;
 
         public static bool IsShuttingDown { get; internal set; }
+        
+        #endregion
 
         #region Random
 
@@ -73,9 +76,13 @@ namespace RedOwl.Engine
 
         #endregion
 
+        #region Screen
+        
         public static float ScreenHalfWidth => Screen.width * 0.5f;
         public static float ScreenHalfHeight => Screen.height * 0.5f;
         public static Vector3 ScreenCenter => new Vector3(ScreenHalfWidth, ScreenHalfHeight, 0f);
+        
+        #endregion
         
         public static void Initialize()
         {
@@ -87,7 +94,6 @@ namespace RedOwl.Engine
 #if REDOWL_DOTS
             DotsInit();
 #endif
-            // Register Systems Initialize
             // TODO: should these move to Container.Initialize?
             GameSettings.AvatarSettings.Initialize();
         }

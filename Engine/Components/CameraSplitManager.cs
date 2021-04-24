@@ -48,6 +48,7 @@ namespace RedOwl.Engine
 
         private void UpdateRect(Rect rect)
         {
+            if (_cam == null) return;
             if (Game.IsRunning)
             {
                 _tweener?.Kill();

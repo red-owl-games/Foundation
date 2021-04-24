@@ -77,6 +77,7 @@ namespace RedOwl.Engine
 
         internal IEnumerator LoadLevelAsync(GameLevel level)
         {
+            if (level == null) yield break;
             yield return LoadingScreen.Show();
             if (level.sceneName == GameSettings.LevelManagerSettings.BootstrapSceneName) level = Levels.Next(level);
             var async = SceneManager.LoadSceneAsync(level.sceneName);

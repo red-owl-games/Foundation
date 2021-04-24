@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace RedOwl.Engine
 {
+    /*
     public abstract class DatabaseBuilder<T, TBuilder, TData> : Asset<T> where T : DatabaseBuilder<T, TBuilder, TData> where TBuilder : Builder<TData>, new() where TData : new()
     {
         private TData[] _all;
@@ -57,4 +58,5 @@ namespace RedOwl.Engine
 
         protected abstract void Construct();
     }
+    */
 }

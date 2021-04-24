@@ -1,9 +1,14 @@
+using Sirenix.OdinInspector;
+
 namespace RedOwl.Engine
 {
-    public abstract class Builder<T> where T : new()
+    public abstract class Builder<T> : Asset where T : new()
     {
+        [ShowInInspector]
         public T Data = new T();
-        public virtual T Build() => Data;
-        public static implicit operator T(Builder<T> builder) => builder.Build();
+
+        public abstract T Build(string name);
+        
+        public static implicit operator T(Builder<T> builder) => builder.Build(builder.name);
     }
 }
