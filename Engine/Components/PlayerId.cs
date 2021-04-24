@@ -33,27 +33,33 @@ namespace RedOwl.Engine
         [ShowInInspector, ReadOnly] 
         public int Id { get; private set; }
 
+        [Range(-1, 3)]
+        public int OverrideId = -1;
+
         public string Name => $"Player{Id}";
 
         [Button]
         private void OnEnable()
         {
             if (_players == null) _players = new Dictionary<int, GameObject>(4);
+            if (OverrideId != -1)
+            {
+                SetPlayer(OverrideId);
+                return;
+            }
             for (int i = 1; i < 5; i++)
             {
                 if (_players.TryGetValue(i, out var player))
                 {
                     if (player == null)
                     {
-                        _players[i] = gameObject;
-                        Id = i;
+                        SetPlayer(i);
                         return;
                     }
                 }
                 else
                 {
-                    _players[i] = gameObject;
-                    Id = i;
+                    SetPlayer(i);
                     return;
                 }
             }
@@ -64,6 +70,13 @@ namespace RedOwl.Engine
         {
             if (_players == null) return;
             _players[Id] = null;
+        }
+
+        private void SetPlayer(int id)
+        {
+            _players[id] = gameObject;
+            Id = id;
+            gameObject.name = Name;
         }
     }
 }
