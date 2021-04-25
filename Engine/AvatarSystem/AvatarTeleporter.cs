@@ -5,9 +5,10 @@ namespace RedOwl.Engine
 {
     public class AvatarTeleporter : MonoBehaviour
     {
+        public Transform TeleportLocator;
         public AvatarTeleporter TeleportTo;
 
-        public UnityAction<Avatar> OnCharacterTeleport;
+        public UnityEvent<Avatar> OnCharacterTeleport;
 
         public bool isBeingTeleportedTo { get; set; }
 
@@ -18,7 +19,7 @@ namespace RedOwl.Engine
                 Avatar cc = other.GetComponent<Avatar>();
                 if (cc)
                 {
-                    var teleportTransform = TeleportTo.transform;
+                    var teleportTransform = TeleportTo.TeleportLocator.transform;
                     cc.Motor.SetPositionAndRotation(teleportTransform.position, teleportTransform.rotation);
                     OnCharacterTeleport?.Invoke(cc);
                     TeleportTo.isBeingTeleportedTo = true;
