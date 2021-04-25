@@ -111,13 +111,13 @@ namespace RedOwl.Engine
 
         internal void Add<T>(T ability) where T : AvatarAbility
         {
-            Abilities.Add(ability);
+            Abilities.Add(ability, ability.GetType().Name);
             if (_isInitialized) ability.OnStart();
         }
 
         internal void Remove<T>(T ability) where T : AvatarAbility
         {
-            Abilities.Remove(ability);
+            Abilities.Remove(ability, ability.GetType().Name);
         }
 
         public void ProcessInput()

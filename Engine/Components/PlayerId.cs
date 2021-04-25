@@ -15,6 +15,8 @@ namespace RedOwl.Engine
         [ClearOnReload(true)]
         private static Dictionary<int, GameObject> _players;
 
+        public static int Count => _players.Count;
+
         public static IEnumerable<(int, GameObject)> GetPlayers()
         {
             foreach (var kvp in _players)

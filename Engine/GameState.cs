@@ -12,8 +12,8 @@ namespace RedOwl.Engine
         [ClearOnReload(GameTypes.SinglePlayer)]
         public static GameTypes GameType;
 
-        public static bool IsGameSinglePlayer => GameType == GameTypes.SinglePlayer;
-        public static bool IsGameCoop => GameType == GameTypes.Coop;
-        public static bool IsGameOnlineMultiPlayer => GameType == GameTypes.OnlineMultiPlayer;
+        public static bool IsSinglePlayer => GameType == GameTypes.SinglePlayer;
+        public static bool IsCoop => GameType == GameTypes.Coop;
+        public static bool IsOnlineMultiPlayer => GameType == GameTypes.OnlineMultiPlayer;
     }
 }

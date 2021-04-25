@@ -48,7 +48,8 @@ namespace RedOwl.Engine
 
         public T Add<T>(T target, string key = null)
         {
-            cache.Add(key ?? target.GetType().Name, target);
+            Log.Info($"Binding {key} {typeof(T).Name} {target.GetType().Name}");
+            cache.Add(key ?? typeof(T).Name, target);
             OnAdded?.Invoke();
             Inject(target);
             if (target is IServiceInit init) init.Init();
@@ -59,7 +60,7 @@ namespace RedOwl.Engine
         public T Get<T>(string key = null) => 
             cache.TryGetValue(key ?? typeof(T).Name, out var item) ? (T) item : default;
 
-        public void Remove<T>(T instance, string key = null) => Remove(key ?? instance.GetType().Name);
+        public void Remove<T>(T instance, string key = null) => Remove(key ?? typeof(T).Name);
         
         public void Remove(string key)
         {
