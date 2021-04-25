@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public interface IAvatarInput3DTopdown : IAvatarInput
+    public interface IAvatarInput3DTopdown : IAvatarInputMove
     {
-        Vector2 Move { get; }
-        ButtonStates Run { get; }
+        ButtonStates InputRun { get; }
     }
     
     public class AvatarMovement3DTopDown : AvatarAbility<IAvatarInput3DTopdown>
@@ -32,8 +31,8 @@ namespace RedOwl.Engine
 
         protected override void ProcessInput(ref IAvatarInput3DTopdown input)
         {
-            movement = input.Move;
-            running = input.Run != ButtonStates.Cancelled;
+            movement = input.InputMove;
+            running = input.InputRun != ButtonStates.Cancelled;
         }
 
         public override void UpdateRotation(ref Quaternion currentRotation, float deltaTime)

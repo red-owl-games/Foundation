@@ -24,8 +24,19 @@ namespace RedOwl.Engine
         }
     }
     
+    public class PauseTween : TweenData
+    {
+        [ShowInInspector, ReadOnly, DisplayAsString, HideLabel]
+        public readonly string Title = "Pause";
+        public override void ApplyTween(Sequence sequence)
+        {
+            sequence.AppendCallback(() => sequence.Pause());
+        }
+    }
+    
     public class WaitTween : TweenData
     {
+        [LabelText("Wait Duration")]
         public float duration;
         
         public override void ApplyTween(Sequence sequence)

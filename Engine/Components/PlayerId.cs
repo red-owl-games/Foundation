@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -7,13 +8,12 @@ namespace RedOwl.Engine
     [ExecuteInEditMode]
     public class PlayerId : MonoBehaviour
     {
+        [ClearOnReload]
+        public static event Action<PlayerId> OnPlayerAdded;
+        [ClearOnReload]
+        public static event Action<PlayerId> OnPlayerRemoved;
+        [ClearOnReload(true)]
         private static Dictionary<int, GameObject> _players;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void OnSubsystemRegistration()
-        {
-            _players = null;
-        }
 
         public static IEnumerable<(int, GameObject)> GetPlayers()
         {
@@ -41,7 +41,6 @@ namespace RedOwl.Engine
         [Button]
         private void OnEnable()
         {
-            if (_players == null) _players = new Dictionary<int, GameObject>(4);
             if (OverrideId != -1)
             {
                 SetPlayer(OverrideId);
@@ -68,7 +67,7 @@ namespace RedOwl.Engine
 
         private void OnDisable()
         {
-            if (_players == null) return;
+            OnPlayerRemoved?.Invoke(this);
             _players[Id] = null;
         }
 
@@ -77,6 +76,7 @@ namespace RedOwl.Engine
             _players[id] = gameObject;
             Id = id;
             gameObject.name = Name;
+            OnPlayerAdded?.Invoke(this);
         }
     }
 }

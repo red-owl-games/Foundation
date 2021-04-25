@@ -4,7 +4,7 @@ namespace RedOwl.Engine
 {
     public interface IAvatarDashInput : IAvatarInput
     {
-        ButtonStates Dash { get; }
+        ButtonStates InputDash { get; }
     }
     
     public class AvatarDash : AvatarAbility<IAvatarDashInput>
@@ -25,7 +25,7 @@ namespace RedOwl.Engine
 
         protected override void ProcessInput(ref IAvatarDashInput input)
         {
-            if (input.Dash == ButtonStates.Pressed && cooldown.IsReady)
+            if (input.InputDash == ButtonStates.Pressed && cooldown.IsReady)
             {
                 dashAnimParam.Set();
                 _dashRequested = true;

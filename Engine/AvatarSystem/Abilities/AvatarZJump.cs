@@ -4,8 +4,8 @@ namespace RedOwl.Engine
 {
     public interface IAvatarInputZJump : IAvatarInput
     {
-        ButtonStates ZJumpUp { get; }
-        ButtonStates ZJumpDown { get; }
+        ButtonStates InputZJumpUp { get; }
+        ButtonStates InputZJumpDown { get; }
     }
     
     public class AvatarZJump : AvatarAbility<IAvatarInputZJump>
@@ -28,13 +28,13 @@ namespace RedOwl.Engine
 
         protected override void ProcessInput(ref IAvatarInputZJump input)
         {
-            if (input.ZJumpUp == ButtonStates.Pressed && _zIndex < steps)
+            if (input.InputZJumpUp == ButtonStates.Pressed && _zIndex < steps)
             {
                 jumpAnimParam.Set();
                 _zIndex += 1;
             }
 
-            if (input.ZJumpDown == ButtonStates.Pressed && _zIndex > -steps)
+            if (input.InputZJumpDown == ButtonStates.Pressed && _zIndex > -steps)
             {
                 jumpAnimParam.Set();
                 _zIndex -= 1;

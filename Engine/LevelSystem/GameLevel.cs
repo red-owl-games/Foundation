@@ -2,15 +2,8 @@ using System.Collections.Generic;
 
 namespace RedOwl.Engine
 {
-    public enum LevelTypes
-    {
-        SinglePlayer,
-        MultiPlayer
-    }
-
     public class GameLevel
     {
-        public LevelTypes type { get; private set; }
         public LevelStates state { get; private set; }
 
         public string sceneName { get; private set; }
@@ -32,7 +25,6 @@ namespace RedOwl.Engine
             title = "";
             subTitle = "";
 
-            type = LevelTypes.MultiPlayer;
             state = LevelStates.None;
 
             fmodEvents = new List<FmodEvent>();

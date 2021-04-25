@@ -11,7 +11,7 @@ namespace RedOwl.Engine
 
     public interface IAvatarInputJump : IAvatarInput
     {
-        ButtonStates Jump { get; }
+        ButtonStates InputJump { get; }
     }
 
     [RequireComponent(typeof(AvatarGravity))]
@@ -57,7 +57,7 @@ namespace RedOwl.Engine
 
         protected override void ProcessInput(ref IAvatarInputJump input)
         {
-            if (input.Jump == ButtonStates.Cancelled)
+            if (input.InputJump == ButtonStates.Cancelled)
             {
                 switch (_state)
                 {
@@ -69,7 +69,7 @@ namespace RedOwl.Engine
                         break;
                 }
             }
-            if (input.Jump == ButtonStates.Pressed)
+            if (input.InputJump == ButtonStates.Pressed)
             {
                 if (_state == States.Grounded)
                 {

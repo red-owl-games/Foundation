@@ -43,11 +43,14 @@ namespace RedOwl.Engine
 
         private void OnDestory()
         {
+            if (Game.IsShuttingDown) return;
+            if (_cam == null) return;
             _tweener?.Kill();
         }
 
         private void UpdateRect(Rect rect)
         {
+            if (Game.IsShuttingDown) return;
             if (_cam == null) return;
             if (Game.IsRunning)
             {

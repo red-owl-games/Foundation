@@ -9,6 +9,7 @@ namespace RedOwl.Engine
     {
         public enum SequenceTypes
         {
+            Loops,
             Restart,
             PingPong,
             Toggle
@@ -20,7 +21,7 @@ namespace RedOwl.Engine
         [HorizontalGroup("Settings", 0.75f), LabelWidth(45)]
         public SequenceTypes type;
 
-        [SerializeReference]
+        [SerializeReference, ShowInInspector]
         public TweenData[] tweens = new TweenData[0];
 
         private Sequence _sequence;
@@ -35,20 +36,24 @@ namespace RedOwl.Engine
 
         private void BuildSequence()
         {
-            _sequence = DOTween.Sequence().Pause().SetAutoKill(false);
-            foreach (var tween in tweens)
-            {
-                tween.ApplyTween(_sequence);
-            }
-
+            _sequence = DOTween.Sequence().SetAutoKill(false);
             switch (type)
             {
-                case SequenceTypes.Restart:
+                case SequenceTypes.Loops:
                     _sequence.SetLoops(-1, LoopType.Restart);
+                    break;
+                case SequenceTypes.Restart:
+                    _sequence.SetLoops(1, LoopType.Restart);
+                    _sequence.OnComplete(() => _sequence.Rewind());
                     break;
                 case SequenceTypes.PingPong:
                     _sequence.SetLoops(-1, LoopType.Yoyo);
                     break;
+            }
+            _sequence.Pause();
+            foreach (var tween in tweens)
+            {
+                tween.ApplyTween(_sequence);
             }
         }
 
@@ -62,6 +67,15 @@ namespace RedOwl.Engine
             else
             {
                 _sequence.Play();
+            }
+        }
+        
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
+        public void Rewind()
+        {
+            if (type == SequenceTypes.Restart)
+            {
+                _sequence.Rewind();
             }
         }
 
@@ -103,6 +117,7 @@ namespace RedOwl.Engine
             {
                 switch (type)
                 {
+                    case SequenceTypes.Loops:
                     case SequenceTypes.Restart:
                         loops = 2;
                         break;

@@ -24,10 +24,10 @@ namespace RedOwl.Engine
             self.transform.Children(t => predicate(t.gameObject));
         }
 
-        public static void SetLayer(this GameObject self, int layer)
+        public static void SetLayer(this GameObject self, int layer, bool recursive = false)
         {
             self.layer = layer;
-            self.Children(o => o.SetLayer(layer));
+            if (recursive) self.Children(o => o.SetLayer(layer, true));
         }
         
         public static void Clear(this GameObject self)
@@ -44,5 +44,11 @@ namespace RedOwl.Engine
             Object.Destroy(self);
 #endif
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Disable<T>(this T self) where T : Behaviour => self.enabled = false;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Enable<T>(this T self) where T : Behaviour => self.enabled = true;
     }
 }

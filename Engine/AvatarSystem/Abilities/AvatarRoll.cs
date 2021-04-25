@@ -4,7 +4,7 @@ namespace RedOwl.Engine
 {
     public interface IAvatarInputRoll : IAvatarInput
     {
-        ButtonStates Roll { get; }
+        ButtonStates InputRoll { get; }
     }
     
     public class AvatarRoll : AvatarAbility<IAvatarInputRoll>
@@ -44,7 +44,7 @@ namespace RedOwl.Engine
 
         protected override void ProcessInput(ref IAvatarInputRoll input)
         {
-            if (input.Roll == ButtonStates.Pressed && cooldown.IsReady)
+            if (input.InputRoll == ButtonStates.Pressed && cooldown.IsReady)
             {
                 Roll();
             }

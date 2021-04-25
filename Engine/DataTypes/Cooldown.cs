@@ -7,7 +7,8 @@ namespace RedOwl.Engine
     // public Cooldown duration;
     // duration.Use();
     // duration.Tick(Time.deltaTime)
-    // if (duration.IsReady) ...do thing
+    // if (duration.IsReady) ...allow a thing
+    // if (duration.IsActive) ...still waiting
     [Serializable, InlineProperty]
     public class Cooldown
     {

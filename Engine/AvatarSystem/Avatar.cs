@@ -50,12 +50,14 @@ namespace RedOwl.Engine
         public AnimFloatProperty VelocityZAnimParam = "VelocityZ";
         public AnimTriggerProperty LandedAnimParam = "Landed";
         public AnimBoolProperty GroundedAnimParam = "Grounded";
+        
+        [NonSerialized]
+        public IAvatarInput inputHandler;
 
         public AbilityCache Abilities { get; } = new AbilityCache();
         public Guid Id { get; private set; }
         private bool _hasAnimator;
         private AnimatorController _animController;
-        private IAvatarInput _inputHandler;
         private bool _isInitialized;
         private bool _wasGroundedLastFrame;
         //private AvatarInputManager _input;
@@ -107,27 +109,21 @@ namespace RedOwl.Engine
             Abilities.Dispose();
         }
 
-        internal void Add(AvatarAbility ability)
+        internal void Add<T>(T ability) where T : AvatarAbility
         {
             Abilities.Add(ability);
             if (_isInitialized) ability.OnStart();
         }
 
-        internal void Remove(AvatarAbility ability)
+        internal void Remove<T>(T ability) where T : AvatarAbility
         {
             Abilities.Remove(ability);
-        }
-        
-        public void SetInputHandler<T>(T handler) where T : class, IAvatarInput
-        {
-            handler.AssignAvatar(this);
-            _inputHandler = handler;
         }
 
         public void ProcessInput()
         {
-            if (_inputHandler == null) return;
-            foreach (var ability in Abilities.Unlocked) ability.ProcessInput(ref _inputHandler);
+            if (inputHandler == null) return;
+            foreach (var ability in Abilities.Unlocked) ability.ProcessInput(ref inputHandler);
         }
 
         public void BeforeCharacterUpdate(float deltaTime)

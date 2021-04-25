@@ -51,8 +51,7 @@ namespace RedOwl.Engine
     
     public partial class Game
     {
-        private static GameInstance _instance;
-        public static GameInstance Instance => _instance ?? (_instance = new GameInstance());
+        [ClearOnReload(true)] public static GameInstance Instance;
 
         #region State
         public static bool IsRunning => Application.isPlaying;
@@ -90,7 +89,6 @@ namespace RedOwl.Engine
             Log.Always("Initialize RedOwl Game!");
             Application.quitting -= HandleQuit;
             Application.quitting += HandleQuit;
-            _instance = new GameInstance();
 #if REDOWL_DOTS
             DotsInit();
 #endif

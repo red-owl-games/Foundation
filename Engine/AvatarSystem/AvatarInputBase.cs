@@ -10,42 +10,49 @@ namespace RedOwl.Engine
         Pressed,
         Held,
     }
+    
+    public interface IAvatarInput {}
 
-    public interface IAvatarInput
+    public interface IAvatarInputMove : IAvatarInput
     {
-        void AssignAvatar(Avatar avatar);
+        Vector2 InputMove { get; }
     }
 
-    public abstract class AvatarInputBase
+    public interface IAvatarInputLook : IAvatarInput
     {
-        private Avatar _avatar;
+        Vector2 InputLook { get; }
+    }
+    
+    public interface IAvatarInputMoveAndLook : IAvatarInputMove, IAvatarInputLook {}
 
-        public void AssignAvatar(Avatar avatar)
+    public static class InputActionExt
+    {
+        public static ButtonStates GetState(this InputAction.CallbackContext self)
         {
-            _avatar = avatar;
-        }
-        
-        protected void ApplyInputImmediately()
-        {
-            _avatar.ProcessInput();
-        }
-        
-        public static ButtonStates GetState(InputAction.CallbackContext context)
-        {
-            if (context.canceled)
+            if (self.canceled)
             {
                 return ButtonStates.Cancelled;
             }
-            if (context.started)
+            if (self.started)
             {
                 return ButtonStates.Pressed;
             }
-            return context.performed ? ButtonStates.Held : ButtonStates.Cancelled;
+            return self.performed ? ButtonStates.Held : ButtonStates.Cancelled;
         }
 
-        public static Vector2 GetAxis(InputAction.CallbackContext context)
+        public static bool IsPressed(this ButtonStates self)
         {
-            return context.ReadValue<Vector2>();
+            return self == ButtonStates.Pressed || self == ButtonStates.Held;
+        }
+
+        public static bool WasPressed(this ButtonStates self)
+        {
+            return self == ButtonStates.Pressed;
+        }
+
+        public static Vector2 GetAxis(this InputAction.CallbackContext self)
+        {
+            return self.ReadValue<Vector2>();
         }
     }
 }

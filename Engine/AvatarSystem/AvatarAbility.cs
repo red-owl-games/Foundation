@@ -32,7 +32,9 @@ namespace RedOwl.Engine
 
         public bool Enabled => enabled;
 
-        // Higher Numbers Happen Last in Loops
+        /// <summary>
+        /// Positive Numbers Happen Last in Loops
+        /// </summary>
         public abstract int Priority { get; }
         
         private void Awake()
