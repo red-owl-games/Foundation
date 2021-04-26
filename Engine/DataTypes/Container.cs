@@ -80,6 +80,12 @@ namespace RedOwl.Engine
             }
         }
 
+        public void Clear()
+        {
+            Dispose();
+            cache.Clear();
+        }
+
         public void Start()
         {
             isStarted = true;

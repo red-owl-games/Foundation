@@ -85,6 +85,7 @@ namespace RedOwl.Engine
         
         public static void Initialize()
         {
+            Instance.Container.Clear();
             IsShuttingDown = false;
             Log.Always("Initialize RedOwl Game!");
             Application.quitting -= HandleQuit;
