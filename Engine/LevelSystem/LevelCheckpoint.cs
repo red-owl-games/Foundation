@@ -7,6 +7,7 @@ namespace RedOwl.Engine
     [RequireComponent(typeof(Collider))]
     public class LevelCheckpoint : MonoBehaviour
     {
+        public Transform SpawnLocator;
         public bool isLevelStart = false;
 
         private void Start()

@@ -12,20 +12,22 @@ namespace RedOwl.Engine
         public bool killAllPlayers;
         
         public Vector3 LastCheckpointPosition { get; private set; } = Vector3.zero;
+        public Quaternion LastCheckpointRotation { get; private set; } = Quaternion.identity;
         
         private void OnTriggerEnter(Collider other)
         {
-            if (other.GetComponent<LevelCheckpoint>() == null) return;
+            var checkpoint = other.GetComponent<LevelCheckpoint>();
+            if (checkpoint == null) return;
             if (killAllPlayers)
             {
                 foreach (var player in Avatar.Players)
                 {
-                    player.Abilities.Get<AvatarRespawnable>()?.SetCheckpointPosition(other.transform);
+                    player.Abilities.Get<AvatarRespawnable>()?.SetCheckpointPosition(checkpoint.SpawnLocator.transform);
                 }
             }
             else
             {
-                SetCheckpointPosition(other.transform);
+                SetCheckpointPosition(checkpoint.SpawnLocator.transform);
             }
         }
 
@@ -34,19 +36,26 @@ namespace RedOwl.Engine
             //Game.Register(this);
             foreach (var checkpoint in FindObjectsOfType<LevelCheckpoint>())
             {
-                if (checkpoint.isLevelStart) LastCheckpointPosition = checkpoint.transform.position;
+                if (checkpoint.isLevelStart)
+                {
+                    var checkPointTransform = checkpoint.SpawnLocator.transform;
+                    LastCheckpointPosition = checkPointTransform.position;
+                    LastCheckpointRotation = checkPointTransform.rotation;
+                }
             }
         }
 
         public override void OnReset()
         {
             Motor.SetPosition(LastCheckpointPosition);
+            Motor.SetRotation(LastCheckpointRotation);
             gameObject.SetActive(true);
         }
 
         private void SetCheckpointPosition(Transform target)
         {
             LastCheckpointPosition = target.position;
+            LastCheckpointRotation = target.rotation;
         }
 
         [Button]
