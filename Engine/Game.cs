@@ -89,6 +89,10 @@ namespace RedOwl.Engine
             Log.Always("Initialize RedOwl Game!");
             Application.quitting -= HandleQuit;
             Application.quitting += HandleQuit;
+            
+            // TODO: Expose These
+            Application.targetFrameRate = 30;
+            QualitySettings.vSyncCount = 1;
 #if REDOWL_DOTS
             DotsInit();
 #endif
