@@ -13,7 +13,7 @@ namespace RedOwl.Engine
         [ClearOnReload]
         public static event Action<PlayerId> OnPlayerRemoved;
         [ClearOnReload(true)]
-        private static Dictionary<int, GameObject> _players;
+        private static Dictionary<int, GameObject> _players = new Dictionary<int, GameObject>(); 
 
         public static int Count => _players.Count;
 

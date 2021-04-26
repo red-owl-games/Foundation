@@ -51,7 +51,7 @@ namespace RedOwl.Engine
     
     public partial class Game
     {
-        [ClearOnReload(true)] public static GameInstance Instance;
+        [ClearOnReload(true)] public static GameInstance Instance { get; } = new GameInstance();
 
         #region State
         public static bool IsRunning => Application.isPlaying;
