@@ -12,8 +12,8 @@ namespace RedOwl.Engine
         public static event Action<PlayerId> OnPlayerAdded;
         [ClearOnReload]
         public static event Action<PlayerId> OnPlayerRemoved;
-        [ClearOnReload(true)]
-        private static Dictionary<int, GameObject> _players = new Dictionary<int, GameObject>(); 
+
+        [ClearOnReload(true)] private static Dictionary<int, GameObject> _players;
 
         public static int Count => _players.Count;
 
@@ -39,6 +39,11 @@ namespace RedOwl.Engine
         public int OverrideId = -1;
 
         public string Name => $"Player{Id}";
+
+        private void Awake()
+        {
+            if (_players == null) _players = new Dictionary<int, GameObject>();
+        }
 
         [Button]
         private void OnEnable()
