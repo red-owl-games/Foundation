@@ -7,8 +7,8 @@ namespace RedOwl.Engine
 {
     #region Settings
     
-    [Serializable]
-    public class DrawSettings : Settings
+    [Serializable, InlineProperty, HideLabel]
+    public class DrawSettings
     {
         [ToggleLeft, HorizontalGroup("Draw", 0.3f), LabelWidth(200)]
         public bool ShowDebugDraw = true;

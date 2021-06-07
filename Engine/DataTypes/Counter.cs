@@ -10,7 +10,7 @@ namespace RedOwl.Engine
     public class Counter
     {
         [HorizontalGroup("Counter")]
-        [HideLabel]
+        [HideLabel, DisableInPlayMode]
         public int uses;
 
         public event Action<int> OnChanged;
@@ -32,10 +32,14 @@ namespace RedOwl.Engine
             OnChanged?.Invoke(_count);
         }
 
+        [HorizontalGroup("Counter", 0.2f)]
+        [Button, DisableInEditorMode]
         public void Reset()
         {
             _count = uses;
             OnChanged?.Invoke(_count);
         }
+        
+        public static implicit operator Counter(int uses) => new Counter(uses);
     }
 }

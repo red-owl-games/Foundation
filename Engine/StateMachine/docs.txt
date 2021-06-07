@@ -1,0 +1,47 @@
+    public enum MyStates
+    {
+        Red,
+        Green,
+        Blue,
+        
+        RedNested,
+        GreenNested,
+        BlueNested,
+    }
+
+    public class DebugStateMachine : StateMachineBaseBehaviour
+    {
+        public Image image;
+
+        public Sprite[] sprites = new Sprite[3];
+        
+        protected override void ConfigureStateMachine(StateMachine machine)
+        {
+            var redState = machine.Add(new CallbackState{Id = MyStates.Red, WhenEnter = () => Log.Always("Enter Red State")});
+            var greenState = machine.Add(new CallbackState{Id = MyStates.Green, WhenEnter = () => Log.Always("Enter Green State")});
+            var blueState = machine.Add(new CallbackState{Id = MyStates.Blue, WhenEnter = () => Log.Always("Enter Blue State")});
+            var nested = machine.Add(new StateMachine("Nested"));
+
+            var redStateNested = nested.Add(new CallbackState {Id = MyStates.RedNested, WhenEnter = () => image.sprite = sprites[0]});
+            var greenStateNested = nested.Add(new CallbackState {Id = MyStates.GreenNested, WhenEnter = () => image.sprite = sprites[1]});
+            var blueStateNested = nested.Add(new CallbackState {Id = MyStates.BlueNested, WhenEnter = () => image.sprite = sprites[2]});
+            
+            redState.Permit(greenState, GameEvents.DoGreen);
+            redState.Permit(nested, GameEvents.DoNested);
+
+            greenState.Permit(redState, GameEvents.DoRed);
+            greenState.Permit(blueState, GameEvents.DoBlue);
+
+            blueState.Permit(greenState, GameEvents.DoGreen);
+            blueState.Permit(nested, GameEvents.DoNested);
+
+            nested.Permit(blueState, GameEvents.DoBlue);
+
+            redStateNested.Permit(greenStateNested, 3f);
+            greenStateNested.Permit(blueStateNested, 3f);
+            blueStateNested.Permit(redStateNested, 0.5f);
+
+            nested.SetInitialState(redStateNested);
+            machine.SetInitialState(redState);
+        }
+    }

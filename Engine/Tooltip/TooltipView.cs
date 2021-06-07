@@ -3,14 +3,14 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace RedOwl.Engine
 {
     [HideMonoScript]
-    [RequireComponent(typeof(Canvas)), RequireComponent(typeof(CanvasGroup))]
-    [ExecuteInEditMode]
+    [RequireComponent(typeof(Canvas))]
     public class TooltipView : MonoBehaviour, ITooltipView
     {
         public Transform target;
@@ -19,8 +19,10 @@ namespace RedOwl.Engine
         public LayoutElement layout;
         [FormerlySerializedAs("maxWidth")] public int characterWrapLimit;
 
+        [UnityEventFoldout] public UnityEvent onShow;
+        [UnityEventFoldout] public UnityEvent onHide;
+
         private RectTransform _canvas;
-        private CanvasGroup _canvasGroup;
         private RectTransform _tooltip;
         private Func<Vector3> _getPosition;
         private Tween _tween;
@@ -28,7 +30,6 @@ namespace RedOwl.Engine
         private void Awake()
         {
             _canvas = (RectTransform)transform;
-            _canvasGroup = GetComponent<CanvasGroup>();
             _tooltip = (RectTransform)target;
             gameObject.SetActive(false);
         }
@@ -83,12 +84,12 @@ namespace RedOwl.Engine
             CalculateSize();
             target.position = GetPosition();
             gameObject.SetActive(true);
-            //_tween = _canvasGroup.DOFade(1f, 1f);
+            onShow.Invoke();
         }
 
         public void Hide()
         {
-            //_canvasGroup.alpha = 0f;
+            onHide.Invoke();
             _getPosition = null;
             gameObject.SetActive(false);
         }

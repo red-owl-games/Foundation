@@ -13,8 +13,8 @@ namespace RedOwl.Engine
     
     #region Settings
     
-    [Serializable]
-    public class FileControllerSettings : Settings
+    [Serializable, InlineProperty, HideLabel]
+    public class FileControllerSettings
     {
         [SerializeField]
         public bool UseEncryption;
@@ -39,15 +39,15 @@ namespace RedOwl.Engine
     #endregion
     
     [Serializable]
-    public struct PersistenceItem
-    {
-        public string key;
-        public byte[] value;
-    }
-    
-    [Serializable]
     public class DataFile : IRedOwlFile
     {
+        [Serializable]
+        private struct PersistenceItem
+        {
+            public string key;
+            public byte[] value;
+        }
+        
         [SerializeField] 
         private List<PersistenceItem> data;
         private Dictionary<string, MemoryStream> cache;
@@ -113,12 +113,12 @@ namespace RedOwl.Engine
         public static byte[] Read(string relativePath)
         {
             string filepath = Filepath(relativePath);
-            return !File.Exists(filepath) ? new byte[0] : DoRead(filepath);
+            return !File.Exists(filepath) ? new byte[0] : _Read(filepath);
         }
         
-        private static byte[] DoRead(string filepath)
+        private static byte[] _Read(string filepath)
         {
-            //Log.Always($"Reading File - {filepath}");
+            Log.Debug($"Reading File - {filepath}");
             Stream stream = new FileStream(filepath, FileMode.Open);
             if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
             if (GameSettings.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
@@ -142,12 +142,12 @@ namespace RedOwl.Engine
         public static void Write(string relativePath, byte[] data)
         {
             string filepath = Filepath(relativePath);
-            DoWrite(filepath, data);
+            _Write(filepath, data);
         }
         
-        private static void DoWrite(string filepath, byte[] data)
+        private static void _Write(string filepath, byte[] data)
         {
-            //Log.Always($"Writing File - {filepath}");
+            Log.Debug($"Writing File - {filepath}");
             Directory.CreateDirectory(Path.GetDirectoryName(filepath) ?? string.Empty);
             Stream stream = new FileStream(filepath, FileMode.Create);
             if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);

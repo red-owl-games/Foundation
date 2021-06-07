@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    [Serializable]
-    public class TooltipSettings : Settings
+    [Serializable, InlineProperty, HideLabel]
+    public class TooltipSettings
     {
         public float delay = 1f;
         // TODO: could add an "auto kill" delay

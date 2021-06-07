@@ -15,10 +15,10 @@ namespace RedOwl.Engine
     
     #region Settings
     
-    [Serializable]
-    public class LogSettings : Settings
+    [Serializable, InlineProperty, HideLabel]
+    public class LogSettings
     {
-        public LogLevel LogLevel = LogLevel.Warn;
+        public LogLevel LogLevel = LogLevel.Info;
     }
 
     public partial class GameSettings

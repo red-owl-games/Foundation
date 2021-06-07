@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using RedOwl.UIX.Engine;
 using UnityEngine;
 
-namespace Engine.DataTypes
+namespace RedOwl.Engine
 {
     [Serializable]
     public abstract class BetterKeyedCollection<TKey, TValue> : ICollection<TValue>
@@ -24,6 +23,14 @@ namespace Engine.DataTypes
         {
             collection = new List<TValue>(capacity);
             lookup = new BetterDictionary<TKey, int>(capacity);
+        }
+        
+        protected BetterKeyedCollection(ICollection<TValue> data) : this(data.Count)
+        {
+            foreach (var item in data)
+            {
+                Add(item);
+            }
         }
         
         #region Shared
@@ -109,6 +116,8 @@ namespace Engine.DataTypes
         public ICollection<TValue> Values => collection;
         
         #endregion
+        
+        public TValue this[int index] => collection[index];
         
         public TValue Next(TValue item)
         {

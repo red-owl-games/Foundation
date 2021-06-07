@@ -27,8 +27,8 @@ namespace RedOwl.Editor
 
                     // Extract attribute and access its parameters
                     var reloadAttribute = field.GetCustomAttribute<ClearOnReloadAttribute>();
-                    object valueToAssign = reloadAttribute?.valueToAssign;
-                    bool assignNewTypeInstance = reloadAttribute != null && reloadAttribute.assignNewTypeInstance;
+                    object valueToAssign = reloadAttribute?.ValueToAssign;
+                    bool assignNewTypeInstance = reloadAttribute != null && reloadAttribute.AssignNewTypeInstance;
 
                     // Use valueToAssign only if it's convertible to the field value type
                     dynamic value = valueToAssign != null
@@ -59,8 +59,8 @@ namespace RedOwl.Editor
 
                     // Extract attribute and access its parameters
                     var reloadAttribute = property.GetCustomAttribute<ClearOnReloadAttribute>();
-                    object valueToAssign = reloadAttribute?.valueToAssign;
-                    bool assignNewTypeInstance = reloadAttribute != null && reloadAttribute.assignNewTypeInstance;
+                    object valueToAssign = reloadAttribute?.ValueToAssign;
+                    bool assignNewTypeInstance = reloadAttribute != null && reloadAttribute.AssignNewTypeInstance;
 
                     // Use valueToAssign only if it's convertible to the property value type
                     dynamic value = valueToAssign != null

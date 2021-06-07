@@ -1,128 +1,57 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace RedOwl.Engine
 {
-    public class RedOwlException : Exception
+    public static partial class Game
     {
-        public RedOwlException() {}
-        public RedOwlException(string message) : base(message) {}
-        public RedOwlException(string message, Exception inner) : base(message, inner) {}
-    }
-    
-    [Serializable, InlineProperty, HideLabel]
-    public abstract class Settings {}
-
-    public class GameInstance : IDisposable
-    {
-        public Random Random { get; }
-        public Container Container { get; }
-
-        private Coroutine _update;
-
-        public GameInstance()
-        {
-            Random = new Random((uint)Environment.TickCount);
-            Container = new Container();
-        }
-
-        public IEnumerator Start()
-        {
-            // TODO: this should move to the FmodService probably
-            while (FMODUnity.RuntimeManager.HasBankLoaded("Master Bank"))
-            {
-                yield return null;
-            }
-            Log.Info("Master Bank Loaded");
-            Container.Start();
-            _update = CoroutineManager.StartRoutine(Container.Update());
-        }
-
-        public void Dispose()
-        {
-            CoroutineManager.StopRoutine(_update);
-            Container?.Dispose();
-        }
-    }
-    
-    public partial class Game
-    {
-        [ClearOnReload(true)] public static GameInstance Instance { get; } = new GameInstance();
-
-        #region State
         public static bool IsRunning => Application.isPlaying;
+        public static Random Random { get; private set; }
 
-        public static bool IsShuttingDown { get; internal set; }
-        
-        #endregion
-
-        #region Random
-
-        public static Random Random => Instance.Random;
-
-        #endregion
-        
-        #region Container
-
-        public static T Bind<T>(string key = null) where T : new() => Instance.Container.Add<T>(key);
-        public static T Bind<T>(T system, string key = null) => Instance.Container.Add(system, key);
-        public static T Find<T>(string key = null) => Instance.Container.Get<T>(key);
-        public static void Inject(object obj) => Instance.Container.Inject(obj);
-
-        #endregion
-
-        #region Screen
-        
-        public static float ScreenHalfWidth => Screen.width * 0.5f;
-        public static float ScreenHalfHeight => Screen.height * 0.5f;
-        public static Vector3 ScreenCenter => new Vector3(ScreenHalfWidth, ScreenHalfHeight, 0f);
-        
-        #endregion
-        
-        public static void Initialize()
+        internal static void Init()
         {
-            Instance.Container.Clear();
-            IsShuttingDown = false;
-            Log.Always("Initialize RedOwl Game!");
-            Application.quitting -= HandleQuit;
-            Application.quitting += HandleQuit;
-            
-            // TODO: Expose These
-            Application.targetFrameRate = 30;
-            QualitySettings.vSyncCount = 1;
-#if REDOWL_DOTS
-            DotsInit();
-#endif
-            // TODO: should these move to Container.Initialize?
-            GameSettings.AvatarSettings.Initialize();
+            Log.Always("Game Initialization...");
+            Random = new Random((uint)Environment.TickCount);
+            Services = new Container();
+            if (!IsRunning) return;
+            SetupStateMachines();
+            Events.StartGame.On -= OnStart;
+            Events.StartGame.On += OnStart;
+            Events.QuitGame.On -= Quit;
+            Events.QuitGame.On += Quit;
+            Log.Always("Game Initialized!");
         }
 
-        public static void Start()
-        {
-            CoroutineManager.StartRoutine(Instance.Start());
-        }
-        
-        private static void HandleQuit()
-        {
-            IsShuttingDown = true;
-            CoroutineManager.StopAllRoutines();
-            Instance.Dispose();
-        }
-        
+        public static void Start() => Events.StartGame.Raise();
+
+        public static void Pause() => Events.PauseGame.Raise();
+
+        public static void Resume() => Events.ResumeGame.Raise();
+
         public static void Quit()
         {
-            IsShuttingDown = true;
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.ExitPlaymode();
 #elif UNITY_STANDALONE 
             Application.Quit();
 #elif UNITY_WEBGL
+            HandleQuit();
             Application.OpenURL("about:blank");
 #endif
         }
+
+        private static void OnStart()
+        {
+            Log.Always("Game Started!");
+            Services.Start();
+            UnityBridge.Target = Services;
+        }
+    }
+    
+    public static class GameInit
+    {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void OnAfterAssembliesLoaded() => Game.Init();
     }
 }

@@ -1,84 +1,116 @@
-using System;
+using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public interface ITransition
+    public class AlwaysTransition : TransitionBase, ITransitionBehaviour
     {
-        IState To { get;}
-        int Priority { get;  }
-        bool IsReady { get; }
-        void Reset();
-        void Enable();
-        void Disable();
-    }
-
-    public class CallbackTransition : ITransition
-    {
-        public IState To { get; }
-        public int Priority { get; }
-        private readonly Func<bool> _isAllowed;
-        public bool IsReady => _isAllowed();
-        
-        public CallbackTransition(IState to, int priority, Func<bool> callback)
-        {
-            To = to;
-            Priority = priority;
-            _isAllowed = callback;
-        }
-
-        public void Reset() { }
-        public void Enable() { }
-        public void Disable() { }
+        public override bool CanTransition() => true;
     }
     
-    public class EventTransition : ITransition
+    public class TriggerTransition : TransitionBase, ITransitionBehaviour
     {
-        public IState To { get; }
-        public int Priority { get; }
-        private readonly IMessage _message;
-        private readonly Func<bool> _isAllowed;
-        private readonly bool _hasGuard;
-        private readonly bool _autoReset;
+        [HideInInspector]
+        public bool Value;
 
-        public EventTransition(IState to, int priority, IMessage message, bool autoReset)
+        [Button]
+        public void Trigger() => Value = true;
+        
+        public override bool CanTransition()
         {
-            To = to;
-            Priority = priority;
-            _message = message;
-            _hasGuard = false;
-            _autoReset = autoReset;
+            if (!Value) return false;
+            Value = false;
+            return true;
+        }
+    }
+    
+    public class OnMessageTransition : TransitionBase, ITransitionEnterExit
+    {
+        public Message message;
+
+        private bool _wasTriggered;
+
+        public override bool CanTransition()
+        {
+            if (!_wasTriggered) return false;
+            _wasTriggered = false;
+            return true;
+        }
+        
+        public void OnEnter() => message.On += Handler;
+
+        public void OnExit() => message.On -= Handler;
+
+        private void Handler() => _wasTriggered = true;
+    }
+
+    public class DelayedTransition : TransitionBase, ITransitionEnterExit, ITransitionUpdate, ITransitionBehaviour
+    {
+        public float delay;
+
+        private float _current;
+
+        public override bool CanTransition()
+        {
+            if (_current > delay)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
+        public void OnEnter() => _current = 0;
+        
+        public void OnUpdate(float dt)
+        {
+            _current += dt;
         }
 
-        public EventTransition(IState to, int priority, IMessage message, Func<bool> guard, bool autoReset)
+        public void OnExit() => _current = 0;
+
+    }
+
+    public class OnChannelTransition : TransitionBase, ITransitionEnterExit, ITransitionBehaviour
+    {
+        public Channel channel;
+
+        private bool _wasTriggered;
+
+        public override bool CanTransition()
         {
-            To = to;
-            Priority = priority;
-            _message = message;
-            _isAllowed = guard;
-            _hasGuard = true;
-            _autoReset = autoReset;
+            if (!_wasTriggered) return false;
+            _wasTriggered = false;
+            return true;
         }
+        
+        public void OnEnter() => channel.On += Handler;
 
-        public bool IsReady { get; private set; }
+        public void OnExit() => channel.On -= Handler;
 
-        public void Reset()
+        private void Handler() => _wasTriggered = true;
+    }
+
+    public abstract partial class BaseState
+    {
+        public void Permit(IState to)
         {
-            if (_autoReset) IsReady = false;
+            Permit(new AlwaysTransition{To = to});
         }
-
-        public void Enable()
+        
+        public void Permit(IState to, Message message)
         {
-            _message.OnAny += HandleEvent;
+            Permit(new OnMessageTransition{To = to, message = message});
         }
-
-        public void Disable()
+        
+        public void Permit(IState to, float delay)
         {
-            _message.OnAny -= HandleEvent;
+            Permit(new DelayedTransition(){To = to, delay = delay});
         }
-
-        private void HandleEvent()
+        
+        public void Permit(IState to, Channel channel)
         {
-            IsReady = !_hasGuard || _isAllowed();
+            Permit(new OnChannelTransition{To = to, channel = channel});
         }
     }
 }

@@ -1,12 +1,14 @@
 {
     "name": "RedOwl.Engine",
+    "rootNamespace": "",
     "references": [
         "Unity.Mathematics",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
         "DOTween.Modules",
-        "KinematicCharacterController",
-        "FMODUnity"
+        "KinematicCharacterController"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -28,7 +28,7 @@ namespace RedOwl.Engine
         public void Show(Vector3 position, string content, string header = "", float hideDelay = 1f)
         {
             _tooltipView.Show(() => position, content, header);
-            Delayed.Run(Hide, hideDelay);
+            Game.DelayedCall(Hide, hideDelay);
         }
 
         public void Show(Func<Vector3> position, string content, string header = "") 

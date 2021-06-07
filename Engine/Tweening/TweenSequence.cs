@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -7,6 +8,14 @@ namespace RedOwl.Engine
     [HideMonoScript]
     public class TweenSequence : MonoBehaviour
     {
+        public enum StartType
+        {
+            Never,
+            Awake,
+            Enable,
+            Start
+        }
+        
         public enum SequenceTypes
         {
             Loops,
@@ -14,15 +23,15 @@ namespace RedOwl.Engine
             PingPong,
             Toggle
         }
-        [HorizontalGroup("Settings")]
-        [ToggleLeft]
-        public bool StartOnAwake;
 
-        [HorizontalGroup("Settings", 0.75f), LabelWidth(45)]
+        [HorizontalGroup("Settings"), LabelWidth(60)]
+        public StartType StartOn;
+
+        [HorizontalGroup("Settings"), LabelWidth(45)]
         public SequenceTypes type;
 
         [SerializeReference, ShowInInspector]
-        public TweenData[] tweens = new TweenData[0];
+        public TweenConfig[] tweens = new TweenConfig[0];
 
         private Sequence _sequence;
         private bool _started;
@@ -31,7 +40,29 @@ namespace RedOwl.Engine
         private void Awake()
         {
             BuildSequence();
-            if (StartOnAwake) Play();
+            if (StartOn == StartType.Awake) Play();
+        }
+
+        private void OnEnable()
+        {
+            if (StartOn == StartType.Enable) Play();
+        }
+
+        private void Start()
+        {
+            if (StartOn == StartType.Start) Play();
+        }
+
+        private void OnDisable()
+        {
+            if (StartOn == StartType.Enable)
+            {
+                if (type == SequenceTypes.Toggle)
+                {
+                    _sequence.Rewind();
+                    _toggleState = false;
+                }
+            }
         }
 
         private void BuildSequence()
@@ -44,7 +75,6 @@ namespace RedOwl.Engine
                     break;
                 case SequenceTypes.Restart:
                     _sequence.SetLoops(1, LoopType.Restart);
-                    _sequence.OnComplete(() => _sequence.Rewind());
                     break;
                 case SequenceTypes.PingPong:
                     _sequence.SetLoops(-1, LoopType.Yoyo);
@@ -57,7 +87,8 @@ namespace RedOwl.Engine
             }
         }
 
-        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
+        [BoxGroup("Controls")]
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls/Buttons"), DisableInEditorMode]
         public void Play()
         {
             if (type == SequenceTypes.Toggle)
@@ -66,11 +97,14 @@ namespace RedOwl.Engine
             }
             else
             {
-                _sequence.Play();
+                if (type == SequenceTypes.Restart)
+                    _sequence.Restart();
+                else
+                    _sequence.Play();
             }
         }
         
-        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls/Buttons"), DisableInEditorMode]
         public void Rewind()
         {
             if (type == SequenceTypes.Restart)
@@ -79,7 +113,7 @@ namespace RedOwl.Engine
             }
         }
 
-        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInEditorMode]
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls/Buttons"), DisableInEditorMode]
         public void Stop()
         {
             if (type != SequenceTypes.Toggle)
@@ -104,14 +138,14 @@ namespace RedOwl.Engine
 #if UNITY_EDITOR
 
         private static bool _isPreviewing;
-        [Button(ButtonSizes.Medium), ButtonGroup("Controls"), DisableInPlayMode]
+        [Button(ButtonSizes.Medium), ButtonGroup("Controls/Buttons"), DisableInPlayMode]
         private void Preview()
         {
             if (_isPreviewing) return;
             _isPreviewing = true;
             int loops = 0;
             BuildSequence();
-            if (type == SequenceTypes.Toggle) _sequence.AppendInterval(0.5f);
+            if (type == SequenceTypes.Toggle) _sequence.AppendCallback(_sequence.PlayBackwards);
             DG.DOTweenEditor.DOTweenEditorPreview.PrepareTweenForPreview(_sequence);
             _sequence.OnStepComplete(() =>
             {

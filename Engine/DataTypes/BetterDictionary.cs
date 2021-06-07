@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace RedOwl.UIX.Engine
+namespace RedOwl.Engine
 {
     [Serializable]
     public class BetterDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver

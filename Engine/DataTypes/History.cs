@@ -8,7 +8,7 @@ namespace RedOwl.Engine
         public T Previous => _last;
         public T Current => _current;
 
-        public void Set(T next)
+        public void Push(T next)
         {
             _last = _current;
             _current = next;

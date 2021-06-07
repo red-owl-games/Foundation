@@ -1,0 +1,27 @@
+    public enum Events
+    {
+        One,
+        Two,
+        Three
+    }
+
+#if UNITY_EDITOR
+    [UnityEditor.InitializeOnLoad]
+#endif
+    public static class GameEvents
+    {
+        static GameEvents()
+        {
+        }
+        
+        public static readonly Message Nested = Telegraph.New<Message>("Project/Nested");
+        
+        public static readonly Message DoRed = Telegraph.New<Message>("Project/DoRed");
+        public static readonly Message DoBlue = Telegraph.New<Message>("Project/DoBlue");
+        public static readonly Message DoGreen = Telegraph.New<Message>("Project/DoGreen");
+        public static readonly Message DoNested = Telegraph.New<Message>("Project/DoNested");
+        
+        public static readonly Message one = Telegraph.Get<Message>(Events.One);
+        public static readonly Message two = Telegraph.Get<Message>(Events.Two);
+        public static readonly Message three = Telegraph.Get<Message>(Events.Three);
+    }

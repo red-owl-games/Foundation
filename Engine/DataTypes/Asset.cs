@@ -10,14 +10,7 @@ namespace RedOwl.Engine
     public class Singleton : Attribute {}
 
     [HideMonoScript]
-    public abstract class Asset : ScriptableObject
-    {
-        [SerializeField, Title("Description"), TextArea(1, 6), HideLabel, HideInInlineEditors] 
-        private string developerDescription;
-    }
-
-    [HideMonoScript]
-    public abstract class Asset<T> : Asset where T : Asset<T>
+    public abstract class Asset<T> : RedOwlScriptableObject where T : Asset<T>
     {
         private static T _instance;
         public static T Instance
@@ -42,7 +35,7 @@ namespace RedOwl.Engine
 
         private static T GetInstanceRuntime()
         {
-            var results = Resources.FindObjectsOfTypeAll<T>();
+            var results = Resources.LoadAll<T>(typeof(T).Name);
             if (results.Length == 0)
             {
                 Debug.LogWarning($"No instances of '{typeof(T).FullName}' found - creating a runtime instance");
@@ -92,7 +85,7 @@ namespace RedOwl.Engine
             bool needsRefresh = false;
             if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Game")) UnityEditor.AssetDatabase.CreateFolder("Assets", "Game");
             if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Game/Resources"))UnityEditor.AssetDatabase.CreateFolder("Assets/Game", "Resources");
-            foreach (var type in TypeExtensions.GetAllTypesWithAttribute<Singleton>())
+            foreach (var type in UnityEditor.TypeCache.GetTypesWithAttribute<Singleton>())
             {
                 if (!typeof(ScriptableObject).IsAssignableFrom(type)) continue;
                 if (UnityEditor.AssetDatabase.FindAssets($"t:{type.FullName}").Any()) continue;
