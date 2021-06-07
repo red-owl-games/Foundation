@@ -30,7 +30,7 @@ namespace RedOwl.Engine
 
             if (!table.TryGetValue(name, out var telegram))
             {
-                Debug.Log($"Creating New Telegram '{name}'");
+                //Log.Debug($"Creating New Telegram '{name}'");
                 telegram = new T();
                 table[name] = telegram;
             }

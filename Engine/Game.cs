@@ -9,9 +9,9 @@ namespace RedOwl.Engine
         public static bool IsRunning => Application.isPlaying;
         public static Random Random { get; private set; }
 
-        internal static void Init()
+        public static void Init()
         {
-            Log.Always("Game Initialization...");
+            Log.Always("Game Initializing...");
             Random = new Random((uint)Environment.TickCount);
             Services = new Container();
             if (!IsRunning) return;
@@ -43,15 +43,10 @@ namespace RedOwl.Engine
 
         private static void OnStart()
         {
-            Log.Always("Game Started!");
+            Log.Always("Game Starting...");
             Services.Start();
             UnityBridge.Target = Services;
+            Log.Always("Game Started!");
         }
-    }
-    
-    public static class GameInit
-    {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void OnAfterAssembliesLoaded() => Game.Init();
     }
 }
