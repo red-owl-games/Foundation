@@ -8,7 +8,7 @@ namespace RedOwl.Editor
     {
         static RedOwlTagsAndLayers()
         {
-           Ensure(); 
+            EditorApplication.delayCall += Ensure;
         }
 
         private static void Ensure()
@@ -17,7 +17,7 @@ namespace RedOwl.Editor
             TagsAndLayersUtility.CreateLayer("Environment");
             TagsAndLayersUtility.CreateLayer("EnvironmentNoCameraObstruct");
             TagsAndLayersUtility.CreateTag("Enemy");
-            
+
             for (int i = 1; i < 5; i++)
             {
                 var player = $"Player{i}";
@@ -25,8 +25,6 @@ namespace RedOwl.Editor
                 TagsAndLayersUtility.CreateLayer(player);
                 TagsAndLayersUtility.CreateLayer($"{player}OnlyCanSee");
             }
-
-            
         }
     }
 }

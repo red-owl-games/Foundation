@@ -82,6 +82,11 @@ namespace RedOwl.Engine
         [UnityEditor.InitializeOnLoadMethod]
         public static void Initialize()
         {
+            UnityEditor.EditorApplication.delayCall += DoInitialize;
+        }
+
+        private static void DoInitialize()
+        {
             bool needsRefresh = false;
             if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Game")) UnityEditor.AssetDatabase.CreateFolder("Assets", "Game");
             if (!UnityEditor.AssetDatabase.IsValidFolder("Assets/Game/Resources"))UnityEditor.AssetDatabase.CreateFolder("Assets/Game", "Resources");
@@ -90,7 +95,7 @@ namespace RedOwl.Engine
                 if (!typeof(ScriptableObject).IsAssignableFrom(type)) continue;
                 if (UnityEditor.AssetDatabase.FindAssets($"t:{type.FullName}").Any()) continue;
                 UnityEditor.AssetDatabase.CreateAsset(ScriptableObject.CreateInstance(type), $"Assets/Game/Resources/{type.Name}.asset");
-                Debug.Log($"Initialized Singleton '{type.FullName}'");
+                Debug.Log($"Created Instance of Singleton '{type.FullName}'");
                 needsRefresh = true;
             }
 
