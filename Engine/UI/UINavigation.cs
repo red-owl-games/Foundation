@@ -38,11 +38,13 @@ namespace RedOwl.Engine
         private Selectable _leftMost;
         private Selectable _rightMost;
 
+#if UNITY_EDITOR
         protected override void OnValidate()
         {
             if (transition != Transition.None) transition = Transition.None;
             if (navigation.mode != Navigation.Mode.Explicit) navigation = new Navigation { mode = Navigation.Mode.Explicit };
         }
+#endif
 
         protected override void OnEnable()
         {
