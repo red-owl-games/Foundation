@@ -37,9 +37,9 @@ namespace RedOwl.Engine
         public static void Always(string message)
         {
 #if DEBUG
-            Print.Log($"[RedOwl] <color=maroon>{message}</color>");
+            Print.Log($"[RedOwl] <color=lightblue>{message}</color>");
 #else 
-            Console.Write($"[RedOwl] <color=maroon>{message}</color>");
+            Console.Write($"[RedOwl] <color=lightblue>{message}</color>");
 #endif
         }
 
