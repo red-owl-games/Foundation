@@ -54,6 +54,11 @@ namespace RedOwl.Engine
             Cache = new Dictionary<string, object> ();
         }
 
+        public bool Has<T>(string key = null)
+        {
+            return Cache.ContainsKey(key ?? typeof(T).Name);
+        }
+
         public T Add<T>(string key = null) where T : new() => Add(new T (), key);
         public T Add<T>(T target, Enum key) where T : new() => Add(target, key.ToString());
 
@@ -183,12 +188,16 @@ namespace RedOwl.Engine
     
     public partial class Game
     {
-        public static Container Services { get; private set; }
-        
-        public static T Bind<T>(string key = null) where T : new() => Services.Add<T>(key);
-        public static T Bind<T>(T system, string key = null) => Services.Add(system, key);
-        public static T Bind<T>(T system, Enum key) => Services.Add(system, key.ToString());
-        public static T Find<T>(string key = null) => Services.Get<T>(key);
-        public static void Inject(object obj) => Services.Inject(obj);
+        [ClearOnReload]
+        private static Container container;
+        public static Container Container => container ?? (container = new Container());
+
+        public static T Bind<T>(string key = null) where T : new() => Container.Add<T>(key);
+        public static T Bind<T>(T obj, string key = null) => Container.Add(obj, key);
+        public static T Bind<T>(T obj, Enum key) => Container.Add(obj, key.ToString());
+        public static T Find<T>(string key = null) => Container.Get<T>(key);
+        public static T FindOrBind<T>(string key = null) where T : new() => Container.Has<T>(key) ? Find<T>(key) : Bind<T>(key);
+
+        public static void Inject(object obj) => Container.Inject(obj);
     }
 }

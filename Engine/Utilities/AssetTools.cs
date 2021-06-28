@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace RedOwl.Engine
 {
-    
     #region Settings
     
     [Serializable, InlineProperty, HideLabel]
@@ -26,95 +29,157 @@ namespace RedOwl.Engine
     }
     
     #endregion
-    
-    public class BetterAssetReference<T> : AssetReference where T : UnityEngine.Object
-    {
-        public BetterAssetReference(string guid) : base(guid) {}
-        
-        public void Load(Action<T> callback) => this.Load<T>(callback);
 
-        public static implicit operator BetterAssetReference<T>(string guid) => new BetterAssetReference<T>(guid);
-
-        public static implicit operator T(BetterAssetReference<T> reference) => reference.Asset as T;
-    }
-    
-    public static class AssetReferenceExtensions
-    {
-        public static void Load<T>(this AssetReference reference, Action<T> callback) where T : UnityEngine.Object
-        {
-            if (reference.IsValid())
-            {
-                if (reference.OperationHandle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    callback((T)reference.OperationHandle.Result);
-                    return;
-                }
-                reference.ReleaseAsset();
-            }
-            AssetTools.Load<T>(reference).Completed += (result) =>
-            {
-                if (result.Status == AsyncOperationStatus.Succeeded)
-                {
-                    callback(result.Result);
-                }
-            };
-        }
-    }
-    
     public static class AssetTools
     {
-        public const string ASSET_REFERENCE_NULL = "[AssetTools] asset reference was null";
-        public const string RUNTIME_KEY_INVALID = "[AssetTools] asset reference runtime key was invalid";
+        private static ISerializer _serializer;
+        public static ISerializer Serializer => _serializer ?? (_serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build());
 
-        // Commenting out until we have a usecase
-        // I think this should probably use an IEnumerator
-        // public static async void Preload(IEnumerable<string> labels, Addressables.MergeMode mergeMode = Addressables.MergeMode.Intersection)
-        // {
-        //     await Addressables.LoadResourceLocationsAsync(labels, mergeMode).Task;
-        // }
 
-        public static AsyncOperationHandle<T> Load<T>(AssetReference reference) where T : UnityEngine.Object
+        private static IDeserializer _deserializer;
+        public static IDeserializer Deserializer => _deserializer ?? (_deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).IgnoreUnmatchedProperties().Build());
+
+        #region Public
+        
+        public static void Load<T>(string key, bool autoRelease = true, Action<T> callback = null) where T : UnityEngine.Object
         {
-            if (reference == null)
-            {
-                Log.Warn(ASSET_REFERENCE_NULL);
-                return Addressables.ResourceManager.CreateCompletedOperation<T>(null, ASSET_REFERENCE_NULL);
-            }
-
-            if (!reference.RuntimeKeyIsValid())
-            {
-                Log.Warn(RUNTIME_KEY_INVALID);
-                return Addressables.ResourceManager.CreateCompletedOperation<T>(null, RUNTIME_KEY_INVALID);
-            }
-
 #if UNITY_EDITOR
-            return Application.isPlaying ? LoadWithAddressables<T>(reference) : LoadWithAssetDatabase<T>(reference);
+            if (Game.IsRunning)
+            {
+                LoadInternal(key, autoRelease, callback);
+            }
+            else
+            {
+                LoadEditor(key, callback);
+            }
 #else
-            return LoadWithAddressables<T>(reference);
+            LoadInternal(key, autoRelease, callback);
 #endif
         }
 
-        private static AsyncOperationHandle<T> LoadWithAssetDatabase<T>(AssetReference reference) where T : UnityEngine.Object
-        {
-            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(reference.RuntimeKey.ToString());
-            var foundAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path);
-            var foundType = foundAsset == null
-                ? UnityEditor.AssetDatabase.GetMainAssetTypeAtPath(path)
-                : foundAsset.GetType();
-            var expectedType = typeof(T);
-            if (foundType != expectedType)
-            {
-                var unexpectedTypeMsg = $"[AssetTools] found '{foundType}' @ '{path}' but is not expected type '{expectedType}'.  Unable to load it.";
-                Log.Warn(unexpectedTypeMsg);
-                return Addressables.ResourceManager.CreateCompletedOperation<T>(null, unexpectedTypeMsg);
-            }
 
-            return Addressables.ResourceManager.CreateCompletedOperation(foundAsset, "");
+
+        public static void LoadAll<T>(string key, bool autoRelease = true, Action<IList<T>> callback = null, Action<T> forEach = null) where T : UnityEngine.Object
+        {
+#if UNITY_EDITOR
+            if (Game.IsRunning)
+            {
+                LoadAllInternal(key, autoRelease, callback, forEach);
+            }
+            else
+            {
+                LoadAllEditor(key, callback, forEach);
+            }
+#else
+            LoadAllInternal(key, autoRelease, callback, forEach);
+#endif
         }
 
-        private static AsyncOperationHandle<T> LoadWithAddressables<T>(AssetReference reference) where T : UnityEngine.Object
+        #endregion
+
+        #region Private
+        
+        private static async void LoadInternal<T>(string key, bool autoRelease = true, Action<T> callback = null) where T : UnityEngine.Object
         {
-            return reference.LoadAssetAsync<T>();
+            var op = Game.IsRunning ?
+                Addressables.LoadAssetAsync<T>(key) :
+                Addressables.ResourceManager.CreateCompletedOperation(LoadEditor<T>(key), "");
+            op.Completed += handle =>
+            {
+                switch (handle.Status)
+                {
+                    case AsyncOperationStatus.Succeeded:
+                        callback?.Invoke(handle.Result);
+                        break;
+                    case AsyncOperationStatus.Failed:
+                        Addressables.Release(op);
+                        break;
+                }
+            };
+            await op.Task;
+            if (autoRelease) Addressables.Release(op);
+        }
+
+        private static async void LoadAllInternal<T>(string key, bool autoRelease = true, Action<IList<T>> callback = null, Action<T> forEach = null) where T : UnityEngine.Object
+        {
+            var op = Game.IsRunning ?
+                Addressables.LoadAssetsAsync(key, forEach) :
+                Addressables.ResourceManager.CreateCompletedOperation(LoadAllEditor(key, null, forEach), "");
+            op.Completed += handle =>
+            {
+                switch (handle.Status)
+                {
+                    case AsyncOperationStatus.Succeeded:
+                        callback?.Invoke(handle.Result);
+                        break;
+                    case AsyncOperationStatus.Failed:
+                        Addressables.Release(op);
+                        break;
+                }
+            };
+            await op.Task;
+            if (autoRelease) Addressables.Release(op);
+        }
+        
+#if UNITY_EDITOR
+        private static T LoadEditor<T>(string key, Action<T> callback = null) where T : UnityEngine.Object
+        {
+            // TODO: if key has [] then we need to pull out a subasset
+            if (key.Contains("[") || key.Contains("]"))
+            {
+                throw new Exception($"Unable to properly load {key} - we need to write code for this!!!");
+            }
+            foreach (var entry in AddressableDatabase.Table)
+            {
+                if (key != entry.Key && !entry.Value.Contains(key)) continue;
+                
+                var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(UnityEditor.AssetDatabase.GUIDToAssetPath(entry.Key));
+                if (asset != null)
+                {
+                    callback?.Invoke(asset);
+                    return asset;
+                }
+            }
+            return null;
+        }
+
+        private static IList<T> LoadAllEditor<T>(string key, Action<IList<T>> callback = null, Action<T> forEach = null) where T : UnityEngine.Object
+        {
+            // TODO: if key has [] then we need to pull out a subasset
+            if (key.Contains("[") || key.Contains("]"))
+            {
+                throw new Exception($"Unable to properly load {key} - we need to write code for this!!!");
+            }
+            var assets = new List<T>();
+            foreach (var entry in AddressableDatabase.Table)
+            {
+                if (key == entry.Key || entry.Value.Contains(key))
+                {
+                    // TODO: if key has [] then we need to pull out a subasset
+                    var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(UnityEditor.AssetDatabase.GUIDToAssetPath(entry.Key));
+                    if (asset == null) continue;
+                    forEach?.Invoke(asset);
+                    assets.Add(asset);
+                }
+            }
+            callback?.Invoke(assets);
+            return assets;
+        }
+#endif
+
+        #endregion
+
+
+        [Conditional("UNITY_EDITOR")]
+        public static void Rename<T>(T asset, string name) where T : UnityEngine.Object
+        {
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(asset, out string guid, out long _))
+            {
+                var currentPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                UnityEditor.AssetDatabase.RenameAsset(currentPath, name);
+            };
+#endif
         }
     }
 }

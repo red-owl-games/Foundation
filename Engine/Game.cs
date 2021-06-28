@@ -13,13 +13,16 @@ namespace RedOwl.Engine
         {
             Log.Always("Game Initializing...");
             Random = new Random((uint)Environment.TickCount);
-            Services = new Container();
             if (!IsRunning) return;
             SetupStateMachines();
             Events.StartGame.On -= OnStart;
             Events.StartGame.On += OnStart;
             Events.QuitGame.On -= Quit;
             Events.QuitGame.On += Quit;
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged -= HandlePlaymodeChanaged;
+            UnityEditor.EditorApplication.playModeStateChanged += HandlePlaymodeChanaged;
+#endif
             Log.Always("Game Initialized!");
         }
 
@@ -40,12 +43,23 @@ namespace RedOwl.Engine
             Application.OpenURL("about:blank");
 #endif
         }
+        
+#if UNITY_EDITOR
+        private static void HandlePlaymodeChanaged(UnityEditor.PlayModeStateChange change)
+        {
+            Log.Always($"Game '{change}'");
+            if (change == UnityEditor.PlayModeStateChange.ExitingPlayMode)
+            {
+                container = null;
+            }
+        }
+#endif
 
         private static void OnStart()
         {
             Log.Always("Game Starting...");
-            Services.Start();
-            UnityBridge.Target = Services;
+            Container.Start();
+            UnityBridge.Target = Container;
             Log.Always("Game Started!");
         }
     }

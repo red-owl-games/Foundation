@@ -8,7 +8,8 @@
         "Unity.Addressables",
         "Unity.ResourceManager",
         "DOTween.Modules",
-        "KinematicCharacterController"
+        "KinematicCharacterController",
+        "YamlDotNet"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

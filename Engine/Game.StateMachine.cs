@@ -25,7 +25,7 @@ namespace RedOwl.Engine
             
             StateMachine.SetInitialState(initialState);
 
-            Services.Add(StateMachine, "GameStateMachine");
+            Bind(StateMachine, "GameStateMachine");
         }
         
         private static void BuildLoadingScreenStateMachine()
@@ -39,7 +39,7 @@ namespace RedOwl.Engine
             
             loading.SetInitialState(hide);
 
-            Services.Add(loading, "LoadingScreenStateMachine");
+            Bind(loading, "LoadingScreenStateMachine");
         }
 
         private static void BuildFaderStateMachine()
@@ -53,7 +53,7 @@ namespace RedOwl.Engine
             
             fader.SetInitialState(hide);
 
-            Services.Add(fader, "FaderStateMachine");
+            Bind(fader, "FaderStateMachine");
         }
     }
 }
