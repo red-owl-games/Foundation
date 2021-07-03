@@ -7,6 +7,27 @@ using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 using Attribute = System.Attribute;
 
+/*
+
+    [Serializable, Model("Buff", "buffs")]
+    public struct Buff
+    {
+        public string title;
+        public float power;
+    }
+    
+    [Serializable, Model("Item", "items")]
+    public struct Item
+    {
+        public string title;
+        public float health;
+        public float power;
+        public BuffReference[] buffs;
+        [BoxGroup("Buffer"), InlineProperty, HideLabel]
+        public Buff buffer;
+    }
+
+*/
 namespace RedOwl.Engine
 {
     [AttributeUsage(AttributeTargets.Struct)]
