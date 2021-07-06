@@ -136,8 +136,7 @@ namespace RedOwl.Engine
         }
 
 #if UNITY_EDITOR
-
-        private static bool _isPreviewing;
+        private bool _isPreviewing;
         [Button(ButtonSizes.Medium), ButtonGroup("Controls/Buttons"), DisableInPlayMode]
         private void Preview()
         {
@@ -169,6 +168,6 @@ namespace RedOwl.Engine
             });
             DG.DOTweenEditor.DOTweenEditorPreview.Start();
         }
-        #endif
+#endif
     }
 }

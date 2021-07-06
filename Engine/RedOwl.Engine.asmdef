@@ -9,7 +9,7 @@
         "Unity.ResourceManager",
         "DOTween.Modules",
         "KinematicCharacterController",
-        "YamlDotNet"
+        "QFSW.QC"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

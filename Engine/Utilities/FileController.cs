@@ -17,15 +17,15 @@ namespace RedOwl.Engine
     public class FileControllerSettings
     {
         [SerializeField]
+        public bool UseCompression;
+        
+        [SerializeField]
         public bool UseEncryption;
 
-        [SerializeField]
-        public bool UseCompression;
-
-        [SerializeField]
+        [SerializeField, ShowIf("UseEncryption")]
         public string EncryptionKey;
 
-        [SerializeField]
+        [SerializeField, ShowIf("UseEncryption")]
         public string EncryptionIV;
     }
     

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -81,9 +80,7 @@ namespace RedOwl.Engine
         
         private static async void LoadInternal<T>(string key, bool autoRelease = true, Action<T> callback = null) where T : UnityEngine.Object
         {
-            var op = Game.IsRunning ?
-                Addressables.LoadAssetAsync<T>(key) :
-                Addressables.ResourceManager.CreateCompletedOperation(LoadEditor<T>(key), "");
+            var op = CreateLoadOperation<T>(key);
             op.Completed += handle =>
             {
                 switch (handle.Status)
@@ -100,11 +97,18 @@ namespace RedOwl.Engine
             if (autoRelease) Addressables.Release(op);
         }
 
+        private static AsyncOperationHandle<T> CreateLoadOperation<T>(string key) where T : UnityEngine.Object
+        {
+#if UNITY_EDITOR
+            return  Game.IsRunning ? Addressables.LoadAssetAsync<T>(key) : Addressables.ResourceManager.CreateCompletedOperation(LoadEditor<T>(key), "");
+#else
+            return Addressables.LoadAssetAsync<T>(key);
+#endif
+        }
+
         private static async void LoadAllInternal<T>(string key, bool autoRelease = true, Action<IList<T>> callback = null, Action<T> forEach = null) where T : UnityEngine.Object
         {
-            var op = Game.IsRunning ?
-                Addressables.LoadAssetsAsync(key, forEach) :
-                Addressables.ResourceManager.CreateCompletedOperation(LoadAllEditor(key, null, forEach), "");
+            var op = CreateLoadAllOperation<T>(key, forEach);
             op.Completed += handle =>
             {
                 switch (handle.Status)
@@ -120,7 +124,16 @@ namespace RedOwl.Engine
             await op.Task;
             if (autoRelease) Addressables.Release(op);
         }
-        
+
+        private static AsyncOperationHandle<IList<T>> CreateLoadAllOperation<T>(string key, Action<T> forEach = null) where T : UnityEngine.Object
+        {
+#if UNITY_EDITOR
+            return Game.IsRunning ? Addressables.LoadAssetsAsync(key, forEach) : Addressables.ResourceManager.CreateCompletedOperation(LoadAllEditor(key, null, forEach), "");
+#else
+            return Addressables.LoadAssetsAsync(key, forEach);
+#endif
+        }
+
 #if UNITY_EDITOR
         private static T LoadEditor<T>(string key, Action<T> callback = null) where T : UnityEngine.Object
         {
@@ -129,7 +142,7 @@ namespace RedOwl.Engine
             {
                 throw new Exception($"Unable to properly load {key} - we need to write code for this!!!");
             }
-            foreach (var entry in AddressableDatabase.Table)
+            foreach (var entry in AddressableDatabase.Get<T>())
             {
                 if (key != entry.Key && !entry.Value.Contains(key)) continue;
                 
@@ -151,7 +164,7 @@ namespace RedOwl.Engine
                 throw new Exception($"Unable to properly load {key} - we need to write code for this!!!");
             }
             var assets = new List<T>();
-            foreach (var entry in AddressableDatabase.Table)
+            foreach (var entry in AddressableDatabase.Get<T>())
             {
                 if (key == entry.Key || entry.Value.Contains(key))
                 {

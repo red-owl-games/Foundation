@@ -4,6 +4,8 @@ using System.IO;
 using RedOwl.Engine;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEngine;
 
 namespace RedOwl.Editor
@@ -13,12 +15,19 @@ namespace RedOwl.Editor
         void Generate(string @namespace);
     }
 
-    public struct AssetData<T>
+    public struct AssetData
     {
         public string Guid;
         public string Path;
+        public UnityEngine.Object Asset;
         public string Name;
-        public T Asset;
+        public Type Type;
+
+        public T Get<T>() where T : UnityEngine.Object
+        {
+            if (typeof(T) != Type) Log.Always($"Trying to get asset type '{typeof(T)}' from type '{Type}'");
+            return (T) Asset;
+        }
     }
     
     public static class CodeGenerator
@@ -69,29 +78,93 @@ namespace RedOwl.Editor
             return false;
         }
 
-        public static IEnumerable<AssetData<T>> AllAssets<T>() where T : UnityEngine.Object
+        public static AssetData GetAssetData(string guid)
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath(path, typeof(UnityEngine.Object));
+            return new AssetData
+            {
+                Guid = guid,
+                Path = path,
+                Asset = asset,
+                Name = asset.name,
+                Type = asset.GetType(),
+            };
+        }
+
+        // TODO: this probably isn't needed
+        public static IEnumerable<AssetData> AllAssets<T>() where T : UnityEngine.Object
         {
             foreach (string guid in AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
-                var path = AssetDatabase.GUIDToAssetPath(guid);
-                var asset = AssetDatabase.LoadAssetAtPath<T>(path);
-                yield return new AssetData<T>
-                {
-                    Guid = guid,
-                    Path = path,
-                    Name = asset.name,
-                    Asset = asset,
-                };
+                yield return GetAssetData(guid);
             }
         }
 
-        public static IEnumerable<AssetData<T>> AllAddressables<T>() where T : UnityEngine.Object
+        [ClearOnReload]
+        private static Dictionary<string, HashSet<string>> _addressableTable;
+        
+        public static Dictionary<string, HashSet<string>> AllAddressables()
         {
-            foreach (var data in AllAssets<T>())
+            if (_addressableTable != null) return _addressableTable;
+            
+            _addressableTable = new Dictionary<string, HashSet<string>>();
+            
+            var entries = new List<AddressableAssetEntry>();
+            foreach (var group in AddressableAssetSettingsDefaultObject.Settings.groups)
             {
-                if (!IsAddressable(data.Guid)) continue;
-                yield return data;
+                if (group.HasSchema<PlayerDataGroupSchema>()) continue;
+                foreach (var entry in group.entries)
+                {
+                    if (AssetDatabase.LoadAllAssetRepresentationsAtPath(AssetDatabase.GUIDToAssetPath(entry.guid)).Length > 0)
+                    {
+                        if (!_addressableTable.TryGetValue(entry.guid, out var tags))
+                        {
+                            tags = new HashSet<string>();
+                            _addressableTable[entry.guid] = tags;
+                        }
+                        foreach (string key in entry.CreateKeyList())
+                        {
+                            if (key == entry.guid) continue;
+                            tags.Add(key);
+                        }
+                    }
+
+                    entries.Clear();
+                    entry.GatherAllAssets(entries, true, true, true);
+                    foreach (var item in entries)
+                    {
+                        if (item.guid != entry.guid && !string.IsNullOrEmpty(item.guid))
+                        {
+                            if (!_addressableTable.TryGetValue(item.guid, out var subtags))
+                            {
+                                subtags = new HashSet<string>();
+                                _addressableTable[item.guid] = subtags;
+                            }
+                            foreach (string key in item.CreateKeyList())
+                            {
+                                if (key == item.guid) continue;
+                                subtags.Add(key);
+                            }
+                        }
+                        else
+                        {
+                            if (!_addressableTable.TryGetValue(entry.guid, out var tags))
+                            {
+                                tags = new HashSet<string>();
+                                _addressableTable[entry.guid] = tags;
+                            }
+                            foreach (string key in item.CreateKeyList())
+                            {
+                                if (key == entry.guid) continue;
+                                tags.Add(key);
+                            }
+                        }
+                    }
+                }
             }
+
+            return _addressableTable;
         }
 
         public static void WriteFile(string filename, string contents)

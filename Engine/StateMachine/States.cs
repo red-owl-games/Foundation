@@ -17,7 +17,6 @@ namespace RedOwl.Engine
             WhenEnter?.Invoke();
         }
 
-
         public override void Exit()
         {
             base.Exit();
@@ -39,7 +38,6 @@ namespace RedOwl.Engine
             base.Enter();
             WhenEnter.Invoke();
         }
-
 
         public override void Exit()
         {

@@ -10,10 +10,12 @@ namespace RedOwl.Engine
     
     public static class Telegraph
     {
+        [ClearOnReload(true)]
         private static Dictionary<Type, Dictionary<string, ITelegram>> _cache = new Dictionary<Type, Dictionary<string, ITelegram>>();
 
         private static Dictionary<string, ITelegram> GetTable(Type type)
         {
+            
             if (!_cache.TryGetValue(type, out var table))
             {
                 table = new Dictionary<string, ITelegram>();

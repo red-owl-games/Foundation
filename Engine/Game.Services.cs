@@ -197,7 +197,6 @@ namespace RedOwl.Engine
         public static T Bind<T>(T obj, Enum key) => Container.Add(obj, key.ToString());
         public static T Find<T>(string key = null) => Container.Get<T>(key);
         public static T FindOrBind<T>(string key = null) where T : new() => Container.Has<T>(key) ? Find<T>(key) : Bind<T>(key);
-
         public static void Inject(object obj) => Container.Inject(obj);
     }
 }

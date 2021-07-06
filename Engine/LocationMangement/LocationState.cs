@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 namespace RedOwl.Engine
 {
     [Flags]
-    public enum SceneStates : int
+    public enum LocationStates : int
     {
         None = 0,
         L0 = 1 << 0,
@@ -45,16 +45,18 @@ namespace RedOwl.Engine
     }
     
     [HideMonoScript]
-    public class SceneState : MonoBehaviour
+    public class LocationState : MonoBehaviour
     {
-        public bool ignoreSceneControllerState = false;
+        [ToggleLeft]
+        public bool ignoreSceneState = false;
+        [ToggleLeft]
         public bool ensureDisabledOnSaveScene = true;
         
         [SerializeField, ShowInInspector, DisableInPlayMode]
         [OnValueChanged("TestState"), EnumToggleButtons, HideLabel]
-        private SceneStates state;
+        private LocationStates state;
 
-        [Inject] private ISceneController _controller;
+        [Inject] private LocationService _controller;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -67,18 +69,19 @@ namespace RedOwl.Engine
         {
             if (!ensureDisabledOnSaveScene) return;
             if (this == null) return;
-            ApplyState(SceneStates.None);
+            ApplyState(LocationStates.None);
         }
 #endif
         
         private void TestState()
         {
+            // TODO: Ensure Child Named after 'state' ?
             ApplyState(state);
         }
 
         private void Awake()
         {
-            if (!ignoreSceneControllerState) StartCoroutine(WaitForState());
+            if (!ignoreSceneState) StartCoroutine(WaitForState());
         }
 
         private IEnumerator WaitForState()
@@ -91,10 +94,10 @@ namespace RedOwl.Engine
             ApplyState(_controller.History.Current.state);
         }
 
-        public void ApplyState(SceneStates value)
+        public void ApplyState(LocationStates value)
         {
             state = value;
-            gameObject.Children(c => c.SetActive(value.HasFlag((SceneStates) Enum.Parse(typeof(SceneStates), c.name))));
+            gameObject.Children(c => c.SetActive(value.HasFlag((LocationStates) Enum.Parse(typeof(LocationStates), c.name))));
         }
     }
 }

@@ -4,14 +4,14 @@ using UnityEngine.Events;
 
 namespace RedOwl.Engine
 {
-    public class SceneChannelListener : MonoBehaviour
+    public class LocationChannelListener : MonoBehaviour
     {
         [Serializable]
-        public class SceneUnityEvent : UnityEvent<SceneMetadata> {}
+        public class LocationUnityEvent : UnityEvent<LocationRef> {}
         
-        public SceneChannel channel;
+        public LocationChannel channel;
 
-        public SceneUnityEvent On;
+        public LocationUnityEvent On;
 
         private void OnEnable()
         {
@@ -23,7 +23,7 @@ namespace RedOwl.Engine
             channel.On -= Handler;
         }
 
-        private void Handler(SceneMetadata metadata)
+        private void Handler(LocationRef metadata)
         {
             On?.Invoke(metadata);
         }

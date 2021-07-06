@@ -4,6 +4,12 @@ namespace RedOwl.Engine
     {
         public static StateMachine StateMachine { get; private set; }
 
+        public static class States
+        {
+            public static CallbackState Running { get; internal set; }
+            public static CallbackState Paused { get; internal set; }
+        }
+
         private static void SetupStateMachines()
         {
             BuildMainStateMachine();
@@ -16,12 +22,12 @@ namespace RedOwl.Engine
             StateMachine = new StateMachine("Game");
 
             var initialState = StateMachine.Add(new CallbackState{Name = "Initial", WhenExit = Events.OnStartGame.Raise});
-            var runningState = StateMachine.Add(new CallbackState{Name = "Running", WhenEnter = Events.OnResumeGame.Raise});
-            var pauseState = StateMachine.Add(new CallbackState{Name = "Pause", WhenEnter = Events.OnPauseGame.Raise});
+            States.Running = StateMachine.Add(new CallbackState{Name = "Running", WhenEnter = Events.OnResumeGame.Raise});
+            States.Paused = StateMachine.Add(new CallbackState{Name = "Pause", WhenEnter = Events.OnPauseGame.Raise});
             
-            initialState.Permit(runningState, Events.StartGame);
-            runningState.Permit(pauseState, Events.PauseGame);
-            pauseState.Permit(runningState, Events.ResumeGame);
+            initialState.Permit(States.Running, Events.StartGame);
+            States.Running.Permit(States.Paused, Events.PauseGame);
+            States.Paused.Permit(States.Running, Events.ResumeGame);
             
             StateMachine.SetInitialState(initialState);
 

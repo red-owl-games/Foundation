@@ -27,26 +27,7 @@ namespace RedOwl.Engine
         protected virtual void Awake()
         {
             BuildStateMachine();
-        }
-
-        protected virtual void Start()
-        {
-            _machine?.Start();
-        }
-
-        protected virtual void Update()
-        {
-            _machine?.Update(Time.deltaTime);
-        }
-
-        protected virtual void LateUpdate()
-        {
-            _machine?.LateUpdate(Time.deltaTime);
-        }
-
-        protected virtual void FixedUpdate()
-        {
-            _machine?.FixedUpdate(Time.deltaTime);
+            Game.Bind(_machine, $"StateMachine_{name}");
         }
 
         protected void BuildStateMachine()

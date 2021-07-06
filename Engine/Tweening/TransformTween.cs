@@ -20,6 +20,7 @@ namespace RedOwl.Engine
         [ShowIf("type", Types.Move)] public Vector3 position;
         [ShowIf("type", Types.LocalMove)] public Vector3 relative;
         [ShowIf("type", Types.Rotate)] public Vector3 rotation;
+        [ShowIf("type", Types.Rotate), LabelText("Mode")] public RotateMode rotationMode = RotateMode.WorldAxisAdd;
         [ShowIf("type", Types.Scale)] public Vector3 scale;
 
         protected override void Children(Action<Transform> callback)
@@ -36,7 +37,7 @@ namespace RedOwl.Engine
                 case Types.LocalMove:
                     return t.DOLocalMove(t.localPosition + relative, duration);
                 case Types.Rotate:
-                    return t.DORotate(rotation, duration);
+                    return t.DORotate(rotation, duration, rotationMode);
                 case Types.Scale:
                     return t.DOScale(scale, duration);
             }

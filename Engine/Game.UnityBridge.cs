@@ -24,14 +24,12 @@ namespace RedOwl.Engine
                 return _unityBridge;
             }
         }
-
-        // TODO: this should not use dotween so we can control the timestep
-        // Maybe a generated coroutine function that can wait for the delay amount
+        
         public static void DelayedCall(Action callback, float delay = 0.001f)
         {
             if (IsRunning)
             {
-                DOVirtual.DelayedCall(delay, () => callback());
+                StartRoutine(DelayedCallWrapper(callback, delay));
             }
             else
             {
@@ -39,6 +37,36 @@ namespace RedOwl.Engine
                 UnityEditor.EditorApplication.delayCall += () => callback();
 #endif
             }
+        }
+        
+        private static IEnumerator DelayedCallWrapper(Action callback, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            callback();
+        }
+
+        public static void GuardedCall(Func<bool> guard, Action callback, float sleepInterval = 1f)
+        {
+            if (IsRunning)
+            {
+                StartRoutine(GuardedCallWrapper(guard, callback, sleepInterval));
+            }
+            else
+            {
+                // TODO: Editor Coroutines
+#if UNITY_EDITOR
+                throw new Exception("Guarded Call - Not Implemented For Unity Editor");
+#endif
+            }
+        }
+
+        private static IEnumerator GuardedCallWrapper(Func<bool> guard, Action callback, float sleepInterval)
+        {
+            while (guard() == false)
+            {
+                yield return new WaitForSeconds(sleepInterval);
+            }
+            callback();
         }
         
         public static Coroutine StartRoutine(IEnumerator wrapper)

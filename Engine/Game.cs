@@ -15,8 +15,6 @@ namespace RedOwl.Engine
             Random = new Random((uint)Environment.TickCount);
             if (!IsRunning) return;
             SetupStateMachines();
-            Events.StartGame.On -= OnStart;
-            Events.StartGame.On += OnStart;
             Events.QuitGame.On -= Quit;
             Events.QuitGame.On += Quit;
 #if UNITY_EDITOR
@@ -26,7 +24,14 @@ namespace RedOwl.Engine
             Log.Always("Game Initialized!");
         }
 
-        public static void Start() => Events.StartGame.Raise();
+        public static void Start()
+        {
+            Log.Always("Game Starting...");
+            Events.StartGame.Raise();
+            Container.Start();
+            UnityBridge.Target = Container;
+            Log.Always("Game Started!");
+        }
 
         public static void Pause() => Events.PauseGame.Raise();
 
@@ -54,13 +59,5 @@ namespace RedOwl.Engine
             }
         }
 #endif
-
-        private static void OnStart()
-        {
-            Log.Always("Game Starting...");
-            Container.Start();
-            UnityBridge.Target = Container;
-            Log.Always("Game Started!");
-        }
     }
 }

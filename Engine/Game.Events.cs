@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace RedOwl.Engine
 {
@@ -23,10 +21,13 @@ namespace RedOwl.Engine
             [Telegram]
             public static Message QuitGame => Telegraph.Get<Message>(nameof(QuitGame));
 
+            // Fade To Black
             [Telegram]
             public static Message FadeOut => Telegraph.Get<Message>(nameof(FadeOut));
             [Telegram]
             public static Message OnFadeOut => Telegraph.Get<Message>(nameof(OnFadeOut));
+            
+            // Fade Away from Black
             [Telegram]
             public static Message FadeIn => Telegraph.Get<Message>(nameof(FadeIn));
             [Telegram]
@@ -40,11 +41,7 @@ namespace RedOwl.Engine
             public static Message HideLoadingScreen => Telegraph.Get<Message>(nameof(HideLoadingScreen));
             [Telegram]
             public static Message OnHideLoadingScreen => Telegraph.Get<Message>(nameof(OnHideLoadingScreen));
-
-            [Telegram]
-            public static SceneMessage LoadScene => Telegraph.Get<SceneMessage>(nameof(LoadScene));
-            [Telegram]
-            public static SceneMessage SceneLoaded => Telegraph.Get<SceneMessage>(nameof(SceneLoaded));
+            
         }
     }
 }

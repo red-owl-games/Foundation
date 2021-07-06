@@ -2,7 +2,7 @@ using System;
 
 namespace RedOwl.Engine
 {
-    public class StateMachine : BaseState, IStateLateUpdate, IStateFixedUpdate, IServiceStart, IServiceUpdate, IServiceLateUpdate, IServiceFixedUpdate
+    public class StateMachine : BaseState, IServiceStart, IServiceUpdate, IStateLateUpdate, IStateFixedUpdate
     {
         public const string NO_STATE = "NO STATE";
         
@@ -75,6 +75,7 @@ namespace RedOwl.Engine
 
         public override void Update(float dt)
         {
+            // TODO: why does this not call base.Update() ?
             foreach (var transition in _history.Current.Transitions)
             {
                 if (transition.CanTransition())

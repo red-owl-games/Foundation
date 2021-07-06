@@ -36,11 +36,7 @@ namespace RedOwl.Engine
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Always(string message)
         {
-#if DEBUG
             Print.Log($"[RedOwl] <color=lightblue>{message}</color>");
-#else 
-            Console.Write($"[RedOwl] <color=lightblue>{message}</color>");
-#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -48,11 +44,7 @@ namespace RedOwl.Engine
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Debug)
             {
-#if DEBUG
                 Print.Log($"[RedOwl] <color=grey>{message}</color>");
-#else 
-                Console.Write($"[RedOwl] <color=grey>{message}</color>");
-#endif
             }
         }
 
@@ -61,11 +53,7 @@ namespace RedOwl.Engine
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Info)
             {
-#if DEBUG
                 Print.Log($"[RedOwl] <color=teal>{message}</color>");
-#else 
-                Console.Write($"[RedOwl] <color=teal>{message}</color>");
-#endif
             }
         }
 
@@ -74,11 +62,7 @@ namespace RedOwl.Engine
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Warn)
             {
-#if DEBUG
                 Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
-#else 
-                Console.Write($"[RedOwl] <color=yellow>{message}</color>");
-#endif
             }
         }
 
@@ -87,11 +71,7 @@ namespace RedOwl.Engine
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Error)
             {
-#if DEBUG
                 Print.LogError($"[RedOwl] <color=red>{message}</color>");
-#else 
-                Console.Write($"[RedOwl] <color=red>{message}</color>");
-#endif
             }
         }
     }
