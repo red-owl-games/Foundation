@@ -267,13 +267,14 @@ namespace RedOwl.Engine
         {
             History.Push(location);
             if (bootstrap) History.Push(location);
+            // TODO: should this just be if any location needs loading screen then its true? same for fader?
             var settings = new SceneControllerLoadSettings
             {
                 isBootstrapping = bootstrap,
-                useLoadingScreen = forward ? History.Previous.useLoadingScreen : location.useLoadingScreen,
-                loadingScreenAnimationDelay = forward ? History.Previous.loadingScreenAnimationDelay : location.loadingScreenAnimationDelay,
-                useFader = forward ? History.Previous.useFader : location.useFader,
-                faderAnimationDelay = forward ? History.Previous.faderAnimationDelay : location.faderAnimationDelay
+                useLoadingScreen = forward ? location.useLoadingScreen : History.Previous.useLoadingScreen ,
+                loadingScreenAnimationDelay = forward ? location.loadingScreenAnimationDelay : History.Previous.loadingScreenAnimationDelay,
+                useFader = forward ? location.useFader : History.Previous.useFader ,
+                faderAnimationDelay = forward ? location.faderAnimationDelay : History.Previous.faderAnimationDelay
             };
             Game.StartRoutine(_controller.Load(location, settings));
             
