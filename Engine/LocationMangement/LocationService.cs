@@ -197,7 +197,7 @@ namespace RedOwl.Engine
 
         private SceneController _controller;
 
-        private Location[] _flow;
+        private LocationFlow _flow;
         public History<Location> History { get; private set; }
         
         public void Init()
@@ -219,7 +219,7 @@ namespace RedOwl.Engine
         {
             AssetTools.Load<LocationFlow>("GameLocationFlow", false, (flow) =>
             {
-                _flow = flow.Flow;
+                _flow = flow;
                 ColdLoadCheck();
             });
         }
@@ -228,7 +228,7 @@ namespace RedOwl.Engine
         {
             var coldLoaded = false;
             var scenePath = SceneManager.GetActiveScene().path;
-            foreach (var location in _flow)
+            foreach (var location in _flow.AllLocations)
             {
                 if (scenePath.EndsWith(location.mainScene.Address))
                 {
@@ -239,7 +239,7 @@ namespace RedOwl.Engine
 
             if (coldLoaded == false)
             {
-                InternalLoad(_flow[0], true, true);
+                InternalLoad(_flow.Flow[0], true, true);
             }
         }
 
@@ -250,7 +250,7 @@ namespace RedOwl.Engine
 
         public void LoadNextLocation()
         {
-            int count = _flow.Length;
+            int count = _flow.Flow.Length;
             for (int i = 0; i < count; i++)
             {
                 if (_flow[i].Id != History.Current.Id) continue;
@@ -262,7 +262,7 @@ namespace RedOwl.Engine
         
         public void LoadPreviousLocation()
         {
-            int count = _flow.Length;
+            int count = _flow.Flow.Length;
             for (int i = 0; i < count; i++)
             {
                 if (_flow[i].Id != History.Current.Id) continue;

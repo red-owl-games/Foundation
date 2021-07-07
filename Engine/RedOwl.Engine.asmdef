@@ -1,6 +1,6 @@
 {
     "name": "RedOwl.Engine",
-    "rootNamespace": "",
+    "rootNamespace": "RedOwl.Engine",
     "references": [
         "Unity.Mathematics",
         "Unity.TextMeshPro",

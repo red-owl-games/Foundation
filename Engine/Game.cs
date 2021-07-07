@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using QFSW.QC;
 using UnityEngine;
+using UnityEngine.Scripting;
 using Random = Unity.Mathematics.Random;
+
+[assembly: Preserve]
 
 namespace RedOwl.Engine
 {
@@ -11,17 +15,12 @@ namespace RedOwl.Engine
         public static bool IsRunning => Application.isPlaying;
         public static Random Random { get; private set; }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void Init()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+        private static void Init()
         {
             Log.Always("Game Initializing...");
             Random = new Random((uint)Environment.TickCount);
-            if (!IsRunning)
-            {
-                Log.Always("Why is this being called?! We should probably remove any edit time calls to this");
-                return;
-            }
-            
+
             Events.QuitGame.On += HandleQuit;
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.playModeStateChanged -= HandlePlaymodeChanaged;
@@ -31,10 +30,8 @@ namespace RedOwl.Engine
             Log.Always("Game Initialized!");
         }
 
-        public static void Start()
-        {
-            StartRoutine(HandleStart());
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Start() => StartRoutine(HandleStart());
 
         [Command("ro.pause")]
         public static void Pause() => Events.PauseGame.Raise();
