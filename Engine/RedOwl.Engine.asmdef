@@ -9,7 +9,8 @@
         "Unity.ResourceManager",
         "DOTween.Modules",
         "KinematicCharacterController",
-        "QFSW.QC"
+        "QFSW.QC",
+        "FMODUnity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Print = UnityEngine.Debug;
@@ -33,13 +33,13 @@ namespace RedOwl.Engine
     public static class Log
     {
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
         public static void Always(string message)
         {
             Print.Log($"[RedOwl] <color=lightblue>{message}</color>");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
         public static void Debug(string message)
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Debug)
@@ -48,7 +48,7 @@ namespace RedOwl.Engine
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
         public static void Info(string message)
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Info)
@@ -57,7 +57,7 @@ namespace RedOwl.Engine
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
         public static void Warn(string message)
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Warn)
@@ -66,7 +66,7 @@ namespace RedOwl.Engine
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [Conditional("DEBUG")]
         public static void Error(string message)
         {
             if (GameSettings.LogSettings.LogLevel >= LogLevel.Error)

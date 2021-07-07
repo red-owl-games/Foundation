@@ -31,5 +31,8 @@ namespace RedOwl.Engine
 
         [Title("Location State"), EnumToggleButtons, HideLabel]
         public LocationStates state;
+
+        [Title("Music"), HideLabel, InlineProperty]
+        public FmodEvent Music;
     }
 }

@@ -21,6 +21,8 @@ namespace RedOwl.Engine
     
     public class SceneController
     {
+        [Inject] private FmodService _fmod;
+        
         private Dictionary<string, AsyncOperationHandle<SceneInstance>> _loadedScenes;
         private List<Scene> _preloadedScenes;
 
@@ -29,6 +31,7 @@ namespace RedOwl.Engine
             _loadedScenes = new Dictionary<string, AsyncOperationHandle<SceneInstance>>();
             _preloadedScenes = new List<Scene>();
             CacheCurrentScenes();
+            Game.Inject(this);
         }
 
         public IEnumerator Load(Location next, SceneControllerLoadSettings settings)
@@ -51,12 +54,15 @@ namespace RedOwl.Engine
                 Game.Events.ShowLoadingScreen.Raise();
                 yield return new WaitForSeconds(settings.loadingScreenAnimationDelay);
             }
+            
+            _fmod.Ensure(next.Music);
 
             // TODO: we also need to check that operations are completing successfully
             yield return LoadOtherScenes(next);
             yield return LoadMainScene(next);
             UnloadUnusedAddressableScenes(next);
             UnloadUnusedPreloadedScenes(next);
+            
             yield return WaitForAllLoading();
 
             yield return new WaitForSeconds(next.warmupDelay);
@@ -172,7 +178,7 @@ namespace RedOwl.Engine
         }
     }
     
-    public class LocationService : IServiceInit
+    public class LocationService : IServiceInit, IServiceStart
     {
         public static class Events
         {
@@ -207,7 +213,10 @@ namespace RedOwl.Engine
             Events.LoadPreviousLocation.On += LoadPreviousLocation;
             
             History = new History<Location>();
-            
+        }
+
+        public void Start()
+        {
             AssetTools.Load<LocationFlow>("GameLocationFlow", false, (flow) =>
             {
                 _flow = flow.Flow;

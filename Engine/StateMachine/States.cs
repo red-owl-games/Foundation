@@ -13,12 +13,14 @@ namespace RedOwl.Engine
 
         public override void Enter()
         {
+            Log.Debug($"Entering State '{Name}'");
             base.Enter();
             WhenEnter?.Invoke();
         }
 
         public override void Exit()
         {
+            Log.Debug($"Exiting State '{Name}'");
             base.Exit();
             WhenExit?.Invoke();
         }

@@ -25,7 +25,7 @@ namespace RedOwl.Engine
             States.Running = StateMachine.Add(new CallbackState{Name = "Running", WhenEnter = Events.OnResumeGame.Raise});
             States.Paused = StateMachine.Add(new CallbackState{Name = "Pause", WhenEnter = Events.OnPauseGame.Raise});
             
-            initialState.Permit(States.Running, Events.StartGame);
+            initialState.Permit(States.Running);
             States.Running.Permit(States.Paused, Events.PauseGame);
             States.Paused.Permit(States.Running, Events.ResumeGame);
             
@@ -37,13 +37,16 @@ namespace RedOwl.Engine
         private static void BuildLoadingScreenStateMachine()
         {
             var loading = new StateMachine("Loading Screen");
-            var show = loading.Add(new CallbackState {Name = "Show", WhenEnter = Events.OnShowLoadingScreen.Raise});
-            var hide = loading.Add(new CallbackState {Name = "Hide", WhenEnter = Events.OnHideLoadingScreen.Raise});
+            var initialState = loading.Add(new CallbackState{Name = "Initial"});
+            var show = loading.Add(new CallbackState {Name = "Show Loading Screen", WhenEnter = Events.OnShowLoadingScreen.Raise});
+            var hide = loading.Add(new CallbackState {Name = "Hide Loading Screen", WhenEnter = Events.OnHideLoadingScreen.Raise});
             
+            initialState.Permit(hide, Events.HideLoadingScreen);
+            initialState.Permit(show, Events.ShowLoadingScreen);
             show.Permit(hide, Events.HideLoadingScreen);
             hide.Permit(show, Events.ShowLoadingScreen);
             
-            loading.SetInitialState(hide);
+            loading.SetInitialState(initialState);
 
             Bind(loading, "LoadingScreenStateMachine");
         }
@@ -51,13 +54,16 @@ namespace RedOwl.Engine
         private static void BuildFaderStateMachine()
         {
             var fader = new StateMachine("Fader");
+            var initialState = fader.Add(new CallbackState{Name = "Initial"});
             var show = fader.Add(new CallbackState {Name = "Fade Out", WhenEnter = Events.OnFadeOut.Raise});
             var hide = fader.Add(new CallbackState {Name = "Fade In", WhenEnter = Events.OnFadeIn.Raise});
             
+            initialState.Permit(hide, Events.FadeIn);
+            initialState.Permit(show, Events.FadeOut);
             show.Permit(hide, Events.FadeIn);
             hide.Permit(show, Events.FadeOut);
             
-            fader.SetInitialState(hide);
+            fader.SetInitialState(initialState);
 
             Bind(fader, "FaderStateMachine");
         }

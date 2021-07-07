@@ -1,8 +1,9 @@
 using System;
+using System.Collections;
 
 namespace RedOwl.Engine
 {
-    public class StateMachine : BaseState, IServiceStart, IServiceUpdate, IStateLateUpdate, IStateFixedUpdate
+    public class StateMachine : BaseState, IServiceInit, IServiceUpdate, IStateLateUpdate, IStateFixedUpdate
     {
         public const string NO_STATE = "NO STATE";
         
@@ -53,18 +54,16 @@ namespace RedOwl.Engine
             if (States.Count <= 0) return;
             _initialState = initialState == NO_STATE ? States[0] : States.ContainsKey(initialState) ? States[initialState] : States[0];
         }
-
-        public void Start()
+        
+        public void Init()
         {
-            if (States.Count <= 0) return;
-            if (_initialState == null) _initialState = States[0];
             Enter();
         }
 
         public override void Enter()
         {
             base.Enter();
-            CurrentState = _initialState;
+            CurrentState = _initialState ?? States[0];
         }
 
         public override void Exit()
@@ -99,10 +98,9 @@ namespace RedOwl.Engine
 
         public static void EnterState(string name, IState state)
         {
-            if (state is StateMachine machine) machine.Start();
             if (state is IStateEnter enterable)
             {
-                // Log.Debug($"StateMachine '{name}' Entering State '{state.Name}'");
+                Log.Debug($"StateMachine '{name}' Entering State '{state.Name}'");
                 enterable.Enter();
             }
         }
@@ -111,7 +109,7 @@ namespace RedOwl.Engine
         {
             if (state is IStateExit exitable)
             {
-                // Log.Debug($"StateMachine '{name}' Exiting State '{state.Name}'");
+                Log.Debug($"StateMachine '{name}' Exiting State '{state.Name}'");
                 exitable.Exit();
             }
         }

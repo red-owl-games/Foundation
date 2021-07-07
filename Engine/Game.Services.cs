@@ -18,12 +18,18 @@ namespace RedOwl.Engine
         void Init();
     }
 
+    public interface IServiceAsync : IService
+    {
+        // This will block all services from starting up until all async services are initialized - unless the game is already started
+        IEnumerator AsyncInit();
+    }
+
     public interface IServiceStart : IService
     {
         void Start();
     }
-    
-    public interface IServiceAsync : IService
+
+    public interface IServiceAsyncUpdate : IService
     {
         IEnumerator AsyncUpdate(float dt);
     }
@@ -68,8 +74,14 @@ namespace RedOwl.Engine
             Cache.Add(key ?? typeof(T).Name, target);
             Inject(target);
             if (target is IServiceInit init) init.Init();
-            if (_isStarted && target is IServiceStart start) start.Start();
+            if (_isStarted) Game.StartRoutine(InitAndStart(target));
             return target;
+        }
+
+        private IEnumerator InitAndStart<T>(T target)
+        {
+            if (target is IServiceAsync init) yield return init.AsyncInit();
+            if (target is IServiceStart start) start.Start();
         }
 
         public T Get<T>(Enum key) => Get<T>(key.ToString());
@@ -110,20 +122,25 @@ namespace RedOwl.Engine
         
         #region IUnityBridgeTarget
 
-        public void Start()
+        public IEnumerator Start()
         {
+            foreach (var item in Cache.Values)
+            {
+                if (item is IServiceAsync init) yield return init.AsyncInit();
+            }
             _isStarted = true;
             foreach (var item in Cache.Values)
             {
-                if (item is IServiceStart service) service.Start();
+                if (item is IServiceStart start) start.Start();
             }
+            Game.UnityBridge.Target = this;
         }
 
         public IEnumerator AsyncUpdate(float dt)
         {
             foreach (var item in Cache.Values)
             {
-                if (item is IServiceAsync service) yield return service.AsyncUpdate(dt);
+                if (item is IServiceAsyncUpdate service) yield return service.AsyncUpdate(dt);
             }
         }
         
