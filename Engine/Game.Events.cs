@@ -20,6 +20,18 @@ namespace RedOwl.Engine
             public static Message OnResumeGame => Telegraph.Get<Message>(nameof(OnResumeGame));
             [Telegram]
             public static Message QuitGame => Telegraph.Get<Message>(nameof(QuitGame));
+            
+            [Telegram]
+            public static Message SaveGame => Telegraph.Get<Message>(nameof(SaveGame));
+            
+            [Telegram]
+            public static Message OnBeforeSaveGame => Telegraph.Get<Message>(nameof(OnBeforeSaveGame));
+            
+            [Telegram]
+            public static StringMessage LoadGame => Telegraph.Get<StringMessage>(nameof(LoadGame));
+            
+            [Telegram]
+            public static Message OnAfterSaveGame => Telegraph.Get<Message>(nameof(OnAfterSaveGame));
 
             // Fade To Black
             [Telegram]

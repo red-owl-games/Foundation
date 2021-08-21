@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -9,13 +8,28 @@ using UnityEngine;
 
 namespace RedOwl.Engine
 {
-    public interface IRedOwlFile : ISerializationCallbackReceiver {}
+    public interface IRedOwlFile
+    {
+        string Directory { get; }
+        string Filename { get; }
+        string Extension { get; }
+        int LatestVersion { get; }
+        void BeginSerialize(RedOwlSerializer serializer);
+    }
     
     #region Settings
     
     [Serializable, InlineProperty, HideLabel]
     public class FileControllerSettings
     {
+        [SerializeField]
+        public bool UseBuffer = false;
+        [SerializeField, ShowIf("UseBuffer")] 
+        public int BufferSize = 1024;
+
+        [SerializeField]
+        public RedOwlSerializer.Formats Format = RedOwlSerializer.Formats.Binary;
+        
         [SerializeField]
         public bool UseCompression;
         
@@ -37,62 +51,11 @@ namespace RedOwl.Engine
     }
     
     #endregion
-    
-    [Serializable]
-    public class DataFile : IRedOwlFile
-    {
-        [Serializable]
-        private struct PersistenceItem
-        {
-            public string key;
-            public byte[] value;
-        }
-        
-        [SerializeField] 
-        private List<PersistenceItem> data;
-        private Dictionary<string, MemoryStream> cache;
-
-        public DataFile(int capacity = 100)
-        {
-            data = new List<PersistenceItem>(capacity);
-            cache = new Dictionary<string, MemoryStream>(capacity);
-        }
-
-        public MemoryStream Allocate(string key)
-        {
-            cache[key] = new MemoryStream();
-            return cache[key];
-        }
-
-        public bool Get(string key, out MemoryStream stream)
-        {
-            return cache.TryGetValue(key, out stream);
-        }
-
-        public void OnBeforeSerialize()
-        {
-            if (data == null) data = new List<PersistenceItem>(cache.Count);
-            else data.Clear();
-            foreach (var kvp in cache)
-            {
-                data.Add(new PersistenceItem{ key = kvp.Key, value = kvp.Value.ToArray() });
-            }
-        }
-
-        public void OnAfterDeserialize()
-        {
-            if (cache == null) cache = new Dictionary<string, MemoryStream>(data.Count);
-            else cache.Clear();
-            foreach (var item in data)
-            {
-                cache[item.key] = new MemoryStream(item.value);
-            }
-        }
-    }
 
     public static class FileController
     {
-        private static string Filepath(string filename) => $"{Application.persistentDataPath}/{filename}";
+        public static string Filepath<T>(T file) where T : IRedOwlFile =>
+            $"{Application.persistentDataPath}/{file.Directory}/{file.Filename}.{file.Extension}";
         
         private static AesCryptoServiceProvider _provider;
 
@@ -104,58 +67,90 @@ namespace RedOwl.Engine
             });
         
         #region Read
-        
-        public static void Read<T>(string relativePath, out T file) where T : IRedOwlFile
+
+        public static void Read<T>(T file) where T : IRedOwlFile
         {
-            file = RedOwlTools.FromBytes<T>(Read(relativePath));
-        }
-        
-        public static byte[] Read(string relativePath)
-        {
-            string filepath = Filepath(relativePath);
-            return !File.Exists(filepath) ? new byte[0] : _Read(filepath);
-        }
-        
-        private static byte[] _Read(string filepath)
-        {
+            var settings = GameSettings.FileControllerSettings;
+            string filepath = Filepath(file);
+            string filepathBackup = $"{filepath}.bak";
+            if (!File.Exists(filepath))
+            {
+                if (!File.Exists(filepathBackup)) return;
+                File.Move(filepathBackup, filepath);
+            }
             Log.Debug($"Reading File - {filepath}");
             Stream stream = new FileStream(filepath, FileMode.Open);
-            if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
-            if (GameSettings.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
-            using (var reader = new MemoryStream())
+            if (settings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateDecryptor(), CryptoStreamMode.Read);
+            if (settings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Decompress);
+            if (settings.UseBuffer) stream = new BufferedStream(stream, settings.BufferSize);
+            var serializer = new RedOwlSerializer(stream, file.LatestVersion, settings.Format);
+            try
             {
-                stream.CopyTo(reader);
-                stream.Dispose();
-                return reader.GetBuffer();
+                file.BeginSerialize(serializer);
+            }
+            finally
+            {
+                serializer.Dispose();
             }
         }
-        
+
         #endregion
         
         #region Write
-        
-        public static void Write<T>(string relativePath, T file) where T : IRedOwlFile
+
+        public static void Write<T>(T file) where T : IRedOwlFile
         {
-            Write(relativePath, RedOwlTools.ToBytes(file));
-        }
-        
-        public static void Write(string relativePath, byte[] data)
-        {
-            string filepath = Filepath(relativePath);
-            _Write(filepath, data);
-        }
-        
-        private static void _Write(string filepath, byte[] data)
-        {
+            var settings = GameSettings.FileControllerSettings;
+            string filepath = Filepath(file);
+            string filepathBackup = $"{filepath}.bak";
             Log.Debug($"Writing File - {filepath}");
             Directory.CreateDirectory(Path.GetDirectoryName(filepath) ?? string.Empty);
+            if (File.Exists(filepath))
+            {
+                if (File.Exists(filepathBackup)) File.Delete(filepathBackup);
+                File.Move(filepath, filepathBackup);
+            }
             Stream stream = new FileStream(filepath, FileMode.Create);
-            if (GameSettings.FileControllerSettings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
-            if (GameSettings.FileControllerSettings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
-            stream.Write(data, 0, data.Length);
-            stream.Dispose();
+            if (settings.UseEncryption) stream = new CryptoStream(stream, Provider.CreateEncryptor(), CryptoStreamMode.Write);
+            if (settings.UseCompression) stream = new DeflateStream(stream, CompressionMode.Compress);
+            if (settings.UseBuffer) stream = new BufferedStream(stream, settings.BufferSize);
+            var serializer = new RedOwlSerializer(stream, file.LatestVersion, settings.Format, true);
+            try
+            {
+                file.BeginSerialize(serializer);
+                serializer.Dispose();
+            }
+            catch (Exception)
+            {
+                serializer.Dispose();
+                if (File.Exists(filepath)) File.Delete(filepath);
+                if (File.Exists(filepathBackup)) File.Move(filepathBackup, filepath);
+            }
         }
-        
+
         #endregion
+
+        public static T List<T>(T file) where T : IRedOwlFile
+        {
+            // TODO: not sure how to do this given our customization of Directory/Filename
+            // If we nest save meta files in a directory we need to do a double listing
+            throw new NotImplementedException();
+        }
+
+        public static void Erase<T>(T file) where T : IRedOwlFile
+        {
+            string filepath = Filepath(file);
+            string filepathBackup = $"{filepath}.bak";
+            if (File.Exists(filepath))
+            {
+                Log.Debug($"Deleting File - {filepath}");
+                File.Delete(filepath);
+            }
+            if (File.Exists(filepathBackup))
+            {
+                Log.Debug($"Deleting File - {filepathBackup}");
+                File.Delete(filepathBackup);
+            }
+        }
     }
 }

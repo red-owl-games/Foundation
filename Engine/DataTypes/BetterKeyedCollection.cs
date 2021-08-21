@@ -8,7 +8,7 @@ namespace RedOwl.Engine
     [Serializable]
     public abstract class BetterKeyedCollection<TKey, TValue> : ICollection<TValue>
     {
-        [SerializeField]
+        [SerializeReference]
         private List<TValue> collection;
         [SerializeField]
         private BetterDictionary<TKey, int> lookup;
@@ -83,7 +83,7 @@ namespace RedOwl.Engine
 
         #region IDictionary
 
-        public TValue this[TKey key] => ContainsKey(key) ? collection[lookup[key]] : default;
+        public TValue this[TKey key] => collection[lookup[key]];
 
         public bool ContainsKey(TKey key) => lookup.ContainsKey(key);
 

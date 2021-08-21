@@ -10,7 +10,8 @@
         "DOTween.Modules",
         "KinematicCharacterController",
         "QFSW.QC",
-        "FMODUnity"
+        "FMODUnity",
+        "ShapesRuntime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

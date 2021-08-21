@@ -8,15 +8,15 @@ namespace RedOwl.Engine
     public class FmodController : IDisposable
     {
         private bool _isPlaying;
-        private string _path;
+        private GUID _guid;
         private EventInstance _event;
         private STOP_MODE _stopMode;
 
         public FmodController(FmodEvent fmodEvent)
         {
-            _event = FMODUnity.RuntimeManager.CreateInstance(fmodEvent.path);
+            _event = FMODUnity.RuntimeManager.CreateInstance(fmodEvent.reference);
             if (!_event.isValid()) return;
-            _path = fmodEvent.path;
+            _guid = fmodEvent.reference.Guid;
             foreach (var fmodParam in fmodEvent.parameters)
             {
                 if (fmodParam.duration > 0)
@@ -38,7 +38,7 @@ namespace RedOwl.Engine
         {
             if (_event.getParameterByName(parameter.name, out float from) == RESULT.OK)
             {
-                Log.Info($"Tween Parameter '{parameter.name}' from '{from}' to '{parameter.value}' for '{_path}'");
+                Log.Debug($"Tween Parameter '{parameter.name}' from '{from}' to '{parameter.value}' for '{_guid}'");
                 DOVirtual.Float(from, parameter.value, parameter.duration, v => _event.setParameterByName(parameter.name, v));
             }
         }
@@ -46,7 +46,7 @@ namespace RedOwl.Engine
         public void Start()
         {
             if (_isPlaying) return;
-            Log.Debug($"Starting FMOD Event {_path}");
+            Log.Debug($"Starting FMOD Event {_guid}");
             _event.start();
             _isPlaying = true;
         }
@@ -60,7 +60,7 @@ namespace RedOwl.Engine
         public void Stop()
         {
             if (!_isPlaying) return;
-            Log.Debug($"Stopping FMOD Event {_path}");
+            Log.Debug($"Stopping FMOD Event {_guid}");
             _event.stop(_stopMode);
             _isPlaying = false;
         }

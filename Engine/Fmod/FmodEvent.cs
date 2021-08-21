@@ -1,15 +1,15 @@
 using System;
+using System.Collections;
+using FMODUnity;
+using Sirenix.OdinInspector;
 
 namespace RedOwl.Engine
 {
     [Serializable]
     public struct FmodEvent
     {
-        [FMODUnity.EventRef]
-        public string path;
+        public EventReference reference;
         public FmodParam[] parameters;
         public FMOD.Studio.STOP_MODE stopMode;
-
-        public bool IsValid() => !string.IsNullOrEmpty(path);
     }
 }

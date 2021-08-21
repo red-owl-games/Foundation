@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 namespace RedOwl.Engine
 {
-    // TODO: Add an "Ignore" component so we cant exclude stuff this controller
     [HideMonoScript, ExecuteInEditMode]
     public class UIThemeController : MonoBehaviour
     {

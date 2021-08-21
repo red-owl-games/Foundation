@@ -1,0 +1,3 @@
+<linker>
+    <assembly fullname="RedOwl.Engine" preserve="all"/>
+</linker>

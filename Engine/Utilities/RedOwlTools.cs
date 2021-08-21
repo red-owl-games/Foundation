@@ -23,17 +23,5 @@ namespace RedOwl.Engine
 #endif
             return go.GetComponent<T>();
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T FromJson<T>(string json) => JsonUtility.FromJson<T>(json);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T FromBytes<T>(byte[] bytes) => FromJson<T>(Encoding.UTF8.GetString(bytes));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string ToJson<T>(T item) => JsonUtility.ToJson(item);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte[] ToBytes<T>(T item) => Encoding.UTF8.GetBytes(ToJson(item));
     }
 }

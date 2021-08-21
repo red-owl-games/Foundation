@@ -2,40 +2,49 @@ namespace RedOwl.Engine
 {
     public static partial class Game
     {
-        public static StateMachine StateMachine { get; private set; }
+        public static StateMachine StateMachine;
+        internal static StateMachine LoadingScreenStateMachine;
+        internal static StateMachine FaderStateMachine;
 
         public static class States
         {
-            public static CallbackState Running { get; internal set; }
-            public static CallbackState Paused { get; internal set; }
+            public static void Initialize()
+            {
+                Running = new CallbackState {Name = "Running", WhenEnter = Events.OnResumeGame.Raise};
+                Paused = new CallbackState {Name = "Pause", WhenEnter = Events.OnPauseGame.Raise};
+                
+                StateMachine = BuildMainStateMachine();
+                LoadingScreenStateMachine = BuildLoadingScreenStateMachine();
+                FaderStateMachine = BuildFaderStateMachine();
+            }
+
+            public static CallbackState Running;
+            public static CallbackState Paused;
         }
 
-        private static void SetupStateMachines()
+        private static StateMachine BuildMainStateMachine()
         {
-            BuildMainStateMachine();
-            BuildLoadingScreenStateMachine();
-            BuildFaderStateMachine();
-        }
+            Log.Always("Building Game StateMachine");
+            var machine = new StateMachine("Game");
 
-        private static void BuildMainStateMachine()
-        {
-            StateMachine = new StateMachine("Game");
-
-            var initialState = StateMachine.Add(new CallbackState{Name = "Initial", WhenExit = Events.OnStartGame.Raise});
-            States.Running = StateMachine.Add(new CallbackState{Name = "Running", WhenEnter = Events.OnResumeGame.Raise});
-            States.Paused = StateMachine.Add(new CallbackState{Name = "Pause", WhenEnter = Events.OnPauseGame.Raise});
+            var initialState = machine.Add(new CallbackState{Name = "Initial", WhenExit = Events.OnStartGame.Raise});
+            machine.Add(States.Running);
+            machine.Add(States.Paused);
             
             initialState.Permit(States.Running);
             States.Running.Permit(States.Paused, Events.PauseGame);
             States.Paused.Permit(States.Running, Events.ResumeGame);
             
-            StateMachine.SetInitialState(initialState);
+            machine.SetInitialState(initialState);
 
-            Bind(StateMachine, "GameStateMachine");
+            Bind(machine, "GameStateMachine");
+
+            return machine;
         }
         
-        private static void BuildLoadingScreenStateMachine()
+        private static StateMachine BuildLoadingScreenStateMachine()
         {
+            Log.Always("Building LoadingScreen StateMachine");
             var loading = new StateMachine("Loading Screen");
             var initialState = loading.Add(new CallbackState{Name = "Initial"});
             var show = loading.Add(new CallbackState {Name = "Show Loading Screen", WhenEnter = Events.OnShowLoadingScreen.Raise});
@@ -49,10 +58,12 @@ namespace RedOwl.Engine
             loading.SetInitialState(initialState);
 
             Bind(loading, "LoadingScreenStateMachine");
+            return loading;
         }
 
-        private static void BuildFaderStateMachine()
+        private static StateMachine BuildFaderStateMachine()
         {
+            Log.Always("Building Fader StateMachine");
             var fader = new StateMachine("Fader");
             var initialState = fader.Add(new CallbackState{Name = "Initial"});
             var show = fader.Add(new CallbackState {Name = "Fade Out", WhenEnter = Events.OnFadeOut.Raise});
@@ -66,6 +77,7 @@ namespace RedOwl.Engine
             fader.SetInitialState(initialState);
 
             Bind(fader, "FaderStateMachine");
+            return fader;
         }
     }
 }

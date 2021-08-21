@@ -7,11 +7,11 @@ namespace RedOwl.Engine
     public class FmodService : IServiceAsync
     {
         [NonSerialized]
-        private Dictionary<string, FmodController> _controllers;
+        private Dictionary<FMOD.GUID, FmodController> _controllers;
 
         public FmodService()
         {
-            _controllers = new Dictionary<string, FmodController>();
+            _controllers = new Dictionary<FMOD.GUID, FmodController>();
         }
         
         public IEnumerator AsyncInit()
@@ -27,12 +27,12 @@ namespace RedOwl.Engine
         {
             foreach (var fmodEvent in events)
             {
-                if (!fmodEvent.IsValid()) continue;
-                if (_controllers.TryGetValue(fmodEvent.path, out var instance) == false)
+                if (fmodEvent.reference.IsNull) continue;
+                if (_controllers.TryGetValue(fmodEvent.reference.Guid, out var instance) == false)
                 {
                     // Create Instance
-                    Log.Info($"Creating Fmod Event for '{fmodEvent.path}'");
-                    _controllers[fmodEvent.path] = instance = new FmodController(fmodEvent);
+                    Log.Debug($"Creating Fmod Event for '{fmodEvent.reference}'");
+                    _controllers[fmodEvent.reference.Guid] = instance = new FmodController(fmodEvent);
                 }
                 instance.Start();
                 // Tween Parameters
@@ -42,19 +42,19 @@ namespace RedOwl.Engine
                 }
             }
             
-            foreach (string path in new List<string>(_controllers.Keys))
+            foreach (FMOD.GUID guid in new List<FMOD.GUID>(_controllers.Keys))
             {
                 bool found = false;
                 foreach (var fmodEvent in events)
                 {
-                    if (!fmodEvent.IsValid()) continue;
-                    if (fmodEvent.path == path) found = true;
+                    if (fmodEvent.reference.IsNull) continue;
+                    if (fmodEvent.reference.Guid == guid) found = true;
                 }
 
                 if (found == false)
                 {
-                    _controllers[path].StopAndDispose();
-                    _controllers.Remove(path);
+                    _controllers[guid].StopAndDispose();
+                    _controllers.Remove(guid);
                 }
             }
         }

@@ -26,7 +26,8 @@ namespace RedOwl.Engine
             UnityEditor.EditorApplication.playModeStateChanged -= HandlePlaymodeChanaged;
             UnityEditor.EditorApplication.playModeStateChanged += HandlePlaymodeChanaged;
 #endif
-            SetupStateMachines();
+            Prefs.Initialize();
+            States.Initialize();
             Log.Always("Game Initialized!");
         }
 
