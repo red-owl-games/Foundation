@@ -94,7 +94,7 @@ namespace RedOwl.Editor
                 }
             }
 
-            Debug.Log($"Cleared {clearedValues} members, executed {executedMethods} methods");
+            Log.Debug($"Cleared {clearedValues} members, executed {executedMethods} methods");
         }
 
         private static IEnumerable<MemberInfo> GetMethodMembers<TAttribute>(bool inherit)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Sirenix.OdinInspector;
-using UnityEngine;
 using Print = UnityEngine.Debug;
 
 namespace RedOwl.Engine
@@ -21,17 +20,17 @@ namespace RedOwl.Engine
         public LogLevel LogLevel = LogLevel.Info;
     }
 
-    public partial class GameSettings
-    {
-        [FoldoutGroup("Log"), SerializeField]
-        private LogSettings logSettings = new LogSettings();
-        public static LogSettings LogSettings => Instance.logSettings;
-    }
-    
     #endregion
     
     public static class Log
     {
+        private static LogSettings _settings;
+
+        public static LogSettings Settings
+        {
+            get => _settings ??= new LogSettings();
+            set => _settings = value;
+        }
 
         [Conditional("DEBUG")]
         public static void Always(string message)
@@ -42,7 +41,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Debug(string message)
         {
-            if (GameSettings.LogSettings.LogLevel >= LogLevel.Debug)
+            if (Settings.LogLevel >= LogLevel.Debug)
             {
                 Print.Log($"[RedOwl] <color=grey>{message}</color>");
             }
@@ -51,7 +50,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Info(string message)
         {
-            if (GameSettings.LogSettings.LogLevel >= LogLevel.Info)
+            if (Settings.LogLevel >= LogLevel.Info)
             {
                 Print.Log($"[RedOwl] <color=teal>{message}</color>");
             }
@@ -60,7 +59,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Warn(string message)
         {
-            if (GameSettings.LogSettings.LogLevel >= LogLevel.Warn)
+            if (Settings.LogLevel >= LogLevel.Warn)
             {
                 Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
             }
@@ -69,7 +68,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Error(string message)
         {
-            if (GameSettings.LogSettings.LogLevel >= LogLevel.Error)
+            if (Settings.LogLevel >= LogLevel.Error)
             {
                 Print.LogError($"[RedOwl] <color=red>{message}</color>");
             }

@@ -20,13 +20,6 @@ namespace RedOwl.Engine
         public string folder = "Assets/Game/Code/Generated";
     }
 
-    public partial class GameSettings
-    {
-        [FoldoutGroup("Databases"), SerializeField]
-        private CodeGenSettings codeGenSettings = new CodeGenSettings();
-        public static CodeGenSettings CodeGenSettings => Instance.codeGenSettings;
-    }
-    
     #endregion
 
     public static class AssetTools

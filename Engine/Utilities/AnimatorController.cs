@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -67,7 +68,7 @@ namespace RedOwl.Engine
         public void Trigger(float delay = 0.2f)
         {
             On();
-            Game.DelayedCall(Off, delay);
+            DOVirtual.DelayedCall(delay, Off);
         }
         
         public static implicit operator AnimBoolProperty(string name) => new AnimBoolProperty {name = name};

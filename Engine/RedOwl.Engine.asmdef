@@ -8,10 +8,8 @@
         "Unity.Addressables",
         "Unity.ResourceManager",
         "DOTween.Modules",
-        "KinematicCharacterController",
-        "QFSW.QC",
-        "FMODUnity",
-        "ShapesRuntime"
+        "ShapesRuntime",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
