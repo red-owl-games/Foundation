@@ -17,9 +17,19 @@ namespace RedOwl.Engine
 
         private void Update()
         {
+            var dt = Time.deltaTime;
             foreach (var system in World.Default.All)
             {
-                system.DoUpdate();
+                system.DoUpdate(dt);
+            }
+        }
+
+        private void LateUpdate()
+        {
+            var dt = Time.deltaTime;
+            foreach (var system in World.Default.All)
+            {
+                system.DoLateUpdate(dt);
             }
         }
 
@@ -37,8 +47,8 @@ namespace RedOwl.Engine
     {
         protected override void OnAdd<T>(T item)
         {
-            item.DoCreate();
             item.World = this;
+            item.DoCreate();
         }
 
         #region Static
@@ -51,25 +61,27 @@ namespace RedOwl.Engine
             set => _default = value;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void OnBeforeSceneLoad()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void OnSubsystemRegistration()
         {
+            var game = typeof(Game);
             var match = typeof(SystemBase);
             var add = typeof(World).GetMethod("Add", new []{ typeof(string) });
             var parameters = new object[] { null };
             if (add == null) return;
+            add.MakeGenericMethod(game).Invoke(Default, parameters);
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 foreach (var type in assembly.GetTypes())
                 {
-                    if (type.IsAbstract || !match.IsAssignableFrom(type)) continue;
+                    if (type.IsAbstract || !match.IsAssignableFrom(type) || type.FullName == game.FullName) continue;
                     add.MakeGenericMethod(type).Invoke(Default, parameters);
                 }
             }
         }
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void OnAfterSceneLoad()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void OnBeforeSceneLoad()
         {
             Object.DontDestroyOnLoad(new GameObject("Systems").AddComponent<Systems>().gameObject);
         }
@@ -77,6 +89,14 @@ namespace RedOwl.Engine
         #endregion
     }
     
+    /// <summary>
+    /// Order of Events:
+    ///     OnCreate
+    ///     OnStartRunning
+    ///     OnUpdate
+    ///     OnLateUpdate
+    ///     OnStopRunning
+    /// </summary>
     public abstract class SystemBase
     {
         public World World { get; set; }
@@ -113,7 +133,7 @@ namespace RedOwl.Engine
 
         protected virtual void OnStartRunning() {}
 
-        internal void DoUpdate()
+        internal void DoUpdate(float dt)
         {
             if (ShouldEnable)
             {
@@ -122,7 +142,7 @@ namespace RedOwl.Engine
             }
 
             if (Enabled)
-                OnUpdate();
+                OnUpdate(dt);
                 
             if (ShouldDisable)
             {
@@ -131,11 +151,24 @@ namespace RedOwl.Engine
             }
         }
 
-        protected virtual void OnUpdate() {}
+        protected virtual void OnUpdate(float dt) {}
+        
+        internal void DoLateUpdate(float dt)
+        {
+            if (Enabled)
+                OnLateUpdate(dt);
+        }
+
+        protected virtual void OnLateUpdate(float dt) {}
 
         internal void DoStopRunning() => OnStopRunning();
 
         protected virtual void OnStopRunning() {}
         
+    }
+
+    public abstract class SystemBase<T> : SystemBase where T : SystemBase, new()
+    {
+        public static T Instance => World.Default.Get<T>();
     }
 }

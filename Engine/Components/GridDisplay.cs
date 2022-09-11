@@ -18,7 +18,7 @@ namespace RedOwl.Engine
         public Color mainColor = Color.white;
         public Color edgeColor = Color.yellow;
 
-        private GridSettings Grid => useGlobalGrid ? Game.Prefs.GridSettings.Value : settings;
+        private GridSettings Grid => useGlobalGrid ? Game.Instance.GridSettings.Value : settings;
 
         public GridDrawer(GridSettings settings)
         {

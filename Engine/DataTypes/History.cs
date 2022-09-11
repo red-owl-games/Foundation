@@ -13,5 +13,7 @@ namespace RedOwl.Engine
             _last = _current;
             _current = next;
         }
+
+        public static implicit operator T(History<T> s) => s.Current;
     }
 }

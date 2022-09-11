@@ -19,7 +19,13 @@ namespace RedOwl.Engine
         private Parser<T> _parser;
 
         public Grammar<T> Grammar => _grammar;
-        
+
+        public T this[string key]
+        {
+            get => Variables[key];
+            set => Variables[key] = value;
+        }
+
         public Interpreter()
         {
             Variables = new Dictionary<string, T>();
@@ -44,10 +50,11 @@ namespace RedOwl.Engine
         public IEnumerable<string> GetAll() => 
             Variables.Keys;
 
-        public void Set(string key, T value, bool force = true)
+        public T Set(string key, T value, bool force = true)
         {
             if (force || !Variables.ContainsKey(key))
                 Variables[key] = value;
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,6 +94,18 @@ namespace RedOwl.Engine
             _grammar.AddFunction(key, function, force);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddFunction(string key, Func<T, T, T, T> function, bool force = false) =>
+            _grammar.AddFunction(key, function, force);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddFunction(string key, Func<T, T, T, T, T> function, bool force = false) =>
+            _grammar.AddFunction(key, function, force);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddFunction(string key, Func<T, T, T, T, T, T> function, bool force = false) =>
+            _grammar.AddFunction(key, function, force);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddFunction(string key, Func<T[], T> function, bool force = false) =>
             _grammar.AddFunction(key, function, force);
         
@@ -101,5 +120,7 @@ namespace RedOwl.Engine
 
         public void InfixRight(TokenTypes type, Func<T, T, T> function, int precedence) => 
             _grammar.InfixRight(type, function, precedence);
+        
+        public static implicit operator Dictionary<string, T>(Interpreter<T> s) => s.Variables;
     }
 }

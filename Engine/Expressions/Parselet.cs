@@ -22,31 +22,25 @@ namespace RedOwl.Engine
     {
         public IExpressionNode<T> Parse<T>(IParser<T> parser, Token token) where T : IConvertible
         {
-            // is token.Text a constant?
-            // TODO: this logic is muddy
-            if (parser.LookAhead(0).Type != TokenTypes.LEFT_PAREN && parser.Grammar.TryGetConstant(token.Text, out var constant))
+            // Consume `.` & next Token to concat a const/method name
+            var methodName = $"{token.Text}";
+            while (parser.Match(TokenTypes.PERIOD))
+            {
+                var next = parser.LookAhead(0);
+                if (next.Type == TokenTypes.NAME)
+                {
+                    parser.Consume(TokenTypes.NAME);
+                    methodName += $".{next.Text}";
+                }
+            }
+            
+            // This means they did `math.E` instead of `math.E()`
+            if (parser.LookAhead(0).Type != TokenTypes.LEFT_PAREN && parser.Grammar.TryGetConstant(methodName, out var constant))
             {
                 return new CallExpressionNode<T>((v) => constant());
             }
             
-            var name = new NameExpressionNode<T>(token.Text);
-
-            // TODO: does this really have to live here? is there no way for a prefix to get wants on the left of it?
-            if (parser.LookAhead(0).Type == TokenTypes.PLUS && parser.LookAhead(1).Type == TokenTypes.PLUS)
-            {
-                parser.Match(TokenTypes.PLUS);
-                parser.Match(TokenTypes.PLUS);
-                return new PostIncrementExpressionNode<T>(parser.Grammar.GetFunction1("++"), name);
-            }
-            
-            if (parser.LookAhead(0).Type == TokenTypes.MINUS && parser.LookAhead(1).Type == TokenTypes.MINUS)
-            {
-                parser.Match(TokenTypes.MINUS);
-                parser.Match(TokenTypes.MINUS);
-                return new PostIncrementExpressionNode<T>(parser.Grammar.GetFunction1("--"), name);
-            }
-
-            return name;
+            return new NameExpressionNode<T>(methodName);
         }
     }
     
@@ -79,7 +73,6 @@ namespace RedOwl.Engine
         
         public IExpressionNode<T> Parse<T>(IParser<T> parser, Token token) where T : IConvertible
         {
-            bool matched = parser.Match(token.Type);
             var right = parser.ParseNext(Precedence);
             switch (right)
             {
@@ -130,6 +123,16 @@ namespace RedOwl.Engine
         }
         public IExpressionNode<T> Parse<T>(IParser<T> parser, IExpressionNode<T> left, Token token) where T : IConvertible
         {
+            if (left is NameExpressionNode<T> node)
+            {
+                if (parser.Match(token.Type))
+                    return new PostIncrementExpressionNode<T>(parser.Grammar.GetFunction1($"{token.Text}{token.Text}"), node);
+                if (parser.Match(TokenTypes.EQUALS))
+                    return new AssignExpressionNode<T>(node.Name,
+                        new OperatorExpressionNode<T>(node, parser.Grammar.GetFunction2($"{token.Text}=", true),
+                            parser.ParseNext(Precedence - 1)));
+            }
+
             // To handle right-associative operators like "^", we allow a slightly
             // lower precedence when parsing the right-hand side. This will let a
             // parselet with the same precedence appear on the right, which will then
@@ -171,7 +174,7 @@ namespace RedOwl.Engine
             throw new ParseException("TODO:");
         }
     }
-    
+
     public class GreaterThanParselet : IInfixParselet
     {
         public int Precedence => Precedences.RELATIONAL;
@@ -206,25 +209,19 @@ namespace RedOwl.Engine
 
         public IExpressionNode<T> Parse<T>(IParser<T> parser, IExpressionNode<T> left, Token token) where T : IConvertible
         {
+            if (parser.Match(token.Type))
+            {
+                var right = parser.ParseNext(Precedences.NULL_COALESCING - 1);
+                return new ConditionalExpressionNode<T>(left, left, right);
+            }
+
             var thenArm = parser.ParseNext();
             parser.Consume(TokenTypes.COLON);
-            var elseArm = parser.ParseNext(Precedences.TERNARY - 1);
+            var elseArm = parser.ParseNext(Precedence - 1);
             return new ConditionalExpressionNode<T>(left, thenArm, elseArm);
         }
     }
 
-    // Not used because NullCoalescing is not implemented
-    // public class NullCoalescingParselet : IInfixParselet
-    // {
-    //     public int Precedence => Precedences.NULLCOALESCING;
-    //
-    //     public IExpressionNode<T> Parse<T>(IParser<T> parser, IExpressionNode<T> left, Token token) where T : IConvertible
-    //     {
-    //         var right = parser.ParseNext(Precedences.NULLCOALESCING - 1);
-    //         throw new NotImplementedException($"TODO: Null Coalescing not currently supported - {left} ?? {right}");
-    //     }
-    // }
-    
     // public abstract class DualInfixParselet<TSingle, TDual> : IInfixParselet where TSingle : IInfixParselet, new() where TDual : IInfixParselet, new()
     // {
     //     private IInfixParselet single;
@@ -273,8 +270,6 @@ namespace RedOwl.Engine
                 parser.Consume(TokenTypes.RIGHT_PAREN);
             }
 
-            if (left is CallExpressionNode<T>) return left;
-
             if (!(left is NameExpressionNode<T> name)) throw new ParseException($"Unable to parse '{token.Text}' {left}");
             switch (args.Count)
             {
@@ -287,14 +282,23 @@ namespace RedOwl.Engine
                 case 2:
                     var function2 = parser.Grammar.GetFunction2(name.Name, true);
                     return new CallExpressionNode<T>((v) => function2(args[0].Evaluate(v), args[1].Evaluate(v)));
+                case 3:
+                    var function3 = parser.Grammar.GetFunction3(name.Name, true);
+                    return new CallExpressionNode<T>((v) => function3(args[0].Evaluate(v), args[1].Evaluate(v), args[2].Evaluate(v)));
+                case 4:
+                    var function4 = parser.Grammar.GetFunction4(name.Name, true);
+                    return new CallExpressionNode<T>((v) => function4(args[0].Evaluate(v), args[1].Evaluate(v), args[2].Evaluate(v), args[3].Evaluate(v)));
+                case 5:
+                    var function5 = parser.Grammar.GetFunction5(name.Name, true);
+                    return new CallExpressionNode<T>((v) => function5(args[0].Evaluate(v), args[1].Evaluate(v), args[2].Evaluate(v), args[3].Evaluate(v), args[4].Evaluate(v)));
                 default:
                     var functionN = parser.Grammar.GetFunctionN(name.Name, true);
                     return new CallExpressionNode<T>((v) =>
                     {
                         var argsEvaluated = new T[args.Count];
-                        for (int i = 0; i < args.Count; i++)
+                        for (var i = 0; i < args.Count; i++)
                         {
-                            argsEvaluated[i] =args[i].Evaluate(v);
+                            argsEvaluated[i] = args[i].Evaluate(v);
                         }
                         return functionN(argsEvaluated.ToArray());
                     });

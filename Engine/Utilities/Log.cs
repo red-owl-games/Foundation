@@ -1,35 +1,27 @@
-﻿using System;
-using System.Diagnostics;
-using Sirenix.OdinInspector;
+﻿using System.Diagnostics;
 using Print = UnityEngine.Debug;
 
 namespace RedOwl.Engine
 {
-    public enum LogLevel {
+    public enum LogLevel
+    {
         Error,
         Warn,
         Info,
         Debug
     }
-    
-    #region Settings
-    
-    [Serializable, InlineProperty, HideLabel]
-    public class LogSettings
-    {
-        public LogLevel LogLevel = LogLevel.Info;
-    }
 
-    #endregion
-    
     public static class Log
     {
-        private static LogSettings _settings;
-
-        public static LogSettings Settings
+        [ClearOnReload] private static Game _game;
+        private static LogLevel Current
         {
-            get => _settings ??= new LogSettings();
-            set => _settings = value;
+            get
+            {
+                _game ??= Game.Instance;
+                if (_game == null) return LogLevel.Info;
+                return _game.Prefs.LogLevel;
+            }
         }
 
         [Conditional("DEBUG")]
@@ -41,7 +33,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Debug(string message)
         {
-            if (Settings.LogLevel >= LogLevel.Debug)
+            if (Current >= LogLevel.Debug)
             {
                 Print.Log($"[RedOwl] <color=grey>{message}</color>");
             }
@@ -50,7 +42,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Info(string message)
         {
-            if (Settings.LogLevel >= LogLevel.Info)
+            if (Current >= LogLevel.Info)
             {
                 Print.Log($"[RedOwl] <color=teal>{message}</color>");
             }
@@ -59,7 +51,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Warn(string message)
         {
-            if (Settings.LogLevel >= LogLevel.Warn)
+            if (Current >= LogLevel.Warn)
             {
                 Print.LogWarning($"[RedOwl] <color=yellow>{message}</color>");
             }
@@ -68,7 +60,7 @@ namespace RedOwl.Engine
         [Conditional("DEBUG")]
         public static void Error(string message)
         {
-            if (Settings.LogLevel >= LogLevel.Error)
+            if (Current >= LogLevel.Error)
             {
                 Print.LogError($"[RedOwl] <color=red>{message}</color>");
             }

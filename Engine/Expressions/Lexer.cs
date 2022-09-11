@@ -115,7 +115,7 @@ namespace RedOwl.Engine
             Text = text;
         }
 
-        public override string ToString() => Text;
+        public override string ToString() => $"[{Type}]'{Text}'";
     }
     
     public class Lexer : IEnumerable<Token>

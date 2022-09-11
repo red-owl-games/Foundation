@@ -4,31 +4,34 @@ using Random = Unity.Mathematics.Random;
 
 namespace RedOwl.Engine
 {
-    public static partial class Game
+    [Serializable]
+    public partial class Game : SystemBase<Game>
     {
         public static bool IsRunning => Application.isPlaying;
 
         public static Random RNG => new Random((uint)DateTimeOffset.Now.ToUnixTimeSeconds());
+
+        public Ticker EveryHalfSecond = 0.5f;
+        public Ticker EverySecond = 1f;
+        public Ticker EveryOtherSecond = 2f;
         
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void OnBeforeSceneLoad()
+        protected override void OnCreate()
         {
-            Application.targetFrameRate = 60;
+            base.OnCreate();
+            Load();
         }
 
-        public static FileController FileController { get; set; } = new();
+        protected override void OnUpdate(float dt)
+        {
+            base.OnUpdate(dt);
+            EveryHalfSecond.Tick(dt);
+            EverySecond.Tick(dt);
+            EveryOtherSecond.Tick(dt);
+        }
 
-        public static FileController FileControllerEnc { get; set; } = FileController.Encrypted;
-
-        internal static FileController FileControllerInternal { get; set; } = FileController.Internal;
-
-        public static void Save(string filepath, string data, bool encrypted = false) => 
-            (encrypted ? FileControllerEnc : FileController).Write(filepath, data);
-        
-        public static void Save<T>(string filepath, T data, bool encrypted = false) => 
-            (encrypted ? FileControllerEnc : FileController).Write(filepath, data);
-
-        public static T Load<T>(string filepath, bool encrypted = false) => 
-            (encrypted ? FileControllerEnc : FileController).Read<T>(filepath);
+        public void Load()
+        {
+            FileController.InstanceInternal.Read("game.yaml", this);
+        }
     }
 }

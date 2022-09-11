@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ namespace RedOwl.Engine
         private float3 cellSize;
         [SerializeField]
         private float3 offset;
+
+        public float3 CellSize => cellSize;
+        public float3 Offset => offset;
         
         public GridSettings(float3 cellSize, float3 offset)
         {
@@ -53,14 +57,14 @@ namespace RedOwl.Engine
 
         private Dictionary<int3, T> _store;
         [SerializeField]
-        private GridSettings grid;
+        private GridSettings settings;
         [SerializeField]
         private GridItem[] data;
         
-        public GridData(GridSettings grid)
+        public GridData(GridSettings settings)
         {
             _store = new Dictionary<int3, T>();
-            this.grid = grid;
+            this.settings = settings;
         }
         
         public GridData() : this(new GridSettings()) {}
@@ -83,7 +87,7 @@ namespace RedOwl.Engine
 
         public T Get(int cellX, int cellY, int cellZ) => Get(new int3(cellX, cellY, cellZ));
 
-        public T Get(float3 worldPosition) => Get(grid.GetCellFrom(worldPosition));
+        public T Get(float3 worldPosition) => Get(settings.GetCellFrom(worldPosition));
 
         public void Set(int3 cell, T item)
         {
@@ -105,7 +109,7 @@ namespace RedOwl.Engine
 
         public void Set(int cellX, int cellY, int cellZ, T item) => Set(new int3(cellX, cellY, cellZ), item);
 
-        public void Set(float3 worldPosition, T item) => Set(grid.GetCellFrom(worldPosition), item);
+        public void Set(float3 worldPosition, T item) => Set(settings.GetCellFrom(worldPosition), item);
 
         public void Set(int3 start, int3 end, T item)
         {
@@ -124,7 +128,7 @@ namespace RedOwl.Engine
         }
 
         public void Set(float3 worldPositionStart, float3 worldPositionEnd, T item) => 
-            Set(grid.GetCellFrom(worldPositionStart), grid.GetCellFrom(worldPositionEnd), item);
+            Set(settings.GetCellFrom(worldPositionStart), settings.GetCellFrom(worldPositionEnd), item);
 
         public void OnBeforeSerialize()
         {
@@ -150,5 +154,11 @@ namespace RedOwl.Engine
                 _store[item.cell] = item.data;
             }
         }
+    }
+
+    public partial class Game
+    {
+        [FoldoutGroup("Red Owl"), BoxGroup("Red Owl/Grid"), HideLabel, InlineProperty]
+        public Parameter<GridSettings> GridSettings = new(new GridSettings());
     }
 }

@@ -67,22 +67,35 @@ namespace RedOwl.Engine
         public IExpressionNode<T> ParseNext(int precedence)
         {
             Token token = Consume();
+            //Log.Always($"PARSENEXT: {token}");
+            if (token.Type == TokenTypes.EOF)
+            {
+                return new NullExpressionNode<T>();
+            }
+            IExpressionNode<T> left = null;
             if (!_grammar.TryGetPrefix(token.Type, out var prefix))
             {
-                // if (token.Type == TokenTypes.EOF)
-                // {
-                //     return new NullExpressionNode<T>();
-                // }
-                throw new ParseException($"Could not find a prefix parselet for token '{token.Type}'");
+                if (_grammar.TryGetInfix(token.Type, out var infix))
+                {
+                    left = infix.Parse(this, left, token);
+                }
+                else
+                {
+                    throw new ParseException($"Could not find a parselet for token {token}");
+                }
+            }
+            else
+            {
+                left = prefix.Parse(this, token);
             }
 
-            var left = prefix.Parse(this, token);
-            
             while (precedence < _grammar.GetPrecedence(LookAhead(0))) {
                 token = Consume();
-
+                //Log.Always($"PARSENEXT2: {token}");
                 if (_grammar.TryGetInfix(token.Type, out var infix))
+                {
                     left = infix.Parse(this, left, token);
+                }
             }
 
             return left;

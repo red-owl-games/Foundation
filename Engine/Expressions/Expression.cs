@@ -9,6 +9,11 @@ namespace RedOwl.Engine
         T Evaluate(IDictionary<string, T> variables);
     }
 
+    public class NullExpressionNode<T> : IExpressionNode<T> where T : IConvertible
+    {
+        public T Evaluate(IDictionary<string, T> variables) => default;
+    }
+
     public class NameExpressionNode<T> : IExpressionNode<T> where T : IConvertible
     {
         public string Name { get; }

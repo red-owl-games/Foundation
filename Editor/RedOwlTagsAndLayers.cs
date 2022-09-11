@@ -16,7 +16,9 @@ namespace RedOwl.Editor
             Log.Debug("Ensuring Red Owl Tags and Layers");
             TagsAndLayersUtility.CreateLayer("Environment");
             TagsAndLayersUtility.CreateLayer("EnvironmentNoCameraObstruct");
+            TagsAndLayersUtility.CreateLayer("Enemy");
             TagsAndLayersUtility.CreateTag("Enemy");
+            TagsAndLayersUtility.CreateTag("Damageable");
 
             for (int i = 1; i < 5; i++)
             {

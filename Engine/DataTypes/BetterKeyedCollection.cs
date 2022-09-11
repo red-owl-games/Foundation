@@ -6,23 +6,22 @@ using UnityEngine;
 namespace RedOwl.Engine
 {
     [Serializable]
-    public abstract class BetterKeyedCollection<TKey, TValue> : ICollection<TValue>
+    public abstract class BetterKeyedCollection<TKey, TValue> : ICollection<TValue>, ISerializationCallbackReceiver
     {
-        [SerializeReference]
-        private List<TValue> collection;
         [SerializeField]
-        private BetterDictionary<TKey, int> lookup;
+        private List<TValue> collection;
+        private BetterDictionary<TKey, int> _lookup;
 
         protected BetterKeyedCollection()
         {
             collection = new List<TValue>();
-            lookup = new BetterDictionary<TKey, int>();
+            _lookup = new BetterDictionary<TKey, int>();
         }
 
         protected BetterKeyedCollection(int capacity)
         {
             collection = new List<TValue>(capacity);
-            lookup = new BetterDictionary<TKey, int>(capacity);
+            _lookup = new BetterDictionary<TKey, int>(capacity);
         }
         
         protected BetterKeyedCollection(ICollection<TValue> data) : this(data.Count)
@@ -42,7 +41,7 @@ namespace RedOwl.Engine
         public void Clear()
         {
             collection.Clear();
-            lookup.Clear();
+            _lookup.Clear();
         }
 
         public IEnumerator<TValue> GetEnumerator() => collection.GetEnumerator();
@@ -59,7 +58,7 @@ namespace RedOwl.Engine
 
         public void Add(TValue item)
         {
-            lookup[GetKeyForItem(item)] = collection.Count;
+            _lookup[GetKeyForItem(item)] = collection.Count;
             collection.Add(item);
         }
 
@@ -69,7 +68,7 @@ namespace RedOwl.Engine
             {
                 if (collection[i].Equals(value))
                 {
-                    lookup.Remove(GetKeyForItem(collection[i]));
+                    _lookup.Remove(GetKeyForItem(collection[i]));
                     collection.RemoveAt(i);
                 }
             }
@@ -83,9 +82,9 @@ namespace RedOwl.Engine
 
         #region IDictionary
 
-        public TValue this[TKey key] => collection[lookup[key]];
+        public TValue this[TKey key] => collection[_lookup[key]];
 
-        public bool ContainsKey(TKey key) => lookup.ContainsKey(key);
+        public bool ContainsKey(TKey key) => _lookup.ContainsKey(key);
 
         public bool Remove(TKey key)
         {
@@ -93,8 +92,8 @@ namespace RedOwl.Engine
             {
                 return false;
             }
-            collection.RemoveAt(lookup[key]);
-            lookup.Remove(key);
+            collection.RemoveAt(_lookup[key]);
+            _lookup.Remove(key);
             return true;
         }
 
@@ -112,7 +111,7 @@ namespace RedOwl.Engine
             }
         }
 
-        public ICollection<TKey> Keys => lookup.Keys;
+        public ICollection<TKey> Keys => _lookup.Keys;
         public ICollection<TValue> Values => collection;
         
         #endregion
@@ -123,7 +122,7 @@ namespace RedOwl.Engine
         {
             var key = GetKeyForItem(item);
             if (!ContainsKey(key)) return default;
-            int next = lookup[key] + 1;
+            int next = _lookup[key] + 1;
             if (next > collection.Count)
             {
                 return collection[0];
@@ -133,5 +132,18 @@ namespace RedOwl.Engine
         }
         
         protected abstract TKey GetKeyForItem(TValue item);
+        public virtual void OnBeforeSerialize()
+        {
+        }
+
+        public virtual void OnAfterDeserialize()
+        {
+            var count = collection.Count;
+            _lookup = new BetterDictionary<TKey, int>(count);
+            for (var i = 0; i < count; i++)
+            {
+                _lookup[GetKeyForItem(collection[i])] = i;
+            }
+        }
     }
 }

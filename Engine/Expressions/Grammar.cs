@@ -9,6 +9,9 @@ namespace RedOwl.Engine
         private Dictionary<string, Func<T>> _constants;
         private Dictionary<string, Func<T, T>> _functions1;
         private Dictionary<string, Func<T, T, T>> _functions2;
+        private Dictionary<string, Func<T, T, T, T>> _functions3;
+        private Dictionary<string, Func<T, T, T, T, T>> _functions4;
+        private Dictionary<string, Func<T, T, T, T, T, T>> _functions5;
         private Dictionary<string, Func<T[], T>> _functionsN;
         
         private Dictionary<TokenTypes, IPrefixParselet> _prefixParselets;
@@ -19,6 +22,9 @@ namespace RedOwl.Engine
             _constants = new Dictionary<string, Func<T>>();
             _functions1 = new Dictionary<string, Func<T, T>>();
             _functions2 = new Dictionary<string, Func<T, T, T>>();
+            _functions3 = new Dictionary<string, Func<T, T, T, T>>();
+            _functions4 = new Dictionary<string, Func<T, T, T, T, T>>();
+            _functions5 = new Dictionary<string, Func<T, T, T, T, T, T>>();
             _functionsN = new Dictionary<string, Func<T[], T>>();
             
             _prefixParselets = new Dictionary<TokenTypes, IPrefixParselet>();
@@ -61,9 +67,27 @@ namespace RedOwl.Engine
                 _functions2.Add(key, function);
         }
         
+        public void AddFunction(string key, Func<T, T, T, T> function, bool force = false)
+        {
+            if (force || !_functions3.ContainsKey(key))
+                _functions3.Add(key, function);
+        }
+        
+        public void AddFunction(string key, Func<T, T, T, T, T> function, bool force = false)
+        {
+            if (force || !_functions4.ContainsKey(key))
+                _functions4.Add(key, function);
+        }
+        
+        public void AddFunction(string key, Func<T, T, T, T, T, T> function, bool force = false)
+        {
+            if (force || !_functions5.ContainsKey(key))
+                _functions5.Add(key, function);
+        }
+        
         public void AddFunction(string key, Func<T[], T> function, bool force = false)
         {
-            if (force || !_functions2.ContainsKey(key))
+            if (force || !_functionsN.ContainsKey(key))
                 _functionsN.Add(key, function);
         }
         
@@ -86,6 +110,30 @@ namespace RedOwl.Engine
         public Func<T, T, T> GetFunction2(string key, bool throwIfMissing = false)
         {
             if (_functions2.TryGetValue(key, out var function)) return function;
+            if (throwIfMissing) throw new ParseException($"Failed to find method for '{key}'");
+            return null;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Func<T, T, T, T> GetFunction3(string key, bool throwIfMissing = false)
+        {
+            if (_functions3.TryGetValue(key, out var function)) return function;
+            if (throwIfMissing) throw new ParseException($"Failed to find method for '{key}'");
+            return null;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Func<T, T, T, T, T> GetFunction4(string key, bool throwIfMissing = false)
+        {
+            if (_functions4.TryGetValue(key, out var function)) return function;
+            if (throwIfMissing) throw new ParseException($"Failed to find method for '{key}'");
+            return null;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Func<T, T, T, T, T, T> GetFunction5(string key, bool throwIfMissing = false)
+        {
+            if (_functions5.TryGetValue(key, out var function)) return function;
             if (throwIfMissing) throw new ParseException($"Failed to find method for '{key}'");
             return null;
         }

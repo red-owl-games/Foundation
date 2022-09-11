@@ -8,9 +8,9 @@ namespace RedOwl.Engine
     public class BetterDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
         [SerializeField] 
-        private List<TKey> _keys;
+        private TKey[] keys;
         [SerializeField] 
-        private List<TValue> _values;
+        private TValue[] values;
 
         public BetterDictionary() : base() { }
         public BetterDictionary(int capacity) : base(capacity) { }
@@ -25,17 +25,24 @@ namespace RedOwl.Engine
             {
                 if (value is ISerializationCallbackReceiver callback) callback.OnBeforeSerialize();
             }
-            _keys = new List<TKey>(Keys);
-            _values = new List<TValue>(Values);
+            var count = Count;
+            keys = new TKey[count];
+            values = new TValue[count];
+            Keys.CopyTo(keys, 0);
+            Values.CopyTo(values, 0);
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
-            int count = _keys.Count;
+            if (keys == null || values == null) return;
+            var keyCount = keys.Length;
+            if (keyCount != values.Length) return;
             Clear();
-            for (int i = 0; i < count; i++) {
-                this[_keys[i]] = _values[i];
+            for (var i = 0; i < keyCount; i++) {
+                this[keys[i]] = values[i];
             }
+            keys = null;
+            values = null;
         }
     }
 }
