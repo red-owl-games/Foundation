@@ -29,9 +29,10 @@ namespace RedOwl.Engine
             EveryOtherSecond.Tick(dt);
         }
 
+        internal const string DataLocation = "Game/Resources/Config/Game.yaml";
         public void Load()
         {
-            FileController.InstanceInternal.Read("game.yaml", this);
+            FileController.InstanceInternal.Read(DataLocation, this);
         }
     }
 }

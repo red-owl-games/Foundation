@@ -12,13 +12,13 @@ namespace RedOwl.Engine
         public int2 x = new(0,10);
         public int2 y = new(0, 10);
         public int2 z = new(0, 10);
-        public bool useGlobalGrid;
+        public bool useGlobalGrid = true;
         [HideIf("useGlobalGrid"), HideLabel, InlineProperty]
         public GridSettings settings;
         public Color mainColor = Color.white;
         public Color edgeColor = Color.yellow;
 
-        private GridSettings Grid => useGlobalGrid ? Game.Instance.GridSettings.Value : settings;
+        private GridSettings Grid => Game.IsRunning && useGlobalGrid ? Game.Instance.GridSettings.Value : settings;
 
         public GridDrawer(GridSettings settings)
         {

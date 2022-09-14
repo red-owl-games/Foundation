@@ -18,8 +18,9 @@
     "precompiledReferences": [
         "nunit.framework.dll",
         "Sirenix.OdinInspector.Editor.dll",
-        "Sirenix.Utilities.Editor.dll",
-        "Sirenix.Utilities.dll"
+        "Sirenix.OdinInspector.Attributes.dll",
+        "Sirenix.Utilities.dll",
+        "Sirenix.Utilities.Editor.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

@@ -7,6 +7,7 @@ namespace RedOwl.Engine
 {
     public class TopDownCamera : MonoBehaviour
     {
+        [SerializeField] private Players player;
         [SerializeField] private Transform angleTransform;
         [SerializeField] private Camera targetCamera;
         [SerializeField] private Transform follow;
@@ -57,7 +58,7 @@ namespace RedOwl.Engine
 
         private void OnEnable()
         {
-            input = World.Default.Get<PlayerInputSystem>().Player1;
+            input = PlayerInputSystem.Instance.Get(player);
             
             targetCameraTransform = targetCamera.transform;
             targetPosition = transform.position;
